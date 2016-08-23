@@ -1,0 +1,5 @@
+EXPORTS
+Interop_CreateInstance
+Interop_SetOption
+Interop_Init
+Interop_Remove

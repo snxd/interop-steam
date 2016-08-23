@@ -1,0 +1,35 @@
+Integrating example with sample skin (Step by Step)
+
+Instructions for Host Version: 3.6.4.0
+
+1)  Open steaminterop.sln in Visual Studio 2008
+2)  Select "Debug" and rebuild solution
+3)  Copy steaminterop from "Debug" subdirectory to host exe location
+4)  Copy steamobject.js and interoptestexample.js from the js directory to the sample skin directory with mainwindow.htl
+5)  Open sample skin file - mainwindow.html
+6)  Following "<script src="mainwindow.js" type="text/javascript"></script>" add 
+        <script src="steamobject.js" type="text/javascript"></script>
+        <script src="interoptestexample.js" type="text/javascript"></script>
+7)  Save mainwindow.html
+8)  Open sample workflow file - workflow.json
+9)  Add the following under the loadDownloader item
+    "loadSteam": {
+        "type": "loadInterop",
+        "name": "steam",
+        "filename": "{ModulePath}{LibraryPrefix}steaminterop.{LibraryExtension}"
+    },
+10) Add "loadSteam" to the actions item in the load queue
+11) Add the following under the unloadDownloader item
+    "unloadSteam": {
+        "type": "unloadInterop",
+        "name": "steam",
+        "filename": "{ModulePath}{LibraryPrefix}steaminterop.{LibraryExtension}"
+    },
+12) Add "unloadSteam" to the actions item in the unload queue
+13) Rebuild the skin using Patch Assistant
+14) Make sure the steaminterop.dll is still in the directory with the host executable
+15) Run the exe with /DisableSecurity as the first argument (During production if you sign the dll you won't need this).
+
+    
+
+

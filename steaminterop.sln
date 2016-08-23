@@ -1,0 +1,19 @@
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{A259B0C4-B70C-4d8c-97DB-7B3E2C5D5039}") = "SteamInterop", "steaminterop.vcproj", "{3D7C91C7-99F0-4485-89D1-87D0DDF4455C}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{3D7C91C7-99F0-4485-89D1-87D0DDF4455C}.Debug|Win32.ActiveCfg = Debug|Win32
+		{3D7C91C7-99F0-4485-89D1-87D0DDF4455C}.Debug|Win32.Build.0 = Debug|Win32
+		{3D7C91C7-99F0-4485-89D1-87D0DDF4455C}.Release|Win32.ActiveCfg = Release|Win32
+		{3D7C91C7-99F0-4485-89D1-87D0DDF4455C}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
