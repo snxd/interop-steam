@@ -2,10 +2,10 @@
 
 Instructions for DIRECT Host Version: 3.6.+
 
-These instructions will show you how to implement the Steam Auth Interop. A test harness javascript file (interoptestexample.js) is included. This file will simply alert out the variables that are produced by the interop. Using this example, you should be able to integrate these variables into your authentication service calls as needed.
+These instructions will show you how to implement the Steam Auth Interop. A test harness javascript file (steamtest.js) is included. This file will simply alert out the variables that are produced by the interop. Using this example, you should be able to integrate these variables into your authentication service calls as needed.
 
 1. Copy steaminterop.dll and steam_api.dll from /bin subdirectory to host exe location
-2. Copy steamauth.js and interoptestexample.js from the /js directory to the your skin /js directory
+2. Copy steamauth.js and steamtest.js from the /js directory to the your skin /js directory
 3. Open your mainwindow.html in your skin 
 4. Following 
 ```<script src="mainwindow.js" type="text/javascript"></script>```
