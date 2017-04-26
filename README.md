@@ -8,16 +8,18 @@ These instructions will show you how to implement the Steam Auth Interop. A test
 2. Copy steamauth.js and interoptestexample.js from the /js directory to the your skin /js directory
 3. Open your mainwindow.html in your skin 
 4. Following 
-```<script src="mainwindow.js" type="text/javascript"></script>``` add ```<script src="/js/steamauth.js" type="text/javascript"></script>
+```<script src="mainwindow.js" type="text/javascript"></script>```
+add 
+```<script src="/js/steamauth.js" type="text/javascript"></script>
 <script src="/js/interoptestexample.js" type="text/javascript"></script>```
 5. Save mainwindow.html
 6. Open your workflow file - workflow.json
 7. Add the following under the loadDownloader item
-  ```"loadSteam": {
-           "type": "loadInterop",
-           "name": "steam",
-           "filename": "{ModulePath}{LibraryPrefix}steaminterop.{LibraryExtension}"
-          },```
+```"loadSteam": {
+      "type": "loadInterop",
+         "name": "steam",
+         "filename": "{ModulePath}{LibraryPrefix}steaminterop.{LibraryExtension}"
+    },```
 8. Add "loadSteam" to the actions item in the load queue
 9. Add the following under the unloadDownloader item
   ```"unloadSteam": {
