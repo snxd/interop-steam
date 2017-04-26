@@ -15,18 +15,18 @@ add
 5. Save mainwindow.html
 6. Open your workflow file - workflow.json
 7. Add the following under the loadDownloader item
-```"loadSteam": {
-      "type": "loadInterop",
-         "name": "steam",
-         "filename": "{ModulePath}{LibraryPrefix}steaminterop.{LibraryExtension}"
+   ```"loadSteam": {
+        "type": "loadInterop",
+        "name": "steam",
+        "filename": "{ModulePath}{LibraryPrefix}steaminterop.{LibraryExtension}"
     },```
 8. Add "loadSteam" to the actions item in the load queue
 9. Add the following under the unloadDownloader item
-  ```"unloadSteam": {
-            "type": "unloadInterop",
-            "name": "steam",
-            "filename": "{ModulePath}{LibraryPrefix}steaminterop.{LibraryExtension}"
-            },```
+   ```"unloadSteam": {
+        "type": "unloadInterop",
+        "name": "steam",
+        "filename": "{ModulePath}{LibraryPrefix}steaminterop.{LibraryExtension}"
+    },```
 10. Add "unloadSteam" to the actions item in the unload queue
 11. Rebuild the skin using Patch Assistant
 12.	Make sure the steaminterop.dll and steam_api.dll are still in the directory with the host executable
