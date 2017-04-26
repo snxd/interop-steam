@@ -7,9 +7,7 @@ These instructions will show you how to implement the Steam Auth Interop. A test
 1. Copy steaminterop.dll and steam_api.dll from /bin subdirectory to host exe location
 2. Copy steamauth.js and steamtest.js from the /js directory to the your skin /js directory
 3. Open your mainwindow.html in your skin 
-4. Following ```
-<script src="mainwindow.js" type="text/javascript"></script>```
-add ```
+4. Following the script tag for *mainwindow.js* add: ```
 <script src="/js/steam.js" type="text/javascript"></script>
 <script src="/js/steamtest.js" type="text/javascript"></script>```
 5. Save mainwindow.html
