@@ -1,6 +1,4 @@
-### Integrating example with your existing skin (Step by Step)
-
-Instructions for DIRECT Host Version: 3.6.+
+### Steam Interop Example for DIRECT 3.6 
 
 These instructions will show you how to implement the Steam Auth Interop. A test harness javascript file (steamtest.js) is included. This file will simply alert out the variables that are produced by the interop. Using this example, you should be able to integrate these variables into your authentication service calls as needed.
 
