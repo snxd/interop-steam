@@ -14,8 +14,8 @@ add
 <script src="/js/interoptestexample.js" type="text/javascript"></script>```
 5. Save mainwindow.html
 6. Open your workflow file - workflow.json
-7. Add the following under the loadDownloader item
-   ```"loadSteam": {
+7. Add the following under the loadDownloader item ```
+   "loadSteam": {
         "type": "loadInterop",
         "name": "steam",
         "filename": "{ModulePath}{LibraryPrefix}steaminterop.{LibraryExtension}"
