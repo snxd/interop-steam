@@ -10,8 +10,8 @@ These instructions will show you how to implement the Steam Auth Interop. A test
 4. Following 
 ```<script src="mainwindow.js" type="text/javascript"></script>```
 add 
-```<script src="/js/steamauth.js" type="text/javascript"></script>
-<script src="/js/interoptestexample.js" type="text/javascript"></script>```
+```<script src="/js/steam.js" type="text/javascript"></script>
+<script src="/js/steamtest.js" type="text/javascript"></script>```
 5. Save mainwindow.html
 6. Open your workflow file - workflow.json
 7. Add the following under the loadDownloader item ```
