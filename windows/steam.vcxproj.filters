@@ -107,7 +107,7 @@
     <None Include="..\js\steamtest.js">
       <Filter>Javascript</Filter>
     </None>
-    <None Include="steaminterop.def">
+    <None Include="steam.def">
       <Filter>Source Files</Filter>
     </None>
   </ItemGroup>

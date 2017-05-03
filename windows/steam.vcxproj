@@ -12,7 +12,7 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{3D7C91C7-99F0-4485-89D1-87D0DDF4455C}</ProjectGuid>
-    <RootNamespace>SteamInterop</RootNamespace>
+    <RootNamespace>steam</RootNamespace>
     <Keyword>Win32Proj</Keyword>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -61,7 +61,7 @@
     </ClCompile>
     <Link>
       <AdditionalDependencies>..\lib\steam_api.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <ModuleDefinitionFile>steaminterop.def</ModuleDefinitionFile>
+      <ModuleDefinitionFile>steam.def</ModuleDefinitionFile>
       <DelayLoadDLLs>%(DelayLoadDLLs)</DelayLoadDLLs>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
@@ -81,7 +81,7 @@
     </ClCompile>
     <Link>
       <AdditionalDependencies>..\lib\steam_api.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <ModuleDefinitionFile>steaminterop.def</ModuleDefinitionFile>
+      <ModuleDefinitionFile>steam.def</ModuleDefinitionFile>
       <DelayLoadDLLs>%(DelayLoadDLLs)</DelayLoadDLLs>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
@@ -124,7 +124,7 @@
   <ItemGroup>
     <None Include="..\js\steam.js" />
     <None Include="..\js\steamtest.js" />
-    <None Include="steaminterop.def" />
+    <None Include="steam.def" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
