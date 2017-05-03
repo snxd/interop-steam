@@ -1,30 +1,45 @@
-### Steam Interop Example for DIRECT 3.6 
+### Steam Interop Example
 
-These instructions will show you how to implement the Steam Auth Interop. A test harness javascript file (steamtest.js) is included. This file will simply alert out the variables that are produced by the interop. Using this example, you should be able to integrate these variables into your authentication service calls as needed.
+This is an example interop that integrates with the Steamworks API.
 
-1. Copy steaminterop.dll and steam_api.dll from /bin subdirectory to host exe location
-2. Copy steamauth.js and steamtest.js from the /js directory to the your skin /js directory
-3. Open mainwindow.html in your skin 
-4. Following the script tag for mainwindow.js add: ```
-<script src="/js/steam.js" type="text/javascript"></script>
-<script src="/js/steamtest.js" type="text/javascript"></script>```
-5. Save mainwindow.html
-6. Open your workflow file - workflow.json
-7. Add the following under the loadDownloader item ```
-   "loadSteam": {
-        "type": "loadInterop",
+These instructions will show you how to implement the Steam Auth Interop. 
+A test harness javascript file (steamtest.js) is included. 
+This file will simply alert out the variables that are produced by the interop. 
+Using this example, you should be able to integrate these variables into your authentication service calls as needed.
+
+### Contents 
+
+* bin - Steam dlls
+* lib - Steam libraries
+* js/steam.js - Javascript class
+* js/steamtest.js - Javascript test
+* interop - DIRECT interop headers
+* jansson - Jansson javascript parser
+* windows - Windows project files
+
+### Requirements
+
+* Visual Studio 2013
+* DIRECT 5
+
+### Setup Instructions
+
+1. Compile the solution
+2. Copy the dynamic library from the target directory to the host.exe directory
+3. Edit workflow.json and add the following task to be run in the load entry point: ```
+    "loadSimple": {
+        "type": "interopLoad",
         "name": "steam",
-        "filename": "{ModulePath}{LibraryPrefix}steaminterop.{LibraryExtension}"
+        "path": "{ModuleDirectory}{LibraryPrefix}steam.{LibraryExtension}"
     },```
-8. Add "loadSteam" to the actions item in the load queue
-9. Add the following under the unloadDownloader item```
-    "unloadSteam": {
-        "type": "unloadInterop",
+4. Edit workflow.json and add the following task to be run in the unload entry point: ```
+    "unloadSimple": {
+        "type": "interopUnload",
         "name": "steam",
-        "filename": "{ModulePath}{LibraryPrefix}steaminterop.{LibraryExtension}"
+        "path": "{ModuleDirectory}{LibraryPrefix}steam.{LibraryExtension}"
     },```
-10. Add "unloadSteam" to the actions item in the unload queue
-11. Rebuild the skin using Patch Assistant
-12. Make sure the steaminterop.dll and steam_api.dll are still in the directory with the host executable
-13. Run the exe with /DisableSecurity as the first argument (During production if you sign the dll you won't need this).
-
+5. Copy simpleobject.js and simpleobjecttest.js from the js directory to the skin directory
+6. Open main.html and insert the following scripts after main.js: ```
+    <script src="steam.js" type="text/javascript"></script>
+    <script src="steamtest.js" type="text/javascript"></script>```
+7. Run host.exe with --disablesecurity as the first argument (during production if you sign the dll you won't need this).
