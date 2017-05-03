@@ -1,11 +1,6 @@
-### Steam Interop Example
+## Steam Interop Example
 
 This is an example interop that integrates with the Steamworks API.
-
-These instructions will show you how to implement the Steam Auth Interop. 
-A test harness javascript file (steamtest.js) is included. 
-This file will simply alert out the variables that are produced by the interop. 
-Using this example, you should be able to integrate these variables into your authentication service calls as needed.
 
 ### Contents 
 
