@@ -1,6 +1,8 @@
-Microsoft Visual Studio Solution File, Format Version 10.00
-# Visual Studio 2008
-Project("{A259B0C4-B70C-4d8c-97DB-7B3E2C5D5039}") = "SteamInterop", "steaminterop.vcproj", "{3D7C91C7-99F0-4485-89D1-87D0DDF4455C}"
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.40629.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "steaminterop", "steaminterop.vcxproj", "{3D7C91C7-99F0-4485-89D1-87D0DDF4455C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

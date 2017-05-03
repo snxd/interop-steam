@@ -1,33 +1,32 @@
 #include <string.h>
-#include "interop/interoptypes.h"
-typedef __int32 int32;
-typedef unsigned __int32 uint32;
-typedef int32 fixed32;
-#include "interop/interop.h"
-#include "steam/isteamclient.h"
-#include "steam/steam_api.h"
-#include <stdlib.h>
-#include <Windows.h>
+
+#include "interoplib.h"
+#include "interopstub.h"
 
 #include "steamauth.h"
+
+/*********************************************************************/
 
 int32 Interop_CreateInstance(char *TypeName, char *InstanceId, int32 InstanceIdLength,
                              void *ExecuteUserPtr, Interop_ExecuteCallback Execute,
                              Interop_InvokeInstanceCallback *InvokeInstance,
-                             Interop_RemoveInstanceCallback *RemoveInstance,
+                             Interop_ReleaseInstanceCallback *ReleaseInstance,
                              Interop_ProcessInstanceCallback *ProcessInstance,
                              void **UserPtr)
 {
     void *Context;
 
-    if (strcmp(TypeName, "Steam.Auth") == 0)
+    if (String_Compare(TypeName, "Steam.Auth") == TRUE)
     {
-        *InvokeInstance = SteamAuth_InvokeInstance;
-        *RemoveInstance = SteamAuth_RemoveInstance;
+        *InvokeInstance = SteamAuth_Invoke;
+        *ReleaseInstance = SteamAuth_Release;
         *ProcessInstance = NULL;
 
+        // Comment this line in if you want the process call
+        // *ProcessInstance = SteamAuth_Process;
+
         SteamAuth_Create(&Context);
-        SteamAuth_SetInstanceId(Context, InstanceId);
+        SteamAuth_GetInstanceId(Context, InstanceId, InstanceIdLength);
         SteamAuth_SetInteropExecuteCallback(Context, ExecuteUserPtr, Execute);
         *UserPtr = Context;
         return TRUE;
@@ -35,31 +34,25 @@ int32 Interop_CreateInstance(char *TypeName, char *InstanceId, int32 InstanceIdL
     return FALSE;
 }
 
+int32 Interop_SetOverride(char *Key, void *Value)
+{
+    InteropLib_SetOverride(Key, Value);
+    return TRUE;
+}
+
 int32 Interop_SetOption(char *Key, char *Value)
 {
     return TRUE;
 }
 
-int32 Interop_Init(InteropHostStruct *InteropHost)
-{
-    wchar_t Filename[_MAX_PATH] = {0};
-    GetModuleFileNameW(NULL, Filename, _MAX_PATH);
-    wchar_t *Slash = 0;
-    for(wchar_t *c = Filename; *c != 0; c++)
-    {
-        if(*c == '\\')
-            Slash = c;
-    }
-    *Slash = 0;
-    wcscat_s(Filename,_MAX_PATH,L"\\steam_api.dll");
-
-    LoadLibrary(Filename);
-    return TRUE;
-}
-
-int32 Interop_Remove()
+int32 Interop_Load()
 {
     return TRUE;
 }
 
+int32 Interop_Unload()
+{
+    return TRUE;
 }
+
+/*********************************************************************/

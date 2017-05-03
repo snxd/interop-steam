@@ -2,98 +2,132 @@
 #include <malloc.h>
 #include <stdlib.h>
 
+#include "interoplib.h"
+#include "interopstub.h"
+
+#include "jansson.h"
+#include "jansson_private.h"
+
 #include "steam_api.h"
-//#include "steamclientpublic.h"
-
-
-#include "interop/interoptypes.h"
-#include "interop/interop.h"
-
-#include "jansson/jansson.h"
-
-#include "steam/isteamclient.h"
-#include "steam/isteamapps.h"
+#include "isteamclient.h"
+#include "isteamapps.h"
 
 #include "steamauth.h"
 
 /*********************************************************************/
  
-#define MAX_GAMEID_LEN 100
+#define STEAMAUTH_MAXGAMEIDLENGTH       (100)
+#define STEAMAUTH_MAXPARAMETERS         (10)
+
+/*********************************************************************/
 
 typedef struct SteamAuthStruct
 {
-    // Interop Storage Data
-    char                            InstanceId[38];
+    ClassStruct                     Class;
     void                            *InteropExecuteUserPtr;
-    char                            GameId[MAX_GAMEID_LEN];
-    int32                           SteamInitialized;
     Interop_ExecuteCallback         InteropExecute;
-
-
+    char                            GameId[STEAMAUTH_MAXGAMEIDLENGTH];
+    int32                           SteamInitialized;
 } SteamAuthStruct;
 
 /********************************************************************/
+// Concrete Functions
 
-#define MAX_PARAMETERS (10)
-
-/********************************************************************/
-// Interop Functions
-
-void SteamAuth_SetInstanceId(void *SteamAuthContext, char *String)
+int32 SteamAuth_IsLoggedOn(void *SteamAuthContext, int32 *Result)
 {
-    SteamAuthStruct *SteamAuth = (SteamAuthStruct*)SteamAuthContext;
-    strncpy(SteamAuth->InstanceId, String, 38);
+    *Result = SteamUser()->BLoggedOn() != 0;
+    return TRUE;
 }
 
-void SteamAuth_SetInteropExecuteCallback(void *SteamAuthContext, void *UserPtr, Interop_ExecuteCallback Execute)
+int32 SteamAuth_GetSteamId(void *SteamAuthContext, uint64 *Result)
+{
+    CSteamID id = SteamUser()->GetSteamID();
+    *Result = id.ConvertToUint64();
+    return TRUE;
+}
+
+int32 SteamAuth_GetSessionTicket(void *SteamAuthContext, char *HexTicket, int32 HexTicketLength)
+{
+    // These aren't the exact lengths of the ticket data - We need to look up the max values for GetAuthSessionTicket
+    // ResultString and MaxResultString length are 
+    char AuthTicketData[2048] = { 0 };
+    uint32 AuthTicketSize = 0;
+
+    // TODO: Check to see if SteamUser can return NULL if the client isn't connected
+    SteamUser()->GetAuthSessionTicket(AuthTicketData, sizeof(AuthTicketData), &AuthTicketSize);
+    String_ConvertToHex(AuthTicketData, AuthTicketSize, HexTicket, HexTicketLength);
+    return TRUE;
+}
+
+/*********************************************************************/
+// Interop Functions
+
+static int32 SteamAuth_ExecuteCallback(void *SteamAuthContext, char *MethodBinding, char *MethodResultString, int32 MethodResultStringLength)
+{
+    SteamAuthStruct *SteamAuth = (SteamAuthStruct*)SteamAuthContext;
+    if (SteamAuth->InteropExecute(SteamAuth->InteropExecuteUserPtr, Class_InstanceId(SteamAuth), MethodBinding, MethodResultString, MethodResultStringLength) == FALSE)
+        return FALSE;
+    return TRUE;
+}
+
+int32 SteamAuth_GetInstanceId(void *SteamAuthContext, char *String, int32 MaxString)
+{
+    SteamAuthStruct *SteamAuth = (SteamAuthStruct *)SteamAuthContext;
+    String_CopyLength(String, Class_InstanceId(SteamAuth), MaxString);
+    return TRUE;
+}
+
+int32 SteamAuth_SetInteropExecuteCallback(void *SteamAuthContext, void *UserPtr, Interop_ExecuteCallback Execute)
 {
     // Store these if I want to call from native code to javascript
     SteamAuthStruct *SteamAuth = (SteamAuthStruct*)SteamAuthContext;
     SteamAuth->InteropExecuteUserPtr = UserPtr;
     SteamAuth->InteropExecute = Execute;
+    return TRUE;
 }
 
-int32 SteamAuth_ExecuteCallback(void *SteamAuthContext, char *MethodBinding, char *MethodResultString, int32 MethodResultStringLength)
+int32 SteamAuth_Process(void *SteamAuthContext)
 {
-    SteamAuthStruct *SteamAuth = (SteamAuthStruct*)SteamAuthContext;
+    // This function is called once per tick and can be used to process simple operations and
+    // thread synchronization.
 
-    return SteamAuth->InteropExecute(SteamAuth->InteropExecuteUserPtr, SteamAuth->InstanceId, MethodBinding, MethodResultString, MethodResultStringLength);
+    return TRUE;
 }
 
 int32 SteamAuth_Init(void *SteamAuthContext)
 {
-    char GameEnvVar[_MAX_PATH];
     SteamAuthStruct *SteamAuth = (SteamAuthStruct*)SteamAuthContext;
-    int32 RetVal = FALSE;
-    if (SteamAuth->SteamInitialized == TRUE)
-        RetVal = TRUE;
-    else if(SteamAuth->GameId[0] != 0)
+    int32 RetVal = SteamAuth->SteamInitialized;
+    char GameEnvVar[320] = { 0 };
+
+    if (RetVal == FALSE && SteamAuth->GameId[0] != 0)
     {
-        sprintf_s(GameEnvVar,_MAX_PATH,"SteamAppId=%s",SteamAuth->GameId);
+        String_Print(GameEnvVar, Element_Count(GameEnvVar), "SteamAppId=%s", SteamAuth->GameId);
         _putenv(GameEnvVar);
-        sprintf_s(GameEnvVar,_MAX_PATH,"SteamGameId=%s",SteamAuth->GameId);
+        String_Print(GameEnvVar, Element_Count(GameEnvVar), "SteamGameId=%s", SteamAuth->GameId);
         _putenv(GameEnvVar);
-        if ( SteamAPI_Init() )
+
+        if (SteamAPI_Init())
         {
-            SteamAuth->SteamInitialized=TRUE;
+            SteamAuth->SteamInitialized = TRUE;
             RetVal = TRUE;
         }
     }
     return RetVal;
 }
 
-int32 SteamAuth_InvokeInstance(void *SteamAuthContext, char *InstanceId, char *Method, char *ResultString, int32 ResultStringLength)
+int32 SteamAuth_Invoke(void *SteamAuthContext, char *Method, char *ResultString, int32 ResultStringLength)
 {
-    // EVERYTHING is marshalled in AND out as a JSON string, use any type supported by JSON and
-    // it should marhsal ok.
+    // EVERYTHING is marshaled in AND out as a JSON string, use any type supported by JSON and
+    // it should marshal ok.
 
     SteamAuthStruct *SteamAuth = (SteamAuthStruct*)SteamAuthContext;
     char *MethodName = NULL;
-    char MethodResultString[MAX_JSON_STRINGLENGTH];
+    char MethodResultString[INTEROP_MAXSTRING];
     int32 MethodResultInt = 0;
     int64 MethodResultLong = 0;
     uint64 MethodResultULong = 0;
-    json_t *Parameter[MAX_PARAMETERS];
+    json_t *Parameter[STEAMAUTH_MAXPARAMETERS];
     char *JSONDumpString = NULL;
     json_t *JSON = NULL;
     json_t *JSONReturnRoot = NULL;
@@ -102,26 +136,16 @@ int32 SteamAuth_InvokeInstance(void *SteamAuthContext, char *InstanceId, char *M
     json_error_t JSONError;
     int32 RetVal = FALSE;
 
-    if (strcmp(SteamAuth->InstanceId, InstanceId) != 0)
-    {
-        // Invalid instance ID
 
-        return FALSE;
-    }
-
-    memset(MethodResultString, 0, MAX_JSON_STRINGLENGTH);
-    JSON = json_loads(Method, MAX_JSON_STRINGLENGTH, &JSONError);
+    memset(MethodResultString, 0, INTEROP_MAXSTRING);
+    JSON = json_loads(Method, INTEROP_MAXSTRING, &JSONError);
     if (JSON == FALSE)
-    {
         return FALSE;
-    }
 
     RetVal = (JSONMethod = json_object_get(JSON, "method")) != NULL;
 
     if (RetVal == TRUE)
-    {
         RetVal = json_is_string(JSONMethod);
-    }
 
     if (RetVal == TRUE)
     {
@@ -129,31 +153,27 @@ int32 SteamAuth_InvokeInstance(void *SteamAuthContext, char *InstanceId, char *M
         RetVal = MethodName != NULL;
     }
 
-    if (RetVal == TRUE && strcmp(MethodName, "setAppId") == 0)
+    if (RetVal == TRUE && String_Compare(MethodName, "setAppId") == TRUE)
     {
         RetVal = ((Parameter[0] = json_object_get(JSON, "value")) != NULL);
         if (RetVal == TRUE)
-        {
             RetVal = json_is_string(Parameter[0]);
-        }
         RetVal = RetVal && (SteamAuth->SteamInitialized == FALSE);
         if (RetVal == TRUE)
-        {
-            RetVal = strlen(json_string_value(Parameter[0])) < MAX_GAMEID_LEN;
-        }
+            RetVal = String_Length(json_string_value(Parameter[0])) < STEAMAUTH_MAXGAMEIDLENGTH;
         if (RetVal == TRUE)
         {
-            strcpy_s(SteamAuth->GameId,MAX_GAMEID_LEN,json_string_value(Parameter[0]));
+            String_CopyLength(SteamAuth->GameId, json_string_value(Parameter[0]), Element_Count(SteamAuth->GameId));
             RetVal = (JSONReturn = json_null()) != NULL;
         }
     }
-    else if (RetVal == TRUE && strcmp(MethodName, "getSteamId") == 0)
+    else if (RetVal == TRUE && String_Compare(MethodName, "getSteamId") == TRUE)
     {
         RetVal = SteamAuth_Init(SteamAuthContext);
         if (RetVal == TRUE)
         {
             SteamAuth_GetSteamId(SteamAuth, &MethodResultULong);
-            sprintf_s(MethodResultString,MAX_JSON_STRINGLENGTH,"%llu",MethodResultULong);
+            String_Print(MethodResultString, Element_Count(MethodResultString), "%llu", MethodResultULong);
             RetVal = (JSONReturn = json_string(MethodResultString)) != NULL;
         }
         else
@@ -161,25 +181,19 @@ int32 SteamAuth_InvokeInstance(void *SteamAuthContext, char *InstanceId, char *M
             RetVal = (JSONReturn = json_string("")) != NULL;
         }
     }
-    else if (RetVal == TRUE && strcmp(MethodName, "isLoggedOn") == 0)
+    else if (RetVal == TRUE && String_Compare(MethodName, "isLoggedOn") == TRUE)
     {
         RetVal = SteamAuth_Init(SteamAuthContext);
         if (RetVal == TRUE)
-        {
             SteamAuth_IsLoggedOn(SteamAuth, &MethodResultInt);
-            RetVal = (JSONReturn = (MethodResultInt == TRUE) ? json_true() : json_false()) != NULL;
-        }
-        else
-        {
-            RetVal = (JSONReturn =  json_false()) != NULL;
-        }
+        RetVal = (JSONReturn = json_boolean(MethodResultInt == TRUE)) != NULL;
     }
-    else if (RetVal == TRUE && strcmp(MethodName, "getSessionTicket") == 0)
+    else if (RetVal == TRUE && String_Compare(MethodName, "getSessionTicket") == TRUE)
     {
         RetVal = SteamAuth_Init(SteamAuthContext);
         if (RetVal == TRUE)
         {
-            SteamAuth_GetSessionTicket(SteamAuth, MethodResultString, MAX_JSON_STRINGLENGTH);
+            SteamAuth_GetSessionTicket(SteamAuth, MethodResultString, Element_Count(MethodResultString));
             RetVal = (JSONReturn = json_string(MethodResultString)) != NULL;
         }
         else
@@ -190,128 +204,64 @@ int32 SteamAuth_InvokeInstance(void *SteamAuthContext, char *InstanceId, char *M
 
     // Set json return value
     if (RetVal == TRUE)
-    {
         RetVal = (JSONReturnRoot = json_object()) != NULL;
-    }
-
     if (RetVal == TRUE)
-    {
         RetVal = (json_object_set_new(JSONReturnRoot, "returnValue", JSONReturn) == 0);
-    }
-
     if (RetVal == TRUE)
-    {
         RetVal = (JSONDumpString = json_dumps(JSONReturnRoot, 0)) != NULL;
-    }
-
     if (RetVal == TRUE)
-    {
-        RetVal = ((signed)strlen(JSONDumpString) < ResultStringLength);
-    }
-
+        RetVal = ((signed)String_Length(JSONDumpString) < ResultStringLength);
     if (RetVal == TRUE)
-    {
-        strncpy(ResultString, JSONDumpString, ResultStringLength);
-    }
+        String_CopyLength(ResultString, JSONDumpString, ResultStringLength);
 
-    if (JSONDumpString != NULL) { free(JSONDumpString); }
-    if (JSONReturnRoot != NULL) { json_decref(JSONReturnRoot); }
-    if (JSON != NULL) { json_decref(JSON); }
+    if (JSONDumpString != NULL)
+        free(JSONDumpString);
+    if (JSONReturnRoot != NULL)
+        json_decref(JSONReturnRoot);
+    if (JSON != NULL)
+        json_decref(JSON);
 
     return RetVal;
 }
 
-int32 SteamAuth_RemoveInstance(void *SteamAuthContext, char *InstanceId)
-{
-    SteamAuthStruct *SteamAuth = (SteamAuthStruct*)SteamAuthContext;
-    if (strcmp(SteamAuth->InstanceId, InstanceId) != 0)
-    {
-        return FALSE;
-    }
-
-    SteamAuth_Delete((void**)&SteamAuth);
-    return TRUE;
-}
-
-/*********************************************************************/
-// Concrete Functions
-
-#define BASE16SYM                                               ("0123456789ABCDEF")
-
-#define Base16_EncodeLo(b)                                      (BASE16SYM[(b & 0xff) >> 4])
-#define Base16_EncodeHi(b)                                      (BASE16SYM[b & 0xF])
-
-int32 ConvertToHex(char *Binary, int32 BinarySize, char *Hex, int32 MaxHex)
-{
-    int32 ReturnVal = TRUE;
-
-    while ((MaxHex > 2) && (BinarySize > 0))
-        {
-        Hex[0] = Base16_EncodeLo(*Binary);
-        Hex[1] = Base16_EncodeHi(*Binary);
-
-        Hex += 2;
-        MaxHex -= 2;
-        Binary += 1;
-        BinarySize -= 1;
-        }
-
-    if (BinarySize > 0)
-        ReturnVal = FALSE;
-
-    //Debug_Assert(MaxHex > 0, "Unable to null terminate hex string");
-    *Hex = 0;
-    return ReturnVal;
-}
-
-void SteamAuth_IsLoggedOn(void *SteamAuthContext, int32 *Result)
-{
-    *Result = SteamUser()->BLoggedOn() != 0;
-}
-
-void SteamAuth_GetSteamId(void *SteamAuthContext, uint64 *Result)
-{
-    CSteamID id = SteamUser()->GetSteamID();
-    *Result = id.ConvertToUint64();
-}
-
-void SteamAuth_GetSessionTicket(void *SteamAuthContext, char *HexTicket, int32 HexTicketLength)
-{
-    // These aren't the exact lengths of the ticket data - We need to look up the max values for GetAuthSessionTicket
-    // ResultString and MaxResultString length are 
-    char AuthTicketData[2048] = { 0 };
-    uint32 AuthTicketSize = 0;
-
-    // TODO: Check to see if SteamUser can return NULL if the client isn't connected
-    SteamUser()->GetAuthSessionTicket(AuthTicketData, sizeof(AuthTicketData), &AuthTicketSize);
-    ConvertToHex(AuthTicketData, AuthTicketSize, HexTicket, HexTicketLength); 
-}
-
-
 /*********************************************************************/
 // Creation/Deletion Functions
 
-void SteamAuth_Create(void **SteamAuthContext)
+int32 SteamAuth_Create(void **SteamAuthContext)
 {
     SteamAuthStruct *SteamAuth = NULL;
 
     SteamAuth = (SteamAuthStruct*)malloc(sizeof(SteamAuthStruct));
-    SteamAuth->GameId[0]=0;
-    SteamAuth->SteamInitialized=FALSE;
+    Interop_GenerateInstanceId(SteamAuth->Class.InstanceId, 40);
+
+    SteamAuth->Class.RefCount = 1;
+    SteamAuth->GameId[0] = 0;
+    SteamAuth->SteamInitialized = FALSE;
+
     *SteamAuthContext = SteamAuth;
+    return TRUE;
 }
 
-void SteamAuth_Delete(void **SteamAuthContext)
+void *SteamAuth_AddRef(void *SteamAuthContext)
 {
-    SteamAuthStruct *SteamAuth = (SteamAuthStruct*)*SteamAuthContext;
-    if(SteamAuth->SteamInitialized == TRUE)
+    SteamAuthStruct *SteamAuth = (SteamAuthStruct *)SteamAuthContext;
+    SteamAuth->Class.RefCount += 1;
+    return SteamAuth;
+}
+
+int32 SteamAuth_Release(void **SteamAuthContext)
+{
+    SteamAuthStruct *SteamAuth = (SteamAuthStruct *)*SteamAuthContext;
+
+    if (--SteamAuth->Class.RefCount == 0)
     {
-        SteamAPI_Shutdown();
+        if (SteamAuth->SteamInitialized == TRUE)
+            SteamAPI_Shutdown();
+        free(SteamAuth);
     }
-    free(SteamAuth);
-    
+
     *SteamAuthContext = NULL;
+    return TRUE;
 }
 
 /*********************************************************************/
-}
