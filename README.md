@@ -6,8 +6,7 @@ This is an example interop that integrates with the Steamworks API.
 
 * bin - Steam dlls
 * lib - Steam libraries
-* js/steam.js - Javascript class
-* js/steamtest.js - Javascript test
+* js - Javascript classes
 * interop - DIRECT interop headers
 * jansson - Jansson javascript parser
 * windows - Windows project files
@@ -35,6 +34,9 @@ This is an example interop that integrates with the Steamworks API.
     },```
 5. Copy simpleobject.js and simpleobjecttest.js from the js directory to the skin directory
 6. Open main.html and insert the following scripts after main.js: ```
-    <script src="steam.js" type="text/javascript"></script>
+    <script src="steamapp.js" type="text/javascript"></script>
+    <script src="steamfriends.js" type="text/javascript"></script>
+    <script src="steamuser.js" type="text/javascript"></script>
+    <script src="steamuserstats.js" type="text/javascript"></script>
     <script src="steamtest.js" type="text/javascript"></script>```
 7. Run host.exe with --disablesecurity as the first argument (during production if you sign the dll you won't need this).
