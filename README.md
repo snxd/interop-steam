@@ -6,6 +6,7 @@ This is an example interop that integrates with the Steamworks API.
 
 * bin - Steam dlls
 * lib - Steam libraries
+* steam - Steam headers
 * js - Javascript classes
 * interop - DIRECT interop headers
 * jansson - Jansson javascript parser
