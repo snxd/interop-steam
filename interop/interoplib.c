@@ -156,12 +156,12 @@ int32 InteropLib_SetOverride(char *Key, void *Value)
     else if (String_Compare(Key, "Class_UntrackInstance") == TRUE)
         Class_UntrackInstancePtr = (Class_UntrackInstanceCallback)Value;
     
-    if (String_Compare(Key, "Dictionary_Create") == TRUE)
+    else if (String_Compare(Key, "Dictionary_Create") == TRUE)
         Dictionary_CreatePtr = (Dictionary_CreateCallback)Value;
     else if (String_Compare(Key, "Dictionary_Delete") == TRUE)
         Dictionary_DeletePtr = (Dictionary_DeleteCallback)Value;
 
-    if (String_Compare(Key, "NotificationCenter_AddInstanceObserver") == TRUE)
+    else if (String_Compare(Key, "NotificationCenter_AddInstanceObserver") == TRUE)
         NotificationCenter_AddInstanceObserverPtr = (NotificationCenter_AddInstanceObserverCallback)Value;
     else if (String_Compare(Key, "NotificationCenter_RemoveInstanceObserver") == TRUE)
         NotificationCenter_RemoveInstanceObserverPtr = (NotificationCenter_RemoveInstanceObserverCallback)Value;
@@ -178,7 +178,7 @@ int32 InteropLib_SetOverride(char *Key, void *Value)
     else if (String_Compare(Key, "NotificationCenter_FireAfterDelayWithJSONV") == TRUE)
         NotificationCenter_FireAfterDelayWithJSONVPtr = (NotificationCenter_FireAfterDelayWithJSONVCallback)Value;
 
-    if (String_Compare(Key, "Interop_GenerateInstanceId") == TRUE)
+    else if (String_Compare(Key, "Interop_GenerateInstanceId") == TRUE)
         Interop_GenerateInstanceIdPtr = (Interop_GenerateInstanceIdCallback)Value;
 
     return TRUE;

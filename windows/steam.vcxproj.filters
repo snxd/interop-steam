@@ -52,10 +52,19 @@
     <ClCompile Include="..\interop\interoplib.c">
       <Filter>Interop</Filter>
     </ClCompile>
-    <ClCompile Include="..\steamauth.c">
+    <ClCompile Include="..\steaminterop.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\steaminterop.c">
+    <ClCompile Include="..\steamapp.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\steamuser.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\steamuserstats.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\steamfriends.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -96,7 +105,16 @@
     <ClInclude Include="..\interop\workflowi.h">
       <Filter>Interop</Filter>
     </ClInclude>
-    <ClInclude Include="..\steamauth.h">
+    <ClInclude Include="..\steamapp.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\steamuser.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\steamuserstats.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\steamfriends.h">
       <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>

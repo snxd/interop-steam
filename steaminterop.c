@@ -3,7 +3,10 @@
 #include "interoplib.h"
 #include "interopstub.h"
 
-#include "steamauth.h"
+#include "steamapp.h"
+#include "steamuser.h"
+#include "steamuserstats.h"
+#include "steamfriends.h"
 
 /*********************************************************************/
 
@@ -16,18 +19,46 @@ int32 Interop_CreateInstance(char *TypeName, char *InstanceId, int32 InstanceIdL
 {
     void *Context;
 
-    if (String_Compare(TypeName, "Steam.Auth") == TRUE)
+    if (String_Compare(TypeName, "Steam.App") == TRUE)
     {
-        *InvokeInstance = SteamAuth_Invoke;
-        *ReleaseInstance = SteamAuth_Release;
+        *InvokeInstance = SteamApp_Invoke;
+        *ReleaseInstance = NULL;
+        *ProcessInstance = SteamApp_Process;
+
+        SteamApp_GetInstanceId(InstanceId, InstanceIdLength);
+        *UserPtr = NULL;
+        return TRUE;
+    }
+    else if (String_Compare(TypeName, "Steam.User") == TRUE)
+    {
+        *InvokeInstance = SteamUser_Invoke;
+        *ReleaseInstance = SteamUser_Release;
         *ProcessInstance = NULL;
 
-        // Comment this line in if you want the process call
-        // *ProcessInstance = SteamAuth_Process;
+        SteamUser_Create(&Context);
+        SteamUser_GetInstanceId(Context, InstanceId, InstanceIdLength);
+        *UserPtr = Context;
+        return TRUE;
+    }
+    else if (String_Compare(TypeName, "Steam.UserStats") == TRUE)
+    {
+        *InvokeInstance = SteamUserStats_Invoke;
+        *ReleaseInstance = SteamUserStats_Release;
+        *ProcessInstance = NULL;
 
-        SteamAuth_Create(&Context);
-        SteamAuth_GetInstanceId(Context, InstanceId, InstanceIdLength);
-        SteamAuth_SetInteropExecuteCallback(Context, ExecuteUserPtr, Execute);
+        SteamUserStats_Create(&Context);
+        SteamUserStats_GetInstanceId(Context, InstanceId, InstanceIdLength);
+        *UserPtr = Context;
+        return TRUE;
+    }
+    else if (String_Compare(TypeName, "Steam.Friends") == TRUE)
+    {
+        *InvokeInstance = SteamFriends_Invoke;
+        *ReleaseInstance = SteamFriends_Release;
+        *ProcessInstance = NULL;
+
+        SteamFriends_Create(&Context);
+        SteamFriends_GetInstanceId(Context, InstanceId, InstanceIdLength);
         *UserPtr = Context;
         return TRUE;
     }
@@ -47,11 +78,13 @@ int32 Interop_SetOption(char *Key, char *Value)
 
 int32 Interop_Load()
 {
+    SteamApp_Init();
     return TRUE;
 }
 
 int32 Interop_Unload()
 {
+    SteamApp_Remove();
     return TRUE;
 }
 

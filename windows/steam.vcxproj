@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
@@ -18,13 +18,13 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
@@ -62,7 +62,7 @@
     <Link>
       <AdditionalDependencies>..\lib\steam_api.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ModuleDefinitionFile>steam.def</ModuleDefinitionFile>
-      <DelayLoadDLLs>%(DelayLoadDLLs)</DelayLoadDLLs>
+      <DelayLoadDLLs>steam_api.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <TargetMachine>MachineX86</TargetMachine>
@@ -103,8 +103,11 @@
     <ClCompile Include="..\jansson\strconv.c" />
     <ClCompile Include="..\jansson\utf.c" />
     <ClCompile Include="..\jansson\value.c" />
-    <ClCompile Include="..\steamauth.c" />
+    <ClCompile Include="..\steamapp.c" />
+    <ClCompile Include="..\steamfriends.cpp" />
     <ClCompile Include="..\steaminterop.c" />
+    <ClCompile Include="..\steamuser.cpp" />
+    <ClCompile Include="..\steamuserstats.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\interop\dictionaryi.h" />
@@ -119,7 +122,10 @@
     <ClInclude Include="..\jansson\lookup3.h" />
     <ClInclude Include="..\jansson\strbuffer.h" />
     <ClInclude Include="..\jansson\utf.h" />
-    <ClInclude Include="..\steamauth.h" />
+    <ClInclude Include="..\steamapp.h" />
+    <ClInclude Include="..\steamfriends.h" />
+    <ClInclude Include="..\steamuser.h" />
+    <ClInclude Include="..\steamuserstats.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\js\steam.js" />
