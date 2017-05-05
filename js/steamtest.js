@@ -2,6 +2,7 @@
 (function () {
     var steamUser = null;
     var steamUserStats = null;
+    var steamFriends = null;
     var observer = null;
     
     function interopLoaded() {
@@ -50,6 +51,9 @@
         }
         if (!isNull(steamUserStats)) {
             steamUserStats.release();
+        }
+        if (!isNull(steamFriends)) {
+            steamFriends.release();
         }
     };
     
