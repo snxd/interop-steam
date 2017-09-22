@@ -92,17 +92,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\interop\interoplib.c" />
-    <ClCompile Include="..\jansson\dump.c" />
-    <ClCompile Include="..\jansson\error.c" />
-    <ClCompile Include="..\jansson\hashtable.c" />
-    <ClCompile Include="..\jansson\hashtable_seed.c" />
-    <ClCompile Include="..\jansson\load.c" />
-    <ClCompile Include="..\jansson\memory.c" />
-    <ClCompile Include="..\jansson\pack_unpack.c" />
-    <ClCompile Include="..\jansson\strbuffer.c" />
-    <ClCompile Include="..\jansson\strconv.c" />
-    <ClCompile Include="..\jansson\utf.c" />
-    <ClCompile Include="..\jansson\value.c" />
     <ClCompile Include="..\steamapp.c" />
     <ClCompile Include="..\steamfriends.cpp" />
     <ClCompile Include="..\steaminterop.c" />
@@ -115,13 +104,6 @@
     <ClInclude Include="..\interop\interopstub.h" />
     <ClInclude Include="..\interop\taski.h" />
     <ClInclude Include="..\interop\workflowi.h" />
-    <ClInclude Include="..\jansson\hashtable.h" />
-    <ClInclude Include="..\jansson\jansson.h" />
-    <ClInclude Include="..\jansson\jansson_config.h" />
-    <ClInclude Include="..\jansson\jansson_private.h" />
-    <ClInclude Include="..\jansson\lookup3.h" />
-    <ClInclude Include="..\jansson\strbuffer.h" />
-    <ClInclude Include="..\jansson\utf.h" />
     <ClInclude Include="..\steamapp.h" />
     <ClInclude Include="..\steamfriends.h" />
     <ClInclude Include="..\steamuser.h" />

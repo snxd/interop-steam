@@ -4,9 +4,7 @@
 
 #include "interoplib.h"
 #include "interopstub.h"
-
-#include "jansson.h"
-#include "jansson_private.h"
+#include "dictionaryi.h"
 
 #include "steam_api.h"
 
@@ -113,81 +111,44 @@ int32 SteamUser_Process(void *SteamUserContext)
     return TRUE;
 }
 
-int32 SteamUser_Invoke(void *SteamUserContext, char *Method, char *ResultString, int32 ResultStringLength)
+int32 SteamUser_Invoke(void *SteamUserContext, echandle MethodDictionaryHandle, echandle ReturnDictionaryHandle)
 {
     // EVERYTHING is marshaled in AND out as a JSON string, use any type supported by JSON and
     // it should marshal ok.
 
     SteamUserStruct *User = (SteamUserStruct*)SteamUserContext;
-    char *MethodName = NULL;
-    char MethodResultString[INTEROP_MAXSTRING] = { 0 };
-    int32 MethodResultInt = 0;
-    int64 MethodResultLong = 0;
-    uint64 MethodResultULong = 0;
-    json_t *Parameter[1];
-    char *JSONDumpString = NULL;
-    json_t *JSON = NULL;
-    json_t *JSONReturnRoot = NULL;
-    json_t *JSONReturn = NULL;
-    json_t *JSONMethod = NULL;
-    json_error_t JSONError;
+    echandle ItemHandle = NULL;
+    int64 Value64 = 0;
     int32 RetVal = FALSE;
+    int32 ReturnValue = FALSE;
+    int32 Value32 = 0;
+    char *Method = NULL;
+    char *ValueString = NULL;
 
 
-    JSON = json_loads(Method, INTEROP_MAXSTRING, &JSONError);
-    if (JSON == FALSE)
+    if (IDictionary_GetStringPtrByKey(MethodDictionaryHandle, "method", &Method) == FALSE)
         return FALSE;
 
-    RetVal = (JSONMethod = json_object_get(JSON, "method")) != NULL;
-
-    if (RetVal == TRUE)
-        RetVal = json_is_string(JSONMethod);
-
-    if (RetVal == TRUE)
+    if (String_Compare(Method, "getSteamId") == TRUE)
     {
-        MethodName = (char*)json_string_value(JSONMethod);
-        RetVal = MethodName != NULL;
+        RetVal = SteamUser_GetSteamId(SteamUserContext, (uint64 *)&Value64);
+        IDictionary_AddInt32(ReturnDictionaryHandle, "returnValue", Value64, &ItemHandle);
     }
-
-    if (RetVal == TRUE && String_Compare(MethodName, "getSteamId") == TRUE)
+    else if (String_Compare(Method, "isLoggedOn") == TRUE)
     {
-        SteamUser_GetSteamId(User, &MethodResultULong);
-        RetVal = (JSONReturn = json_integer(MethodResultULong)) != NULL;
+        ReturnValue = SteamUser_IsLoggedOn(User);
+        RetVal = IDictionary_AddBoolean(ReturnDictionaryHandle, "returnValue", ReturnValue, &ItemHandle);
     }
-    else if (RetVal == TRUE && String_Compare(MethodName, "isLoggedOn") == TRUE)
+    else if (String_Compare(Method, "getAuthSessionTicket") == TRUE)
     {
-        MethodResultInt = SteamUser_IsLoggedOn(User);
-        RetVal = (JSONReturn = json_boolean(MethodResultInt)) != NULL;
+        SteamUser_GetAuthSessionTicket(User, &Value32);
+        RetVal = IDictionary_AddInt32(ReturnDictionaryHandle, "returnValue", Value32, &ItemHandle);
     }
-    else if (RetVal == TRUE && String_Compare(MethodName, "getAuthSessionTicket") == TRUE)
+    else if (String_Compare(Method, "cancelAuthTicket") == TRUE)
     {
-        SteamUser_GetAuthSessionTicket(User, &MethodResultInt);
-        RetVal = (JSONReturn = json_integer(MethodResultInt)) != NULL;
+        ReturnValue = SteamUser_CancelAuthTicket(User);
+        RetVal = IDictionary_AddBoolean(ReturnDictionaryHandle, "returnValue", ReturnValue, &ItemHandle);
     }
-    else if (RetVal == TRUE && String_Compare(MethodName, "cancelAuthTicket") == TRUE)
-    {
-        MethodResultInt = SteamUser_CancelAuthTicket(User);
-        RetVal = (JSONReturn = json_boolean(MethodResultInt)) != NULL;
-    }
-
-    // Set json return value
-    if (RetVal == TRUE)
-        RetVal = (JSONReturnRoot = json_object()) != NULL;
-    if (RetVal == TRUE)
-        RetVal = (json_object_set_new(JSONReturnRoot, "returnValue", JSONReturn) == 0);
-    if (RetVal == TRUE)
-        RetVal = (JSONDumpString = json_dumps(JSONReturnRoot, 0)) != NULL;
-    if (RetVal == TRUE)
-        RetVal = ((signed)String_Length(JSONDumpString) < ResultStringLength);
-    if (RetVal == TRUE)
-        String_CopyLength(ResultString, JSONDumpString, ResultStringLength);
-
-    if (JSONDumpString != NULL)
-        free(JSONDumpString);
-    if (JSONReturnRoot != NULL)
-        json_decref(JSONReturnRoot);
-    if (JSON != NULL)
-        json_decref(JSON);
 
     return RetVal;
 }

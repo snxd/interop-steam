@@ -1,4 +1,4 @@
-## Steam Interop Example for DIRECT 5
+## Steam Interop Example for DIRECT 5.1.9
 
 This is an example interop that integrates with the Steamworks API.
 
@@ -15,20 +15,20 @@ This is an example interop that integrates with the Steamworks API.
 ### Requirements
 
 * Visual Studio 2013
-* DIRECT 5
+* DIRECT 5.1.9
 
 ### Setup Instructions
 
 1. Compile the solution
 2. Copy the dynamic library from the target directory to the host.exe directory
 3. Edit workflow.json and add the following task to be run in the load entry point: ```
-    "loadSimple": {
+    "loadSteam": {
         "type": "interopLoad",
         "name": "steam",
         "path": "{ModuleDirectory}{LibraryPrefix}steam.{LibraryExtension}"
     },```
 4. Edit workflow.json and add the following task to be run in the unload entry point: ```
-    "unloadSimple": {
+    "unloadSteam": {
         "type": "interopUnload",
         "name": "steam",
         "path": "{ModuleDirectory}{LibraryPrefix}steam.{LibraryExtension}"

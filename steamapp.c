@@ -4,9 +4,7 @@
 
 #include "interoplib.h"
 #include "interopstub.h"
-
-#include "jansson.h"
-#include "jansson_private.h"
+#include "dictionaryi.h"
 
 #if defined(_WIN32)
 #include <windows.h>
@@ -84,70 +82,29 @@ int32 SteamApp_Process(void *SteamAppContext)
     return TRUE;
 }
 
-int32 SteamApp_Invoke(void *SteamAppContext, char *Method, char *ResultString, int32 ResultStringLength)
+int32 SteamApp_Invoke(void *SteamAppContext, echandle MethodDictionaryHandle, echandle ReturnDictionaryHandle)
 {
     // EVERYTHING is marshaled in AND out as a JSON string, use any type supported by JSON and
     // it should marshal ok.
 
     SteamAppStruct *SteamApp = (SteamAppStruct *)GlobalSteamApp;
-    char *MethodName = NULL;
-    char MethodResultString[INTEROP_MAXSTRING] = { 0 };
-    int32 MethodResultInt = 0;
-    int64 MethodResultLong = 0;
-    uint64 MethodResultULong = 0;
-    json_t *Parameter[1];
-    char *JSONDumpString = NULL;
-    json_t *JSON = NULL;
-    json_t *JSONReturnRoot = NULL;
-    json_t *JSONReturn = NULL;
-    json_t *JSONMethod = NULL;
-    json_error_t JSONError;
+    echandle ItemHandle = NULL;
     int32 RetVal = FALSE;
+    int32 ReturnValue = FALSE;
+    char *Method = NULL;
+    char *ValueString = NULL;
 
 
-    JSON = json_loads(Method, INTEROP_MAXSTRING, &JSONError);
-    if (JSON == FALSE)
+    if (IDictionary_GetStringPtrByKey(MethodDictionaryHandle, "method", &Method) == FALSE)
         return FALSE;
 
-    RetVal = (JSONMethod = json_object_get(JSON, "method")) != NULL;
-
-    if (RetVal == TRUE)
-        RetVal = json_is_string(JSONMethod);
-
-    if (RetVal == TRUE)
+    if (String_Compare(Method, "setId") == TRUE)
     {
-        MethodName = (char*)json_string_value(JSONMethod);
-        RetVal = MethodName != NULL;
-    }
-
-    if (RetVal == TRUE && String_Compare(MethodName, "setId") == TRUE)
-    {
-        RetVal = ((Parameter[0] = json_object_get(JSON, "value")) != NULL);
+        RetVal = IDictionary_GetStringPtrByKey(MethodDictionaryHandle, "value", &ValueString);
         if (RetVal == TRUE)
-            RetVal = json_is_string(Parameter[0]);
-        if (RetVal == TRUE)
-            MethodResultInt = SteamApp_SetId(SteamApp, (char *)json_string_value(Parameter[0]));
-        RetVal = (JSONReturn = json_boolean(MethodResultInt)) != NULL;
+            ReturnValue = SteamApp_SetId(SteamApp, ValueString);
+        IDictionary_AddBoolean(ReturnDictionaryHandle, "returnValue", ReturnValue, &ItemHandle);
     }
-
-    // Set json return value
-    if (RetVal == TRUE)
-        RetVal = (JSONReturnRoot = json_object()) != NULL;
-    if (RetVal == TRUE)
-        RetVal = (json_object_set_new(JSONReturnRoot, "returnValue", JSONReturn) == 0);
-    if (RetVal == TRUE)
-        RetVal = (JSONDumpString = json_dumps(JSONReturnRoot, 0)) != NULL;
-    if (RetVal == TRUE)
-        RetVal = ((signed)String_Length(JSONDumpString) < ResultStringLength);
-    if (RetVal == TRUE)
-        String_CopyLength(ResultString, JSONDumpString, ResultStringLength);
-
-    if (JSONDumpString != NULL)
-        free(JSONDumpString);
-    if (JSONReturnRoot != NULL)
-        json_decref(JSONReturnRoot);
-    if (JSON != NULL)
-        json_decref(JSON);
 
     return RetVal;
 }

@@ -8,47 +8,11 @@
     <Filter Include="Javascript">
       <UniqueIdentifier>{ba58fefd-e8c7-427f-8f32-66089e3363d6}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Jansson">
-      <UniqueIdentifier>{003cf95c-04d6-4533-b9c0-3f73037255b9}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Interop">
       <UniqueIdentifier>{aca86d22-ac1e-4066-947f-2b0737c2804a}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\jansson\dump.c">
-      <Filter>Jansson</Filter>
-    </ClCompile>
-    <ClCompile Include="..\jansson\error.c">
-      <Filter>Jansson</Filter>
-    </ClCompile>
-    <ClCompile Include="..\jansson\hashtable.c">
-      <Filter>Jansson</Filter>
-    </ClCompile>
-    <ClCompile Include="..\jansson\hashtable_seed.c">
-      <Filter>Jansson</Filter>
-    </ClCompile>
-    <ClCompile Include="..\jansson\load.c">
-      <Filter>Jansson</Filter>
-    </ClCompile>
-    <ClCompile Include="..\jansson\memory.c">
-      <Filter>Jansson</Filter>
-    </ClCompile>
-    <ClCompile Include="..\jansson\pack_unpack.c">
-      <Filter>Jansson</Filter>
-    </ClCompile>
-    <ClCompile Include="..\jansson\strbuffer.c">
-      <Filter>Jansson</Filter>
-    </ClCompile>
-    <ClCompile Include="..\jansson\strconv.c">
-      <Filter>Jansson</Filter>
-    </ClCompile>
-    <ClCompile Include="..\jansson\utf.c">
-      <Filter>Jansson</Filter>
-    </ClCompile>
-    <ClCompile Include="..\jansson\value.c">
-      <Filter>Jansson</Filter>
-    </ClCompile>
     <ClCompile Include="..\interop\interoplib.c">
       <Filter>Interop</Filter>
     </ClCompile>
@@ -69,27 +33,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\jansson\hashtable.h">
-      <Filter>Jansson</Filter>
-    </ClInclude>
-    <ClInclude Include="..\jansson\jansson.h">
-      <Filter>Jansson</Filter>
-    </ClInclude>
-    <ClInclude Include="..\jansson\jansson_config.h">
-      <Filter>Jansson</Filter>
-    </ClInclude>
-    <ClInclude Include="..\jansson\jansson_private.h">
-      <Filter>Jansson</Filter>
-    </ClInclude>
-    <ClInclude Include="..\jansson\lookup3.h">
-      <Filter>Jansson</Filter>
-    </ClInclude>
-    <ClInclude Include="..\jansson\strbuffer.h">
-      <Filter>Jansson</Filter>
-    </ClInclude>
-    <ClInclude Include="..\jansson\utf.h">
-      <Filter>Jansson</Filter>
-    </ClInclude>
     <ClInclude Include="..\interop\dictionaryi.h">
       <Filter>Interop</Filter>
     </ClInclude>

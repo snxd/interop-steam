@@ -18,7 +18,7 @@ int32 SteamUser_GetSessionTicket(void *SteamUserContext, char *HexTicket, int32 
 int32 SteamUser_GetInstanceId(void *SteamUserContext, char *String, int32 MaxString);
 
 int32 SteamUser_Process(void *SteamUserContext);
-int32 SteamUser_Invoke(void *SteamUserContext, char *Method, char *ResultString, int32 ResultStringLength);
+int32 SteamUser_Invoke(void *SteamUserContext, echandle MethodDictionaryHandle, echandle ReturnDictionaryHandle);
 
 /*********************************************************************/
 

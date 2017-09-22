@@ -18,7 +18,7 @@ int32 SteamFriends_GetFriendPersonaName(void *SteamFriendsContext, uint64 Friend
 int32 SteamFriends_GetInstanceId(void *SteamFriendsContext, char *String, int32 MaxString);
 
 int32 SteamFriends_Process(void *SteamFriendsContext);
-int32 SteamFriends_Invoke(void *SteamFriendsContext, char *Method, char *ResultString, int32 ResultStringLength);
+int32 SteamFriends_Invoke(void *SteamFriendsContext, echandle MethodDictionaryHandle, echandle ReturnDictionaryHandle);
 
 /*********************************************************************/
 
