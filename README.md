@@ -32,7 +32,7 @@ This is an example interop that integrates with the Steamworks API.
         "name": "steam",
         "path": "{ModuleDirectory}{LibraryPrefix}steam.{LibraryExtension}"
     },```
-5. Copy simpleobject.js and simpleobjecttest.js from the js directory to the skin directory
+5. Copy the files from the js directory to the skin directory
 6. Open main.html and insert the following scripts after main.js: ```
     <script src="steamapp.js" type="text/javascript"></script>
     <script src="steamfriends.js" type="text/javascript"></script>
