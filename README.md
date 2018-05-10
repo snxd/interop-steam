@@ -1,6 +1,6 @@
 ## Steam Interop Example for DIRECT 5.1.9
 
-This is an example interop that integrates with the Steamworks API.
+The steam interop example shows how to get information from the Steamworks API. 
 
 ### Contents 
 
@@ -15,6 +15,7 @@ This is an example interop that integrates with the Steamworks API.
 
 * Visual Studio 2013
 * DIRECT 5.1.9
+* Steam (must be running)
 
 ### Setup Instructions
 
@@ -39,4 +40,10 @@ This is an example interop that integrates with the Steamworks API.
     <script src="steamuser.js" type="text/javascript"></script>
     <script src="steamuserstats.js" type="text/javascript"></script>
     <script src="steamtest.js" type="text/javascript"></script>```
-7. Run host.exe with --disablesecurity as the first argument (during production if you sign the dll you won't need this).
+7. Modify app.json to set cefEnabled to true
+8. Modify main.json to set enableDeveloperTools to true for cef
+9. Run host.exe with --disablesecurity as the first argument (during production if you sign the dll you won't need this).
+
+### Screenshots
+
+![image](https://gitlab.com/snxd/interop/steam/uploads/cb2f45d9a040868625d40ab73b1f48a3/image.png)
