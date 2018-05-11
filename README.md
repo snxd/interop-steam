@@ -1,6 +1,6 @@
 ## Steam Interop Example for DIRECT 5.1.9
 
-This is an example interop that integrates with the Steamworks API.
+The steam interop example shows how to get information from the Steamworks API. It retrieves information such as whether or not the user is logged on, what their steam ID is, and what their session token is. The Javascript classes provided mirror the classes that the Steamworks API provides. 
 
 ### Contents 
 
@@ -14,7 +14,8 @@ This is an example interop that integrates with the Steamworks API.
 ### Requirements
 
 * Visual Studio 2013
-* DIRECT 5.1.9
+* DIRECT 5.1.9+
+* Steam (must be running)
 
 ### Setup Instructions
 
@@ -38,5 +39,14 @@ This is an example interop that integrates with the Steamworks API.
     <script src="steamfriends.js" type="text/javascript"></script>
     <script src="steamuser.js" type="text/javascript"></script>
     <script src="steamuserstats.js" type="text/javascript"></script>
+    <script src="steamutils.js" type="text/javascript"></script>
     <script src="steamtest.js" type="text/javascript"></script>```
-7. Run host.exe with --disablesecurity as the first argument (during production if you sign the dll you won't need this).
+7. Modify app.json to set cefEnabled to true
+8. Modify main.json to set enableDeveloperTools to true for cef
+9. Run host.exe with --disablesecurity as the first argument (during production if you sign the dll you won't need this).
+
+### Screenshots
+
+In the dev tools you can see the information being retrieved from the Steam client using the Steamworks API. The source code that prints all the details to the console can be found in _steamtest.js_.
+
+![image](https://gitlab.com/snxd/interop/steam/uploads/08224347b79a0a6f5d5e109ce2b102e1/image.png)
