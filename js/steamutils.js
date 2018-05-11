@@ -113,6 +113,16 @@
         });
     };
     /**
+     * Gets the base64 rgba buffer
+     * @returns string
+     */
+    SteamUtils.prototype.getImageRGBA = function (index) {
+        return this.invoke({
+            "method": "getImageRGBA",
+            "index": index
+        });
+    };
+    /**
      * Starts the VR dashboard for steam
      * @returns int
      */

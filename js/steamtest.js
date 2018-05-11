@@ -11,13 +11,19 @@
         //notificationCenter.verbose = true;
         //interop.verbose = true;
 
-        steamApp.setId("570"); // Dota2 app id for testing
+        steamApp.setId("287450"); // Rise of Nations app id for testing
 
-        steamUtils = createSteamUtils();
         steamUser = createSteamUser();
-        observer = notificationCenter.addInstanceObserver("SteamUser", "AuthSessionTicketResponse", steamUser, function (sender, info) {
-            console.log("SteamUser - AuthSessionTicketResponse - {0}".format(JSON.stringify(info)));
-        });
+
+        var isLoggedOn = steamUser.isLoggedOn();
+        console.log("SteamUser - IsLoggedOn - {0}".format(isLoggedOn));
+        if (!isLoggedOn) {
+            return;
+        }
+
+        steamUserStats = createSteamUserStats();
+        steamUtils = createSteamUtils();
+        steamFriends = createSteamFriends();
 
         var mySteamId = steamUser.getSteamId();
 
@@ -31,23 +37,18 @@
         console.log("SteamUtils - AppID - {0}".format(steamUtils.getAppID()));
 
         console.log("SteamUser - GetSteamId - {0}".format(mySteamId));
-        console.log("SteamUser - IsLoggedOn - {0}".format(steamUser.isLoggedOn()));
         console.log("SteamUser - IsBehindNAT - {0}".format(steamUser.isBehindNAT()));
         console.log("SteamUser - IsPhoneVerified - {0}".format(steamUser.isPhoneVerified()));
         console.log("SteamUser - IsTwoFactorEnabled - {0}".format(steamUser.isTwoFactorEnabled()));
         console.log("SteamUser - IsPhoneIdentifying - {0}".format(steamUser.isPhoneIdentifying()));
         console.log("SteamUser - IsPhoneRequiringVerification - {0}".format(steamUser.isPhoneRequiringVerification()));
         console.log("SteamUser - GetPlayerSteamLevel - {0}".format(steamUser.getPlayerSteamLevel()));
-        console.log("SteamUser - AuthSessionTicket - {0}".format(steamUser.getAuthSessionTicket()));
 
-        steamUserStats = createSteamUserStats();
-        observer = notificationCenter.addInstanceObserver("SteamUserStats", "NumberOfCurrentPlayersResponse", steamUserStats, function (sender, info) {
-            console.log("SteamUserStats - NumberOfCurrentPlayersResponse - {0}".format(JSON.stringify(info)));
+        var ob0 = notificationCenter.addInstanceObserver("SteamUser", "AuthSessionTicketResponse", steamUser, function (sender, info) {
+            console.log("SteamUser - AuthSessionTicketResponse - {0}".format(JSON.stringify(info)));
+            ob0.release();
         });
-        console.log("SteamUserStats - NumberOfCurrentPlayers - {0}".format(steamUserStats.getNumberOfCurrentPlayers()));
-        console.log("SteamUserStats - NumberOfAchievements - {0}".format(steamUserStats.getNumberOfAchievements()));
-
-        steamFriends = createSteamFriends();
+        console.log("SteamUser - AuthSessionTicket - {0}".format(steamUser.getAuthSessionTicket()));
 
         var myPersonaName = steamFriends.getFriendPersonaName(mySteamId);
         var myPersonaState = steamFriends.getFriendPersonaState(mySteamId);
@@ -55,9 +56,26 @@
 
         console.log("SteamFriends - Current User - {0} ({1})".format(myPersonaName, myPersonaStateString));
 
+        function convertBase64ToBinary(base64) {
+            var raw = window.atob(base64);
+            var array = new Uint8ClampedArray(new ArrayBuffer(raw.length));
+            for (var i = 0; i < raw.length; i++) {
+                array[i] = raw.charCodeAt(i);
+            }
+            return array;
+        };
+
+        var canvas = document.getElementById("canvas");
+        var ctx = null;
+        if (canvas) {
+            canvas.height = 600;
+            ctx = canvas.getContext('2d');
+        }
+
         var friendCount = steamFriends.getFriendCount();
-        console.log("SteamFriends - GetFriendCount - {0}".format(friendCount));
-        for (var i = 0; i < friendCount; i += 1)
+        console.log("SteamFriends - FriendCount - {0}".format(friendCount));
+
+        for (var i = 0, y = 0; i < friendCount; i += 1)
         {
             var friendSteamId = steamFriends.getFriendByIndex(i);
             var friendPersonaName = steamFriends.getFriendPersonaName(friendSteamId);
@@ -66,9 +84,66 @@
             var friendRelationship = steamFriends.getFriendRelationship(friendSteamId);
             var friendRelationshipString = steamFriendsRelationship.nameFromId(friendRelationship);
 
-            console.log("SteamFriends - GetFriend {0} - {1} - {2} ({3}) - {4}".
-                format(i, friendSteamId, friendPersonaName, friendPersonaStateString, friendRelationshipString));
+            console.log("SteamFriends - Friend {0} - {1} - {2} ({3}) - {4}".
+                format((i + 1), friendSteamId, friendPersonaName, friendPersonaStateString, friendRelationshipString));
+
+            var friendAvatarIndex = steamFriends.getSmallFriendAvatar(friendSteamId);
+            var friendAvatarWidth = steamUtils.getImageWidth(friendAvatarIndex);
+            var friendAvatarHeight = steamUtils.getImageHeight(friendAvatarIndex);
+
+            console.log("SteamUtils - Image {0} - {1}x{2}".format(friendAvatarIndex, friendAvatarWidth, friendAvatarHeight));
+
+            if (canvas) {
+                var friendAvatarRGBA = steamUtils.getImageRGBA(friendAvatarIndex);
+                var friendAvatarImageArray = convertBase64ToBinary(friendAvatarRGBA);
+                var friendAvatarImageData = new ImageData(friendAvatarImageArray, friendAvatarWidth, friendAvatarHeight);
+
+                ctx.putImageData(friendAvatarImageData, 0, y);
+                ctx.fillStyle = "white";
+                ctx.fillText("{0} ({1})".format(friendPersonaName, friendPersonaState), friendAvatarWidth + 10, y + ((friendAvatarHeight / 2) + 10));
+
+                y += friendAvatarHeight;
+            }
         }
+
+        var ob1 = notificationCenter.addInstanceObserver("SteamUserStats", "NumberOfCurrentPlayersResponse", steamUserStats, function (sender, info) {
+            console.log("SteamUserStats - NumberOfCurrentPlayersResponse - {0}".format(JSON.stringify(info)));
+            ob1.release();
+        });
+
+        var achievementCount = steamUserStats.getNumberOfAchievements();
+        var ob2 = notificationCenter.addInstanceObserver("SteamUserStats", "UserStatsReceivedResponse", steamUserStats, function (sender, info) {
+
+            console.log("SteamUserStats - UserStatsReceivedResponse - {0}".format(JSON.stringify(info)));
+            steamUserStats.requestGlobalAchievementPercentages();
+
+            var ob3 = notificationCenter.addInstanceObserver("SteamUserStats", "GlobalAchievementPercentagesResponse", steamUserStats, function (sender, info) {
+                console.log("SteamUserStats - NumberOfAchievements - {0}".format(achievementCount));
+
+                for (var i = 0; i < achievementCount; i += 1) {
+                    var achievementName = steamUserStats.getAchievementName(i);
+                    var achievementFriendlyName = steamUserStats.getAchievementDisplayAttribute(achievementName, "name");
+                    var achievementDescription = steamUserStats.getAchievementDisplayAttribute(achievementName, "desc");
+                    var achievementHidden = steamUserStats.getAchievementDisplayAttribute(achievementName, "hidden");
+                    var achievementAchieved = steamUserStats.getAchievement(achievementName);
+                    var achievementAchievedPercent = steamUserStats.getAchievementAchievedPercent(achievementName);
+
+                    console.log("SteamUserStats - Achievement {0} - {1} - \"{2}\" - {3} - {4}{5}{6}%".
+                        format((i + 1), achievementName, achievementFriendlyName, achievementDescription,
+                            (achievementHidden == "1") ? "Invisible " : "", (achievementAchieved) ? "Achieved ": "",
+                            achievementAchievedPercent));
+                }
+
+                ob3.release();
+            });
+
+            ob2.release();
+        });
+
+        // Wait for results in notification callbacks
+        steamUserStats.getNumberOfCurrentPlayers();
+        steamUserStats.requestUserStats(mySteamId);
+
         steamFriends.activateGameOverlayToWebPage("http://google.com/");
     };
 

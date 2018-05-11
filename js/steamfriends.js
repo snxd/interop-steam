@@ -69,6 +69,36 @@
             "steamId": steamId
         });
     };
+    /**
+     * Gets the image index of the small friend avatar
+     * @returns string
+     */
+    SteamFriends.prototype.getSmallFriendAvatar = function (steamId) {
+        return this.invoke({
+            "method": "getSmallFriendAvatar",
+            "steamId": steamId
+        });
+    };
+    /**
+     * Gets the image index of the medium friend avatar
+     * @returns string
+     */
+    SteamFriends.prototype.getMediumFriendAvatar = function (steamId) {
+        return this.invoke({
+            "method": "getMediumFriendAvatar",
+            "steamId": steamId
+        });
+    };
+    /**
+     * Gets the image index of the large friend avatar
+     * @returns string
+     */
+    SteamFriends.prototype.getLargeFriendAvatar = function (steamId) {
+        return this.invoke({
+            "method": "getLargeFriendAvatar",
+            "steamId": steamId
+        });
+    };
 
     SteamFriends.prototype.activateGameOverlayToWebPage = function (url) {
         return this.invoke({

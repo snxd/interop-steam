@@ -21,6 +21,9 @@ int32 SteamUtils_GetAppID(void *SteamUtilsContext, int32 *AppID);
 int32 SteamUtils_GetImageWidth(void *SteamUtilsContext, int32 Index, int32 *Width);
 int32 SteamUtils_GetImageHeight(void *SteamUtilsContext, int32 Index, int32 *Height);
 
+int32 SteamUtils_GetImageRGBAPtr(void *SteamUtilsContext, int32 Index, uint8 **Base64Buffer, int32 *Base64BufferSize);
+int32 SteamUtils_ReleaseImageRGBAPtr(void *SteamUtilsContext, uint8 **Base64Buffer, int32 *Base64BufferSize);
+
 int32 SteamUtils_StartVRDashboard(void *SteamUtilsContext);
 
 /*********************************************************************/
