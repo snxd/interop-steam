@@ -89,6 +89,11 @@ int32 String_ConvertToHex(char *Binary, int32 BinarySize, char *Hex, int32 MaxHe
 
 /*********************************************************************/
 
+int32 Base64_Encode(uint8 *Source, int32 SourceLength, char *Target, int32 MaxTarget, int32 *TargetLength);
+int32 Base64_CalculateEncodeSize(int32 SourceLength, int32 *BytesRequired);
+
+/*********************************************************************/
+
 typedef int32 (*Generic_PrintCallback)(echandle PrintHandle, char *Format, ...);
 
 /*********************************************************************/
