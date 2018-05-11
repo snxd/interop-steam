@@ -47,4 +47,6 @@ The steam interop example shows how to get information from the Steamworks API. 
 
 ### Screenshots
 
+In the dev tools you can see the information being retrieved from the Steam client using the Steamworks API. The source code that prints all the details to the console can be found in _steamtest.js_.
+
 ![image](https://gitlab.com/snxd/interop/steam/uploads/08224347b79a0a6f5d5e109ce2b102e1/image.png)
