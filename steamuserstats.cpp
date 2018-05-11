@@ -53,6 +53,45 @@ int32 SteamUserStats_GetNumberOfCurrentPlayers(void *SteamUserStatsContext)
     return 0;
 }
 
+int32 SteamUserStats_GetNumberOfAchievements(void *SteamUserStatsContext, int32 *Achievements)
+{
+    SteamUserStatsStruct *UserStats = (SteamUserStatsStruct*)SteamUserStatsContext;
+    if (SteamApp_IsInitialized() == FALSE)
+        return FALSE;
+    *Achievements = SteamUserStats()->GetNumAchievements();
+    return TRUE;
+}
+
+int32 SteamUserStats_GetAchievement(void *SteamUserStatsContext, char *Name, int32 *Achieved)
+{
+    SteamUserStatsStruct *UserStats = (SteamUserStatsStruct*)SteamUserStatsContext;
+    bool IsSet = false;
+    bool Result = false;
+    *Achieved = FALSE;
+    if (SteamApp_IsInitialized() == FALSE)
+        return FALSE;
+    Result = SteamUserStats()->GetAchievement(Name, &IsSet);
+    if (Result && IsSet)
+        *Achieved = TRUE;
+    return Result != 0;
+}
+
+int32 SteamUserStats_SetAchievement(void *SteamUserStatsContext, char *Name)
+{
+    SteamUserStatsStruct *UserStats = (SteamUserStatsStruct*)SteamUserStatsContext;
+    if (SteamApp_IsInitialized() == FALSE)
+        return FALSE;
+    return SteamUserStats()->SetAchievement(Name) != 0;
+}
+
+int32 SteamUserStats_ClearAchievement(void *SteamUserStatsContext, char *Name)
+{
+    SteamUserStatsStruct *UserStats = (SteamUserStatsStruct*)SteamUserStatsContext;
+    if (SteamApp_IsInitialized() == FALSE)
+        return FALSE;
+    return SteamUserStats()->ClearAchievement(Name) != 0;
+}
+
 /*********************************************************************/
 // Interop Functions
 
@@ -92,6 +131,32 @@ int32 SteamUserStats_Invoke(void *SteamUserStatsContext, echandle MethodDictiona
     {
         Value64 = SteamUserStats_GetNumberOfCurrentPlayers(UserStats);
         RetVal = IDictionary_AddInt64(ReturnDictionaryHandle, "returnValue", Value64, &ItemHandle);
+    }
+    else if (String_Compare(Method, "getNumberOfAchievements") == TRUE)
+    {
+        RetVal = SteamUserStats_GetNumberOfAchievements(UserStats, &Value32);
+        IDictionary_AddInt64(ReturnDictionaryHandle, "returnValue", Value32, &ItemHandle);
+    }
+    else if (String_Compare(Method, "getAchievement") == TRUE)
+    {
+        RetVal = IDictionary_GetStringPtrByKey(MethodDictionaryHandle, "name", &ValueString);
+        if (RetVal == TRUE)
+            RetVal = SteamUserStats_GetAchievement(UserStats, ValueString, &Value32);
+        IDictionary_AddBoolean(ReturnDictionaryHandle, "returnValue", Value32, &ItemHandle);
+    }
+    else if (String_Compare(Method, "setAchievement") == TRUE)
+    {
+        RetVal = IDictionary_GetStringPtrByKey(MethodDictionaryHandle, "name", &ValueString);
+        if (RetVal == TRUE)
+            ReturnValue = SteamUserStats_SetAchievement(UserStats, ValueString);
+        IDictionary_AddBoolean(ReturnDictionaryHandle, "returnValue", ReturnValue, &ItemHandle);
+    }
+    else if (String_Compare(Method, "clearAchievement") == TRUE)
+    {
+        RetVal = IDictionary_GetStringPtrByKey(MethodDictionaryHandle, "name", &ValueString);
+        if (RetVal == TRUE)
+            ReturnValue = SteamUserStats_ClearAchievement(UserStats, ValueString);
+        IDictionary_AddBoolean(ReturnDictionaryHandle, "returnValue", ReturnValue, &ItemHandle);
     }
 
     return RetVal;

@@ -6,6 +6,7 @@
 #include "steamapp.h"
 #include "steamuser.h"
 #include "steamuserstats.h"
+#include "steamutils.h"
 #include "steamfriends.h"
 
 /*********************************************************************/
@@ -48,6 +49,17 @@ int32 Interop_CreateInstance(char *TypeName, char *InstanceId, int32 InstanceIdL
 
         SteamUserStats_Create(&Context);
         SteamUserStats_GetInstanceId(Context, InstanceId, InstanceIdLength);
+        *UserPtr = Context;
+        return TRUE;
+    }
+    else if (String_Compare(TypeName, "Steam.Utils") == TRUE)
+    {
+        *InvokeInstance = SteamUtils_Invoke;
+        *ReleaseInstance = SteamUtils_Release;
+        *ProcessInstance = NULL;
+
+        SteamUtils_Create(&Context);
+        SteamUtils_GetInstanceId(Context, InstanceId, InstanceIdLength);
         *UserPtr = Context;
         return TRUE;
     }

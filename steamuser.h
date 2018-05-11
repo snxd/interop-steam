@@ -9,9 +9,20 @@ extern "C" {
 
 /*********************************************************************/
 
-int32 SteamUser_IsLoggedOn(void *SteamUserContext, int32 *Result);
+int32 SteamUser_IsLoggedOn(void *SteamUserContext);
+int32 SteamUser_IsBehindNAT(void *SteamUserContext);
+int32 SteamUser_IsPhoneVerified(void *SteamUserContext);
+int32 SteamUser_IsTwoFactorEnabled(void *SteamUserContext);
+int32 SteamUser_IsPhoneIdentifying(void *SteamUserContext);
+int32 SteamUser_IsPhoneRequiringVerification(void *SteamUserContext);
+
 int32 SteamUser_GetSteamId(void *SteamUserContext, uint64 *Result);
-int32 SteamUser_GetSessionTicket(void *SteamUserContext, char *HexTicket, int32 HexTicketLength);
+int32 SteamUser_GetAuthSessionTicket(void *SteamUserContext, int32 *Ticket);
+int32 SteamUser_GetPlayerSteamLevel(void *SteamUserContext, int32 *PlayerSteamLevel);
+
+int32 SteamUser_CancelAuthTicket(void *SteamUserContext);
+int32 SteamUser_StartVoiceRecording(void *SteamUserContext);
+int32 SteamUser_StopVoiceRecording(void *SteamUserContext);
 
 /*********************************************************************/
 

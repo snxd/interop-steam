@@ -61,6 +61,46 @@ int32 SteamUser_IsLoggedOn(void *SteamUserContext)
     return SteamUser()->BLoggedOn() != 0;
 }
 
+int32 SteamUser_IsBehindNAT(void *SteamUserContext)
+{
+    SteamUserStruct *User = (SteamUserStruct*)SteamUserContext;
+    if (SteamApp_IsInitialized() == FALSE)
+        return FALSE;
+    return SteamUser()->BIsBehindNAT() != 0;
+}
+
+int32 SteamUser_IsPhoneVerified(void *SteamUserContext)
+{
+    SteamUserStruct *User = (SteamUserStruct*)SteamUserContext;
+    if (SteamApp_IsInitialized() == FALSE)
+        return FALSE;
+    return SteamUser()->BIsPhoneVerified() != 0;
+}
+
+int32 SteamUser_IsTwoFactorEnabled(void *SteamUserContext)
+{
+    SteamUserStruct *User = (SteamUserStruct*)SteamUserContext;
+    if (SteamApp_IsInitialized() == FALSE)
+        return FALSE;
+    return SteamUser()->BIsTwoFactorEnabled() != 0;
+}
+
+int32 SteamUser_IsPhoneIdentifying(void *SteamUserContext)
+{
+    SteamUserStruct *User = (SteamUserStruct*)SteamUserContext;
+    if (SteamApp_IsInitialized() == FALSE)
+        return FALSE;
+    return SteamUser()->BIsPhoneIdentifying() != 0;
+}
+
+int32 SteamUser_IsPhoneRequiringVerification(void *SteamUserContext)
+{
+    SteamUserStruct *User = (SteamUserStruct*)SteamUserContext;
+    if (SteamApp_IsInitialized() == FALSE)
+        return FALSE;
+    return SteamUser()->BIsPhoneRequiringVerification() != 0;
+}
+
 int32 SteamUser_GetSteamId(void *SteamUserContext, uint64 *Result)
 {
     SteamUserStruct *User = (SteamUserStruct*)SteamUserContext;
@@ -78,7 +118,7 @@ int32 SteamUser_GetAuthSessionTicket(void *SteamUserContext, int32 *Ticket)
     if (SteamApp_IsInitialized() == FALSE)
         return FALSE;
 
-    User->Results->Ticket = SteamUser()->GetAuthSessionTicket(User->Results->TicketData, 
+    User->Results->Ticket = SteamUser()->GetAuthSessionTicket(User->Results->TicketData,
         Element_Count(User->Results->TicketData), &User->Results->TicketSize);
 
     *Ticket = User->Results->Ticket;
@@ -91,6 +131,33 @@ int32 SteamUser_CancelAuthTicket(void *SteamUserContext)
     if (SteamApp_IsInitialized() == FALSE)
         return FALSE;
     SteamUser()->CancelAuthTicket(User->Results->Ticket);
+    return TRUE;
+}
+
+int32 SteamUser_GetPlayerSteamLevel(void *SteamUserContext, int32 *PlayerSteamLevel)
+{
+    SteamUserStruct *User = (SteamUserStruct*)SteamUserContext;
+    if (SteamApp_IsInitialized() == FALSE)
+        return FALSE;
+    *PlayerSteamLevel = SteamUser()->GetPlayerSteamLevel();
+    return TRUE;
+}
+
+int32 SteamUser_StartVoiceRecording(void *SteamUserContext)
+{
+    SteamUserStruct *User = (SteamUserStruct*)SteamUserContext;
+    if (SteamApp_IsInitialized() == FALSE)
+        return FALSE;
+    SteamUser()->StartVoiceRecording();
+    return TRUE;
+}
+
+int32 SteamUser_StopVoiceRecording(void *SteamUserContext)
+{
+    SteamUserStruct *User = (SteamUserStruct*)SteamUserContext;
+    if (SteamApp_IsInitialized() == FALSE)
+        return FALSE;
+    SteamUser()->StopVoiceRecording();
     return TRUE;
 }
 
@@ -124,7 +191,7 @@ int32 SteamUser_Invoke(void *SteamUserContext, echandle MethodDictionaryHandle, 
     int32 Value32 = 0;
     char *Method = NULL;
     char *ValueString = NULL;
-
+    char Value64String[120] = { 0 };
 
     if (IDictionary_GetStringPtrByKey(MethodDictionaryHandle, "method", &Method) == FALSE)
         return FALSE;
@@ -132,12 +199,8 @@ int32 SteamUser_Invoke(void *SteamUserContext, echandle MethodDictionaryHandle, 
     if (String_Compare(Method, "getSteamId") == TRUE)
     {
         RetVal = SteamUser_GetSteamId(SteamUserContext, (uint64 *)&Value64);
-        IDictionary_AddInt32(ReturnDictionaryHandle, "returnValue", Value64, &ItemHandle);
-    }
-    else if (String_Compare(Method, "isLoggedOn") == TRUE)
-    {
-        ReturnValue = SteamUser_IsLoggedOn(User);
-        RetVal = IDictionary_AddBoolean(ReturnDictionaryHandle, "returnValue", ReturnValue, &ItemHandle);
+        String_Print(Value64String, Element_Count(Value64String), "%lld", Value64);
+        IDictionary_AddString(ReturnDictionaryHandle, "returnValue", Value64String, &ItemHandle);
     }
     else if (String_Compare(Method, "getAuthSessionTicket") == TRUE)
     {
@@ -147,6 +210,51 @@ int32 SteamUser_Invoke(void *SteamUserContext, echandle MethodDictionaryHandle, 
     else if (String_Compare(Method, "cancelAuthTicket") == TRUE)
     {
         ReturnValue = SteamUser_CancelAuthTicket(User);
+        RetVal = IDictionary_AddBoolean(ReturnDictionaryHandle, "returnValue", ReturnValue, &ItemHandle);
+    }
+    else if (String_Compare(Method, "isLoggedOn") == TRUE)
+    {
+        ReturnValue = SteamUser_IsLoggedOn(User);
+        RetVal = IDictionary_AddBoolean(ReturnDictionaryHandle, "returnValue", ReturnValue, &ItemHandle);
+    }
+    else if (String_Compare(Method, "isBehindNAT") == TRUE)
+    {
+        ReturnValue = SteamUser_IsBehindNAT(User);
+        RetVal = IDictionary_AddBoolean(ReturnDictionaryHandle, "returnValue", ReturnValue, &ItemHandle);
+    }
+    else if (String_Compare(Method, "isPhoneVerified") == TRUE)
+    {
+        ReturnValue = SteamUser_IsPhoneVerified(User);
+        RetVal = IDictionary_AddBoolean(ReturnDictionaryHandle, "returnValue", ReturnValue, &ItemHandle);
+    }
+    else if (String_Compare(Method, "isTwoFactorEnabled") == TRUE)
+    {
+        ReturnValue = SteamUser_IsPhoneIdentifying(User);
+        RetVal = IDictionary_AddBoolean(ReturnDictionaryHandle, "returnValue", ReturnValue, &ItemHandle);
+    }
+    else if (String_Compare(Method, "isPhoneIdentifying") == TRUE)
+    {
+        ReturnValue = SteamUser_IsBehindNAT(User);
+        RetVal = IDictionary_AddBoolean(ReturnDictionaryHandle, "returnValue", ReturnValue, &ItemHandle);
+    }
+    else if (String_Compare(Method, "isPhoneRequiringVerification") == TRUE)
+    {
+        ReturnValue = SteamUser_IsPhoneRequiringVerification(User);
+        RetVal = IDictionary_AddBoolean(ReturnDictionaryHandle, "returnValue", ReturnValue, &ItemHandle);
+    }
+    else if (String_Compare(Method, "getPlayerSteamLevel") == TRUE)
+    {
+        RetVal = SteamUser_GetPlayerSteamLevel(User, &Value32);
+        IDictionary_AddInt32(ReturnDictionaryHandle, "returnValue", Value32, &ItemHandle);
+    }
+    else if (String_Compare(Method, "startVoiceRecording") == TRUE)
+    {
+        ReturnValue = SteamUser_StartVoiceRecording(User);
+        RetVal = IDictionary_AddBoolean(ReturnDictionaryHandle, "returnValue", ReturnValue, &ItemHandle);
+    }
+    else if (String_Compare(Method, "stopVoiceRecording") == TRUE)
+    {
+        ReturnValue = SteamUser_StopVoiceRecording(User);
         RetVal = IDictionary_AddBoolean(ReturnDictionaryHandle, "returnValue", ReturnValue, &ItemHandle);
     }
 

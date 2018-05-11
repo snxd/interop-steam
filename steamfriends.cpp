@@ -26,7 +26,7 @@ int32 SteamFriends_GetFriendCount(void *SteamFriendsContext, int32 *FriendCount)
     SteamFriendsStruct *Friends = (SteamFriendsStruct*)SteamFriendsContext;
     if (SteamApp_IsInitialized() == FALSE)
         return FALSE;
-    *FriendCount = SteamFriends()->GetFriendCount(0xFFFF); // All
+    *FriendCount = SteamFriends()->GetFriendCount(k_EFriendFlagAll); // All
     return TRUE;
 }
 
@@ -35,7 +35,7 @@ int32 SteamFriends_GetFriendByIndex(void *SteamFriendsContext, int32 Index, uint
     SteamFriendsStruct *Friends = (SteamFriendsStruct*)SteamFriendsContext;
     if (SteamApp_IsInitialized() == FALSE)
         return FALSE;
-    *FriendId = SteamFriends()->GetFriendByIndex(Index, 0xFFFF).ConvertToUint64(); // All
+    *FriendId = SteamFriends()->GetFriendByIndex(Index, k_EFriendFlagAll).ConvertToUint64(); // All
     return TRUE;
 }
 
@@ -45,6 +45,33 @@ int32 SteamFriends_GetFriendPersonaName(void *SteamFriendsContext, uint64 Friend
     if (SteamApp_IsInitialized() == FALSE)
         return FALSE;
     String_CopyLength(PersonaName, (char *)SteamFriends()->GetFriendPersonaName(CSteamID(FriendId)), MaxPersonaName);
+    return TRUE;
+}
+
+int32 SteamFriends_GetFriendPersonaState(void *SteamFriendsContext, uint64 FriendId, int32 *PersonaState)
+{
+    SteamFriendsStruct *Friends = (SteamFriendsStruct*)SteamFriendsContext;
+    if (SteamApp_IsInitialized() == FALSE)
+        return FALSE;
+    *PersonaState = SteamFriends()->GetFriendPersonaState(CSteamID(FriendId));
+    return TRUE;
+}
+
+int32 SteamFriends_GetFriendRelationship(void *SteamFriendsContext, uint64 FriendId, int32 *Relationship)
+{
+    SteamFriendsStruct *Friends = (SteamFriendsStruct*)SteamFriendsContext;
+    if (SteamApp_IsInitialized() == FALSE)
+        return FALSE;
+    *Relationship = SteamFriends()->GetFriendRelationship(CSteamID(FriendId));
+    return TRUE;
+}
+
+int32 SteamFriends_GetSmallFriendAvatar(void *SteamFriendsContext, uint64 FriendId, int32 *SmallFriendAvatar)
+{
+    SteamFriendsStruct *Friends = (SteamFriendsStruct*)SteamFriendsContext;
+    if (SteamApp_IsInitialized() == FALSE)
+        return FALSE;
+    *SmallFriendAvatar = SteamFriends()->GetSmallFriendAvatar(CSteamID(FriendId));
     return TRUE;
 }
 
@@ -87,6 +114,7 @@ int32 SteamFriends_Invoke(void *SteamFriendsContext, echandle MethodDictionaryHa
     int32 Value32 = 0;
     char *Method = NULL;
     char *ValueString = NULL;
+    char Value64String[120] = { 0 };
 
 
     if (IDictionary_GetStringPtrByKey(MethodDictionaryHandle, "method", &Method) == FALSE)
@@ -102,15 +130,41 @@ int32 SteamFriends_Invoke(void *SteamFriendsContext, echandle MethodDictionaryHa
         RetVal = IDictionary_GetInt32ByKey(MethodDictionaryHandle, "index", &Value32);
         if (RetVal == TRUE)
             SteamFriends_GetFriendByIndex(Friends, Value32, (uint64 *)&Value64);
-        IDictionary_AddInt64(ReturnDictionaryHandle, "returnValue", Value64, &ItemHandle);
+        String_Print(Value64String, Element_Count(Value64String), "%lld", Value64);
+        IDictionary_AddString(ReturnDictionaryHandle, "returnValue", Value64String, &ItemHandle);
     }
     else if (String_Compare(Method, "getFriendPersonaName") == TRUE)
     {
         char PersonaName[320] = { 0 };
-        RetVal = IDictionary_GetInt64ByKey(MethodDictionaryHandle, "steamId", &Value64);
+        RetVal = IDictionary_GetStringPtrByKey(MethodDictionaryHandle, "steamId", &ValueString);
         if (RetVal == TRUE)
+        {
+            Value64 = String_AtoI64(ValueString);
             SteamFriends_GetFriendPersonaName(Friends, Value64, PersonaName, Element_Count(PersonaName));
+        }
         IDictionary_AddString(ReturnDictionaryHandle, "returnValue", PersonaName, &ItemHandle);
+    }
+    else if (String_Compare(Method, "getFriendPersonaState") == TRUE)
+    {
+        int32 PersonaState = 0;
+        RetVal = IDictionary_GetStringPtrByKey(MethodDictionaryHandle, "steamId", &ValueString);
+        if (RetVal == TRUE)
+        {
+            Value64 = String_AtoI64(ValueString);
+            SteamFriends_GetFriendPersonaState(Friends, Value64, &PersonaState);
+        }
+        IDictionary_AddInt32(ReturnDictionaryHandle, "returnValue", PersonaState, &ItemHandle);
+    }
+    else if (String_Compare(Method, "getFriendRelationship") == TRUE)
+    {
+        int32 Relationship = 0;
+        RetVal = IDictionary_GetStringPtrByKey(MethodDictionaryHandle, "steamId", &ValueString);
+        if (RetVal == TRUE)
+        {
+            Value64 = String_AtoI64(ValueString);
+            SteamFriends_GetFriendRelationship(Friends, Value64, &Relationship);
+        }
+        IDictionary_AddInt32(ReturnDictionaryHandle, "returnValue", Relationship, &ItemHandle);
     }
     else if (String_Compare(Method, "activateGameOverlayToWebPage") == TRUE)
     {
@@ -120,7 +174,17 @@ int32 SteamFriends_Invoke(void *SteamFriendsContext, echandle MethodDictionaryHa
             ReturnValue = SteamFriends_ActivateGameOverlayToWebPage(Friends, ValueString);
         IDictionary_AddBoolean(ReturnDictionaryHandle, "returnValue", ReturnValue, &ItemHandle);
     }
-
+    else if (String_Compare(Method, "getSmallFriendAvatar") == TRUE)
+    {
+        int32 SmallFriendAvatar = 0;
+        RetVal = IDictionary_GetStringPtrByKey(MethodDictionaryHandle, "steamId", &ValueString);
+        if (RetVal == TRUE)
+        {
+            Value64 = String_AtoI64(ValueString);
+            SteamFriends_GetSmallFriendAvatar(Friends, Value64, &SmallFriendAvatar);
+        }
+        IDictionary_AddInt32(ReturnDictionaryHandle, "returnValue", SmallFriendAvatar, &ItemHandle);
+    }
     return RetVal;
 }
 

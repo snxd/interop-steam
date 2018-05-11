@@ -97,6 +97,7 @@
     <ClCompile Include="..\steaminterop.c" />
     <ClCompile Include="..\steamuser.cpp" />
     <ClCompile Include="..\steamuserstats.cpp" />
+    <ClCompile Include="..\steamutils.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\interop\dictionaryi.h" />
@@ -108,6 +109,7 @@
     <ClInclude Include="..\steamfriends.h" />
     <ClInclude Include="..\steamuser.h" />
     <ClInclude Include="..\steamuserstats.h" />
+    <ClInclude Include="..\steamutils.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\js\steam.js" />

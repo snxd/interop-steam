@@ -10,6 +10,7 @@ extern "C" {
 /*********************************************************************/
 
 int32 SteamUserStats_GetNumberOfCurrentPlayers(void *SteamUserStatsContext);
+int32 SteamUserStats_GetNumberOfAchievements(void *SteamUserStatsContext, int32 *Achievements);
 
 /*********************************************************************/
 
