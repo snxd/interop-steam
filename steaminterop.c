@@ -3,7 +3,8 @@
 #include "interoplib.h"
 #include "interopstub.h"
 
-#include "steamapp.h"
+#include "steamapi.h"
+#include "steamapps.h"
 #include "steamuser.h"
 #include "steamuserstats.h"
 #include "steamutils.h"
@@ -20,58 +21,42 @@ int32 Interop_CreateInstance(char *TypeName, char *InstanceId, int32 InstanceIdL
 {
     void *Context;
 
-    if (String_Compare(TypeName, "Steam.App") == TRUE)
-    {
-        *InvokeInstance = SteamApp_Invoke;
-        *ReleaseInstance = NULL;
-        *ProcessInstance = SteamApp_Process;
+    *InvokeInstance = NULL;
+    *ReleaseInstance = NULL;
+    *ProcessInstance = NULL;
+    *UserPtr = NULL;
 
-        SteamApp_GetInstanceId(InstanceId, InstanceIdLength);
-        *UserPtr = NULL;
+    if (String_Compare(TypeName, "Steam.API") == TRUE)
+    {
+        *InvokeInstance = SteamAPI_Invoke;
+        *ProcessInstance = SteamAPI_Process;
+        return TRUE;
+    }
+    else if (String_Compare(TypeName, "Steam.Apps") == TRUE)
+    {
+        *InvokeInstance = SteamApps_Invoke;
         return TRUE;
     }
     else if (String_Compare(TypeName, "Steam.User") == TRUE)
     {
         *InvokeInstance = SteamUser_Invoke;
-        *ReleaseInstance = SteamUser_Release;
-        *ProcessInstance = NULL;
-
-        SteamUser_Create(&Context);
-        SteamUser_GetInstanceId(Context, InstanceId, InstanceIdLength);
-        *UserPtr = Context;
+        SteamUser_GetInstanceId(InstanceId, InstanceIdLength);
         return TRUE;
     }
     else if (String_Compare(TypeName, "Steam.UserStats") == TRUE)
     {
         *InvokeInstance = SteamUserStats_Invoke;
-        *ReleaseInstance = SteamUserStats_Release;
-        *ProcessInstance = NULL;
-
-        SteamUserStats_Create(&Context);
-        SteamUserStats_GetInstanceId(Context, InstanceId, InstanceIdLength);
-        *UserPtr = Context;
+        SteamUserStats_GetInstanceId(InstanceId, InstanceIdLength);
         return TRUE;
     }
     else if (String_Compare(TypeName, "Steam.Utils") == TRUE)
     {
         *InvokeInstance = SteamUtils_Invoke;
-        *ReleaseInstance = SteamUtils_Release;
-        *ProcessInstance = NULL;
-
-        SteamUtils_Create(&Context);
-        SteamUtils_GetInstanceId(Context, InstanceId, InstanceIdLength);
-        *UserPtr = Context;
         return TRUE;
     }
     else if (String_Compare(TypeName, "Steam.Friends") == TRUE)
     {
         *InvokeInstance = SteamFriends_Invoke;
-        *ReleaseInstance = SteamFriends_Release;
-        *ProcessInstance = NULL;
-
-        SteamFriends_Create(&Context);
-        SteamFriends_GetInstanceId(Context, InstanceId, InstanceIdLength);
-        *UserPtr = Context;
         return TRUE;
     }
     return FALSE;
@@ -90,13 +75,17 @@ int32 Interop_SetOption(char *Key, char *Value)
 
 int32 Interop_Load()
 {
-    SteamApp_Init();
+    SteamAPI_InitLib();
+    SteamUser_Init();
+    SteamUserStats_Init();
     return TRUE;
 }
 
 int32 Interop_Unload()
 {
-    SteamApp_Remove();
+    SteamUserStats_Remove();
+    SteamUser_Remove();
+    SteamAPI_RemoveLib();
     return TRUE;
 }
 

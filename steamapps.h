@@ -1,7 +1,7 @@
 #pragma once
 
-#ifndef _STEAMUTILS_H_
-#define _STEAMUTILS_H_
+#ifndef _STEAMAPPS_H_
+#define _STEAMAPPS_H_
 
 #ifdef __cplusplus
 extern "C" {
@@ -9,8 +9,8 @@ extern "C" {
 
 /*********************************************************************/
 
-int32 SteamUtils_Process(void *SteamUtilsContext);
-int32 SteamUtils_Invoke(void *SteamUtilsContext, echandle MethodDictionaryHandle, echandle ReturnDictionaryHandle);
+int32 SteamApps_Process(void *SteamAppsContext);
+int32 SteamApps_Invoke(void *SteamAppsContext, echandle MethodDictionaryHandle, echandle ReturnDictionaryHandle);
 
 /*********************************************************************/
 

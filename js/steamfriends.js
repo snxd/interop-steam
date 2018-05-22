@@ -107,9 +107,25 @@
         });
     };
 
-    root.createSteamFriends = function(instanceId) {
+    root.createSteamFriends = function (instanceId) {
         return interop.createInstance("Steam.Friends", SteamFriends, instanceId);
     };
+
+    /** Global instance of SteamFriends
+     *  @type SteamFriends
+     */
+
+    interop.on("libraryLoad", function(info) {
+        if (info.name.toLowerCase() == "steam") {
+            root.steamFriends = root.createSteamFriends();
+        }
+    });
+    interop.on("libraryUnload", function(info) {
+        if (info.name.toLowerCase() == "steam") {
+            root.steamFriends.release();
+            root.steamFriends = null;
+        }
+    });
 
     /** @class SteamFriendsPersonaState
      *  @brief persona state

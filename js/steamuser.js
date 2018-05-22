@@ -133,4 +133,20 @@
         return interop.createInstance("Steam.User", SteamUser, instanceId);
     };
 
+    /** Global instance of SteamUser
+     *  @type SteamUser
+     */
+
+    interop.on("libraryLoad", function(info) {
+        if (info.name.toLowerCase() == "steam") {
+            root.steamUser = root.createSteamUser();
+        }
+    });
+    interop.on("libraryUnload", function(info) {
+        if (info.name.toLowerCase() == "steam") {
+            root.steamUser.release();
+            root.steamUser = null;
+        }
+    });
+
 }(_global()));

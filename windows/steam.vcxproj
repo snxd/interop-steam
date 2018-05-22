@@ -92,7 +92,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\interop\interoplib.c" />
-    <ClCompile Include="..\steamapp.c" />
+    <ClCompile Include="..\steamapi.c" />
+    <ClCompile Include="..\steamapps.c" />
     <ClCompile Include="..\steamfriends.cpp" />
     <ClCompile Include="..\steaminterop.c" />
     <ClCompile Include="..\steamuser.cpp" />
@@ -105,15 +106,21 @@
     <ClInclude Include="..\interop\interopstub.h" />
     <ClInclude Include="..\interop\taski.h" />
     <ClInclude Include="..\interop\workflowi.h" />
-    <ClInclude Include="..\steamapp.h" />
+    <ClInclude Include="..\steamapi.h" />
+    <ClInclude Include="..\steamapps.h" />
     <ClInclude Include="..\steamfriends.h" />
     <ClInclude Include="..\steamuser.h" />
     <ClInclude Include="..\steamuserstats.h" />
     <ClInclude Include="..\steamutils.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\js\steam.js" />
+    <None Include="..\js\steamapi.js" />
+    <None Include="..\js\steamapps.js" />
+    <None Include="..\js\steamfriends.js" />
     <None Include="..\js\steamtest.js" />
+    <None Include="..\js\steamuser.js" />
+    <None Include="..\js\steamuserstats.js" />
+    <None Include="..\js\steamutils.js" />
     <None Include="steam.def" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

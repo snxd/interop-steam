@@ -1,8 +1,8 @@
 ## Steam Interop Example for DIRECT 5.1.9
 
-The steam interop example shows how to get information from the Steamworks API. It retrieves information such as whether or not the user is logged on, what their steam ID is, and what their session token is. The Javascript classes provided mirror the classes that the Steamworks API provides. 
+The steam interop example shows how to get information from the Steamworks API. It retrieves information such as whether or not the user is logged on, what their steam ID is, and what their session token is. The Javascript classes provided mirror the classes that the Steamworks API provides.
 
-### Contents 
+### Contents
 
 * bin - Steam dlls
 * lib - Steam libraries
@@ -35,7 +35,8 @@ The steam interop example shows how to get information from the Steamworks API. 
     },```
 5. Copy the files from the js directory to the skin directory
 6. Open main.html and insert the following scripts after main.js: ```
-    <script src="steamapp.js" type="text/javascript"></script>
+    <script src="steamapi.js" type="text/javascript"></script>
+    <script src="steamapps.js" type="text/javascript"></script>
     <script src="steamfriends.js" type="text/javascript"></script>
     <script src="steamuser.js" type="text/javascript"></script>
     <script src="steamuserstats.js" type="text/javascript"></script>

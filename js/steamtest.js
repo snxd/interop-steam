@@ -1,19 +1,23 @@
 // Remember to add steam.js to your HTML scripts
 (function () {
-    var steamUser = null;
-    var steamUserStats = null;
-    var steamUtils = null;
-    var steamFriends = null;
-    var observer = null;
 
     function interopLoaded() {
 
         //notificationCenter.verbose = true;
         //interop.verbose = true;
 
-        steamApp.setId("287450"); // Rise of Nations app id for testing
+        var isSteamRunning = steamAPI.isSteamRunning();
+        console.log("SteamAPI - IsSteamRunning - {0}".format(isSteamRunning));
+        if (!isSteamRunning) {
+            console.warn("Steam must be running");
+            return;
+        }
 
-        steamUser = createSteamUser();
+        steamAPI.setAppId(287450); // Rise of Nations app id for testing
+        if (!steamAPI.initialize()) {
+            console.warn("Cannot initialize steam for app");
+            return;
+        }
 
         var isLoggedOn = steamUser.isLoggedOn();
         console.log("SteamUser - IsLoggedOn - {0}".format(isLoggedOn));
@@ -21,12 +25,9 @@
             return;
         }
 
-        steamUserStats = createSteamUserStats();
-        steamUtils = createSteamUtils();
-        steamFriends = createSteamFriends();
+        var appId = steamUtils.getAppID();
 
-        var mySteamId = steamUser.getSteamId();
-
+        console.log("SteamUtils - AppID - {0}".format(appId));
         console.log("SteamUtils - IsOverlayEnabled - {0}".format(steamUtils.isOverlayEnabled()));
         console.log("SteamUtils - IsSteamRunningInVR - {0}".format(steamUtils.isSteamRunningInVR()));
         console.log("SteamUtils - IsSteamInBigPictureMode - {0}".format(steamUtils.isSteamInBigPictureMode()));
@@ -34,7 +35,26 @@
         console.log("SteamUtils - ServerRealTime - {0}".format(steamUtils.getServerRealTime()));
         console.log("SteamUtils - IPCountry - {0}".format(steamUtils.getIPCountry()));
         console.log("SteamUtils - CurrentBatteryPower - {0}".format(steamUtils.getCurrentBatteryPower()));
-        console.log("SteamUtils - AppID - {0}".format(steamUtils.getAppID()));
+
+        console.log("SteamApps - IsAppInstalled - {0}".format(steamApps.isAppInstalled(appId)));
+        console.log("SteamApps - IsSubscribed - {0}".format(steamApps.isSubscribed()));
+        console.log("SteamApps - IsSubscribedFromWeekend - {0}".format(steamApps.isSubscribedFromWeekend()));
+        console.log("SteamApps - IsVACBanned - {0}".format(steamApps.isVACBanned()));
+        console.log("SteamApps - IsCybercafe - {0}".format(steamApps.isCybercafe()));
+        console.log("SteamApps - IsLowViolence - {0}".format(steamApps.isLowViolence()));
+        console.log("SteamApps - CurrentBetaName - {0}".format(steamApps.getCurrentBetaName()));
+        console.log("SteamApps - AppInstallDir - {0}".format(steamApps.getAppInstallDir(appId)));
+        console.log("SteamApps - AppBuildId - {0}".format(steamApps.getAppBuildId()));
+        console.log("SteamApps - GetDLCCount - {0}".format(steamApps.getDLCCount()));
+
+        for (var x = 0; x < steamApps.getDLCCount(); x += 1) {
+            var dlcData = steamApps.getDLCData(x, appId);
+            console.log("SteamApps - DLC - {0} - Data {1}".format(x, JSON.stringify(dlcData)));
+            var isDLCInstalled = steamApps.isDLCInstalled(dlcData.id);
+            console.log("SteamApps - DLC - {0} - IsInstalled {1}".format(x, isDLCInstalled));
+        }
+
+        var mySteamId = steamUser.getSteamId();
 
         console.log("SteamUser - GetSteamId - {0}".format(mySteamId));
         console.log("SteamUser - IsBehindNAT - {0}".format(steamUser.isBehindNAT()));
@@ -151,19 +171,6 @@
         // Release our notification center instance observer
         if (!isNull(observer)) {
             observer.release();
-        }
-        // Release our objects
-        if (!isNull(steamUtils)) {
-            steamUtils.release();
-        }
-        if (!isNull(steamUser)) {
-            steamUser.release();
-        }
-        if (!isNull(steamUserStats)) {
-            steamUserStats.release();
-        }
-        if (!isNull(steamFriends)) {
-            steamFriends.release();
         }
     };
 

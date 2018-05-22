@@ -19,9 +19,6 @@
     <ClCompile Include="..\steaminterop.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\steamapp.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\steamuser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -32,6 +29,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\steamutils.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\steamapps.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\steamapi.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -51,9 +54,6 @@
     <ClInclude Include="..\interop\workflowi.h">
       <Filter>Interop</Filter>
     </ClInclude>
-    <ClInclude Include="..\steamapp.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\steamuser.h">
       <Filter>Source Files</Filter>
     </ClInclude>
@@ -66,16 +66,37 @@
     <ClInclude Include="..\steamutils.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\steamapps.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\steamapi.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\js\steam.js">
-      <Filter>Javascript</Filter>
-    </None>
     <None Include="..\js\steamtest.js">
       <Filter>Javascript</Filter>
     </None>
     <None Include="steam.def">
       <Filter>Source Files</Filter>
+    </None>
+    <None Include="..\js\steamfriends.js">
+      <Filter>Javascript</Filter>
+    </None>
+    <None Include="..\js\steamuser.js">
+      <Filter>Javascript</Filter>
+    </None>
+    <None Include="..\js\steamuserstats.js">
+      <Filter>Javascript</Filter>
+    </None>
+    <None Include="..\js\steamutils.js">
+      <Filter>Javascript</Filter>
+    </None>
+    <None Include="..\js\steamapi.js">
+      <Filter>Javascript</Filter>
+    </None>
+    <None Include="..\js\steamapps.js">
+      <Filter>Javascript</Filter>
     </None>
   </ItemGroup>
 </Project>

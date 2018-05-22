@@ -154,4 +154,20 @@
         return interop.createInstance("Steam.UserStats", SteamUserStats, instanceId);
     };
 
+    /** Global instance of SteamUserStats
+     *  @type SteamUserStats
+     */
+
+    interop.on("libraryLoad", function(info) {
+        if (info.name.toLowerCase() == "steam") {
+            root.steamUserStats = root.createSteamUserStats();
+        }
+    });
+    interop.on("libraryUnload", function(info) {
+        if (info.name.toLowerCase() == "steam") {
+            root.steamUserStats.release();
+            root.steamUserStats = null;
+        }
+    });
+
 }(_global()));

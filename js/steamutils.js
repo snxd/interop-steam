@@ -136,4 +136,20 @@
         return interop.createInstance("Steam.Utils", SteamUtils, instanceId);
     };
 
+    /** Global instance of SteamUtils
+      *  @type SteamUtils
+      */
+
+    interop.on("libraryLoad", function(info) {
+        if (info.name.toLowerCase() == "steam") {
+            root.steamUtils = root.createSteamUtils();
+        }
+    });
+    interop.on("libraryUnload", function(info) {
+        if (info.name.toLowerCase() == "steam") {
+            root.steamUtils.release();
+            root.steamUtils = null;
+        }
+    });
+
 }(_global()));
