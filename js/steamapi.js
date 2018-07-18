@@ -53,6 +53,15 @@
             "id": id
         });
     };
+    /**
+     * Restarts the app if not started from steam
+     */
+    SteamAPI.prototype.restartAppIfNecessary = function (id) {
+        return this.invoke({
+            "method": "restartAppIfNecessary",
+            "id": id
+        });
+    };
 
     /** Global instance of SteamAPI
      *  @type SteamAPI

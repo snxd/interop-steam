@@ -41,11 +41,6 @@ int32 SteamAPI_IsInitialized()
     return GlobalSteamIsInitialized;
 }
 
-static int32 SteamAPI_IsSteamRunningInt()
-{
-    return SteamAPI_IsSteamRunning() != 0;
-}
-
 static int32 SteamAPI_SetAppId(int32 AppId)
 {
     char EnvVar[320] = { 0 };
@@ -97,13 +92,20 @@ int32 SteamAPI_Invoke(void *SteamAPIContext, echandle MethodDictionaryHandle, ec
     }
     else if (String_Compare(Method, "isSteamRunning") == TRUE)
     {
-        ReturnValue = SteamAPI_IsSteamRunningInt();
+        ReturnValue = (int32)SteamAPI_IsSteamRunning();
         RetVal = IDictionary_AddBoolean(ReturnDictionaryHandle, "returnValue", ReturnValue, &ItemHandle);
     }
     else if (String_Compare(Method, "isInitialized") == TRUE)
     {
         ReturnValue = SteamAPI_IsInitialized();
         RetVal = IDictionary_AddBoolean(ReturnDictionaryHandle, "returnValue", ReturnValue, &ItemHandle);
+    }
+    else if (String_Compare(Method, "restartAppIfNecessary") == TRUE)
+    {
+        RetVal = IDictionary_GetInt32ByKey(MethodDictionaryHandle, "id", &Value32);
+        if (RetVal == TRUE)
+            ReturnValue = (int32)SteamAPI_RestartAppIfNecessary(Value32);
+        IDictionary_AddBoolean(ReturnDictionaryHandle, "returnValue", ReturnValue, &ItemHandle);
     }
     else if (String_Compare(Method, "setAppId") == TRUE)
     {
