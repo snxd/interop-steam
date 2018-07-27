@@ -72,6 +72,7 @@
     <ClInclude Include="..\steamapi.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\js\steamtest.js">
@@ -98,5 +99,8 @@
     <None Include="..\js\steamapps.js">
       <Filter>Javascript</Filter>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="resource.rc" />
   </ItemGroup>
 </Project>

@@ -82,7 +82,7 @@
     <Link>
       <AdditionalDependencies>..\bin\steam_api.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ModuleDefinitionFile>steam.def</ModuleDefinitionFile>
-      <DelayLoadDLLs>%(DelayLoadDLLs)</DelayLoadDLLs>
+      <DelayLoadDLLs>steam_api.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <OptimizeReferences>true</OptimizeReferences>
@@ -112,6 +112,7 @@
     <ClInclude Include="..\steamuser.h" />
     <ClInclude Include="..\steamuserstats.h" />
     <ClInclude Include="..\steamutils.h" />
+    <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\js\steamapi.js" />
@@ -122,6 +123,9 @@
     <None Include="..\js\steamuserstats.js" />
     <None Include="..\js\steamutils.js" />
     <None Include="steam.def" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="resource.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
