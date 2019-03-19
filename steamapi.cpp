@@ -132,12 +132,12 @@ int32 SteamAPI_InitLib(void)
 
     for (FilenamePtr = Filename; *FilenamePtr != 0; FilenamePtr += 1)
     {
-        if (*FilenamePtr == '\\')
+        if (*FilenamePtr == L'\\')
             Slash = FilenamePtr;
     }
     *Slash = 0;
     wcscat_s(Filename, Element_Count(Filename), L"\\steam_api.dll");
-    LoadLibrary(Filename);
+    LoadLibraryW(Filename);
 #endif
     return TRUE;
 }

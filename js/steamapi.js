@@ -73,12 +73,12 @@
     /** Global instance of SteamAPI created when interop loaded
      *  @type SteamAPI
      */
-    interop.on("libraryLoad", function(info) {
+    interop.on("load", function(info) {
         if (info.name.toLowerCase() == "steam") {
             root.steamAPI = root.createSteamAPI();
         }
     });
-    interop.on("libraryUnload", function(info) {
+    interop.on("unload", function(info) {
         if (info.name.toLowerCase() == "steam") {
             root.steamAPI.release();
             root.steamAPI = null;

@@ -174,15 +174,15 @@
         }
     };
 
-    interop.on("libraryLoad", function(info) {
+    interop.on("load", function(info) {
         if (info.name.toLowerCase() == "steam") {
-            interopLoaded();
+            interopLoaded(info);
         }
     });
 
-    interop.on("libraryUnload", function(info) {
+    interop.on("unload", function(info) {
         if (info.name.toLowerCase() == "steam") {
-            interopUnloaded();
+            interopUnloaded(info);
         }
     });
 }());

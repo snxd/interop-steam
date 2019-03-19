@@ -1,4 +1,4 @@
-## Steam Interop Example for DIRECT 5.1.9
+## Steam Interop Example for DIRECT 5.2
 
 The steam interop example shows how to get information from the Steamworks API. It retrieves information such as whether or not the user is logged on, what their steam ID is, and what their session token is. The Javascript classes provided mirror the classes that the Steamworks API provides.
 
@@ -9,17 +9,42 @@ The steam interop example shows how to get information from the Steamworks API. 
 * steam - Steam headers
 * js - Javascript classes
 * interop - DIRECT interop headers
-* windows - Windows project files
+* mac - Macintosh specific files
+* linux - Linux specific files
+* windows - Windows specific files
 
 ### Requirements
 
-* Visual Studio 2013
-* DIRECT 5.1.9+
-* Steam (must be running)
+* CMake 2.8
+
+### Build Instructions
+
+CMake is a makefile generator that produces solutions and project files for various compiler toolkits. 
+
+#### Visual Studio
+
+```
+cmake .
+cmake --build . --config Debug
+```
+
+#### Xcode
+
+```
+cmake . -G Xcode
+cmake --build . --config Debug
+```
+
+#### Unix Makefiles
+
+```
+cmake . -DCMAKE_BUILD_TYPE=Debug
+cmake --build .
+```
 
 ### Setup Instructions
 
-1. Compile the solution
+1. Compile the solution or project for your platform
 2. Copy the dynamic library from the target directory to the host.exe directory
 3. Edit workflow.json and add the following task to be run in the load entry point: ```
     "loadSteam": {

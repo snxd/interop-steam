@@ -115,12 +115,12 @@
      *  @type SteamFriends
      */
 
-    interop.on("libraryLoad", function(info) {
+    interop.on("load", function(info) {
         if (info.name.toLowerCase() == "steam") {
             root.steamFriends = root.createSteamFriends();
         }
     });
-    interop.on("libraryUnload", function(info) {
+    interop.on("unload", function(info) {
         if (info.name.toLowerCase() == "steam") {
             root.steamFriends.release();
             root.steamFriends = null;

@@ -3,10 +3,6 @@
 #ifndef _INTEROPLIB_H_
 #define _INTEROPLIB_H_
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #include <stdio.h>
 #include <stdint.h>
 #include <string.h>
@@ -85,13 +81,6 @@ typedef int32 (*Class_UntrackInstanceCallback)(void *Pointer);
 #define String_AtoI64(s)                        strtoull(s, NULL, 10)
 #endif
 
-int32 String_ConvertToHex(char *Binary, int32 BinarySize, char *Hex, int32 MaxHex);
-
-/*********************************************************************/
-
-int32 Base64_Encode(uint8 *Source, int32 SourceLength, char *Target, int32 MaxTarget, int32 *TargetLength);
-int32 Base64_CalculateEncodeSize(int32 SourceLength, int32 *BytesRequired);
-
 /*********************************************************************/
 
 typedef int32 (*Generic_PrintCallback)(echandle PrintHandle, char *Format, ...);
@@ -115,6 +104,17 @@ typedef int32 (*NotificationCenter_FireAfterDelayWithJSONVCallback)(char *Type, 
 typedef int32 (*Interop_GenerateInstanceIdCallback)(char *String, int32 MaxString);
 
 /*********************************************************************/
+    
+#ifdef __cplusplus
+extern "C" {
+#endif
+    
+/*********************************************************************/
+    
+int32 String_ConvertToHex(char *Binary, int32 BinarySize, char *Hex, int32 MaxHex);
+
+int32 Base64_Encode(uint8 *Source, int32 SourceLength, char *Target, int32 MaxTarget, int32 *TargetLength);
+int32 Base64_CalculateEncodeSize(int32 SourceLength, int32 *BytesRequired);
 
 void *Class_ConvertFromInstanceId(char *InstanceId);
 char *Class_ConvertToInstanceId(void *Pointer);

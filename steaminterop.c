@@ -19,8 +19,6 @@ int32 Interop_CreateInstance(char *TypeName, char *InstanceId, int32 InstanceIdL
                              Interop_ProcessInstanceCallback *ProcessInstance,
                              void **UserPtr)
 {
-    void *Context;
-
     *InvokeInstance = NULL;
     *ReleaseInstance = NULL;
     *ProcessInstance = NULL;

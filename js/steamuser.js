@@ -137,12 +137,12 @@
      *  @type SteamUser
      */
 
-    interop.on("libraryLoad", function(info) {
+    interop.on("load", function(info) {
         if (info.name.toLowerCase() == "steam") {
             root.steamUser = root.createSteamUser();
         }
     });
-    interop.on("libraryUnload", function(info) {
+    interop.on("unload", function(info) {
         if (info.name.toLowerCase() == "steam") {
             root.steamUser.release();
             root.steamUser = null;

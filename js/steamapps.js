@@ -156,12 +156,12 @@
      *  @type SteamApps
      */
 
-    interop.on("libraryLoad", function(info) {
+    interop.on("load", function(info) {
         if (info.name.toLowerCase() == "steam") {
             root.steamApps = root.createSteamApps();
         }
     });
-    interop.on("libraryUnload", function(info) {
+    interop.on("unload", function(info) {
         if (info.name.toLowerCase() == "steam") {
             root.steamApps.release();
             root.steamApps = null;
