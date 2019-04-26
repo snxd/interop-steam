@@ -1,8 +1,8 @@
 cmake_minimum_required(VERSION 2.8)
+cmake_policy(SET CMP0015 NEW)
 
 include_directories(.)
 include_directories(interop)
-include_directories(steamworks)
 
 add_subdirectory(interop)
 
@@ -22,32 +22,38 @@ set(STEAM_HEADERS
     steamuserstats.h
     steamutils.h)
 
-file(GLOB STEAMWORKS_HEADERS
-    "steamworks/*.h")
-
-if(WIN32)
-    link_directories(${CMAKE_CURRENT_SOURCE_DIR}/bin)
-    if(CMAKE_GENERATOR_PLATFORM MATCHES "x64")
-        link_directories(${CMAKE_CURRENT_SOURCE_DIR}/bin/win64)
-    else()
-        link_directories(${CMAKE_CURRENT_SOURCE_DIR}/bin/win32)
-    endif()
-elseif(APPLE)
-    link_directories(${CMAKE_CURRENT_SOURCE_DIR}/bin/osx32)
-else()
-    if(CMAKE_GENERATOR_PLATFORM MATCHES "x64")
-        link_directories(${CMAKE_CURRENT_SOURCE_DIR}/bin/linux64)
-    else()
-        link_directories(${CMAKE_CURRENT_SOURCE_DIR}/bin/linux32)
-    endif()
-endif()
-
 if(WIN32)
     list(APPEND STEAM_SRC windows/resource.rc)
     list(APPEND STEAM_HEADERS windows/resource.h)
 
     add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 endif()
+
+set(STEAMWORKS_INCLUDE_DIR steamworks)
+
+file(GLOB STEAMWORKS_HEADERS
+    "steamworks/*.h")
+
+set(STEAMWORKS_LIBRARY steam_api)
+if(WIN32)
+    if(CMAKE_GENERATOR_PLATFORM MATCHES "x64")
+        list(APPEND STEAMWORKS_LIBRARY_DIRS bin/win64)
+        set(STEAMWORKS_LIBRARY steam_api64)
+    else()
+        list(APPEND STEAMWORKS_LIBRARY_DIRS bin/win32)
+    endif()
+elseif(APPLE)
+    set(STEAMWORKS_LIBRARY_DIRS bin/osx32)
+else()
+    if(CMAKE_GENERATOR_PLATFORM MATCHES "x64")
+        list(APPEND STEAMWORKS_LIBRARY_DIRS bin/linux64)
+    else()
+        list(APPEND STEAMWORKS_LIBRARY_DIRS bin/linux32)
+    endif()
+endif()
+
+link_directories(${STEAMWORKS_LIBRARY_DIRS})
+include_directories(${STEAMWORKS_INCLUDE_DIR})
 
 source_group("Steamworks" FILES ${STEAMWORKS_HEADERS})
 
@@ -67,9 +73,14 @@ endif()
 project(steam C CXX)
 
 add_library(${PROJECT_NAME} SHARED ${STEAM_SRC} ${STEAM_HEADERS} ${STEAMWORKS_HEADERS})
-target_link_libraries(${PROJECT_NAME} interoplib steam_api)
+target_link_libraries(${PROJECT_NAME} interoplib ${STEAMWORKS_LIBRARY})
 
 if(WIN32)
-    set_target_properties(${PROJECT_NAME} PROPERTIES 
-        LINK_FLAGS "/DELAYLOAD:steam_api.dll;steam_api64.dll")
+    if(CMAKE_GENERATOR_PLATFORM MATCHES "x64")
+        set_target_properties(${PROJECT_NAME} PROPERTIES 
+            LINK_FLAGS "/DELAYLOAD:steam_api64.dll")
+    else()
+        set_target_properties(${PROJECT_NAME} PROPERTIES 
+            LINK_FLAGS "/DELAYLOAD:steam_api.dll")
+    endif()
 endif()
