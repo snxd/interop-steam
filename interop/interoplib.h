@@ -53,7 +53,7 @@ typedef struct ClassStruct
 #define Class_InstanceId(CLASS)                 (((ClassStruct *)(CLASS))->InstanceId)
 #define Class_Define(TYPE, ID)                  static int32 Global##TYPE##ClassId = ID;
 #define Class_Cast(HANDLE, TYPE)                ((TYPE *)(HANDLE))
-#define Class_VtblCast(PTR, VTBLTYPE)           ((VTBLTYPE *)((uint8 *)PTR + sizeof(ClassStruct)))
+#define Class_VtblCast(PTR, VTBLTYPE)           (*(VTBLTYPE **)((uint8 *)PTR + sizeof(ClassStruct)))
 
 /*********************************************************************/
 
@@ -104,13 +104,13 @@ typedef int32 (*NotificationCenter_FireAfterDelayWithJSONVCallback)(char *Type, 
 typedef int32 (*Interop_GenerateInstanceIdCallback)(char *String, int32 MaxString);
 
 /*********************************************************************/
-    
+
 #ifdef __cplusplus
 extern "C" {
 #endif
-    
+
 /*********************************************************************/
-    
+
 int32 String_ConvertToHex(char *Binary, int32 BinarySize, char *Hex, int32 MaxHex);
 
 int32 Base64_Encode(uint8 *Source, int32 SourceLength, char *Target, int32 MaxTarget, int32 *TargetLength);
