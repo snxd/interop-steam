@@ -1,4 +1,4 @@
-## Steam Interop Example for DIRECT 6.0
+## Steam Interop Example for DIRECT 6.1
 
 The steam interop example shows how to get information from the Steamworks API. It retrieves information such as whether or not the user is logged on, what their steam ID is, and what their session token is. The Javascript classes provided mirror the classes that the Steamworks API provides.
 
@@ -8,7 +8,7 @@ The steam interop example shows how to get information from the Steamworks API. 
 * steamworks - Steamworks headers
 * js - Javascript classes
 * interop - DIRECT interop headers
-* mac - Macintosh specific files
+* mac - macOS specific files
 * linux - Linux specific files
 * windows - Windows specific files
 
