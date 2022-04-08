@@ -45,27 +45,33 @@ cmake --build .
 
 1. Compile the solution or project for your platform
 2. Copy the dynamic library from the target directory to the host.exe directory
-3. Edit workflow.json and add the following task to be run in the load entry point: ```
+3. Edit workflow.json and add the following task to be run in the load entry point: 
+```json
     "loadSteam": {
         "type": "interopLoad",
         "name": "steam",
         "path": "{ModuleDirectory}{LibraryPrefix}steam.{LibraryExtension}"
-    },```
-4. Edit workflow.json and add the following task to be run in the unload entry point: ```
+    },
+```
+4. Edit workflow.json and add the following task to be run in the unload entry point: 
+```json
     "unloadSteam": {
         "type": "interopUnload",
         "name": "steam",
         "path": "{ModuleDirectory}{LibraryPrefix}steam.{LibraryExtension}"
-    },```
+    },
+```
 5. Copy the files from the js directory to the skin directory
-6. Open main.html and insert the following scripts after main.js: ```
+6. Open main.html and insert the following scripts after main.js: 
+```html
     <script src="steamapi.js" type="text/javascript"></script>
     <script src="steamapps.js" type="text/javascript"></script>
     <script src="steamfriends.js" type="text/javascript"></script>
     <script src="steamuser.js" type="text/javascript"></script>
     <script src="steamuserstats.js" type="text/javascript"></script>
     <script src="steamutils.js" type="text/javascript"></script>
-    <script src="steamtest.js" type="text/javascript"></script>```
+    <script src="steamtest.js" type="text/javascript"></script>
+```
 7. Modify app.json to set cefEnabled to true
 8. Modify main.json to set enableDeveloperTools to true for cef
 9. Run host.exe with --disablesecurity as the first argument (during production if you sign the dll you won't need this).
