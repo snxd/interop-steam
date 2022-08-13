@@ -124,7 +124,7 @@ static bool SteamUserStats_GetUserAchievement(uint64_t SteamId, const char *Name
     bool IsSet = false;
     bool Result = false;
     *Achieved = false;
-    Result = SteamUserStats()->GetUserAchievement(CSteamID(SteamId), Name, &IsSet);
+    Result = SteamUserStats()->GetUserAchievement(CSteamID((uint64)SteamId), Name, &IsSet);
     if (Result && IsSet)
         *Achieved = true;
     return Result != 0;
@@ -138,7 +138,7 @@ static bool SteamUserStats_GetAchievementAchievedPercent(const char *Name, float
 static bool SteamUserStats_RequestUserStats(uint64_t FriendId) {
     UserStatsResults *ApiCall = new UserStatsResults();
 
-    ApiCall->Call = SteamUserStats()->RequestUserStats(CSteamID(FriendId));
+    ApiCall->Call = SteamUserStats()->RequestUserStats(CSteamID((uint64)FriendId));
     ApiCall->UserStatsReceived.Set(ApiCall->Call, ApiCall, &UserStatsResults::OnUserStatsReceived);
     return true;
 }

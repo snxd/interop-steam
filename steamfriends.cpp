@@ -25,32 +25,33 @@ static bool SteamFriends_GetFriendByIndex(int32_t Index, uint64_t *FriendId) {
 }
 
 static bool SteamFriends_GetFriendPersonaName(uint64_t FriendId, char *PersonaName, int32_t MaxPersonaName) {
-    String_CopyLength(PersonaName, (char *)SteamFriends()->GetFriendPersonaName(CSteamID(FriendId)), MaxPersonaName);
+    String_CopyLength(PersonaName, (char *)SteamFriends()->GetFriendPersonaName(CSteamID((uint64)FriendId)),
+                      MaxPersonaName);
     return true;
 }
 
 static bool SteamFriends_GetFriendPersonaState(uint64_t FriendId, int32_t *PersonaState) {
-    *PersonaState = SteamFriends()->GetFriendPersonaState(CSteamID(FriendId));
+    *PersonaState = SteamFriends()->GetFriendPersonaState(CSteamID((uint64)FriendId));
     return true;
 }
 
 static bool SteamFriends_GetFriendRelationship(uint64_t FriendId, int32_t *Relationship) {
-    *Relationship = SteamFriends()->GetFriendRelationship(CSteamID(FriendId));
+    *Relationship = SteamFriends()->GetFriendRelationship(CSteamID((uint64)FriendId));
     return true;
 }
 
 static bool SteamFriends_GetSmallFriendAvatar(uint64_t FriendId, int32_t *SmallFriendAvatar) {
-    *SmallFriendAvatar = SteamFriends()->GetSmallFriendAvatar(CSteamID(FriendId));
+    *SmallFriendAvatar = SteamFriends()->GetSmallFriendAvatar(CSteamID((uint64)FriendId));
     return true;
 }
 
 static bool SteamFriends_GetMediumFriendAvatar(uint64_t FriendId, int32_t *MediumFriendAvatar) {
-    *MediumFriendAvatar = SteamFriends()->GetMediumFriendAvatar(CSteamID(FriendId));
+    *MediumFriendAvatar = SteamFriends()->GetMediumFriendAvatar(CSteamID((uint64)FriendId));
     return true;
 }
 
 static bool SteamFriends_GetLargeFriendAvatar(uint64_t FriendId, int32_t *LargeFriendAvatar) {
-    *LargeFriendAvatar = SteamFriends()->GetLargeFriendAvatar(CSteamID(FriendId));
+    *LargeFriendAvatar = SteamFriends()->GetLargeFriendAvatar(CSteamID((uint64)FriendId));
     return true;
 }
 
