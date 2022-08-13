@@ -17,10 +17,10 @@ class UserResults {
     CCallbackManual<UserResults, GetAuthSessionTicketResponse_t, false> AuthSessionTicket;
     void OnAuthSessionTicketResponse(GetAuthSessionTicketResponse_t *Response);
 
-    void *User;
-    HAuthTicket Ticket;
-    char TicketData[2048];
-    uint32_t TicketSize;
+    void *User = NULL;
+    HAuthTicket Ticket = k_HAuthTicketInvalid;
+    char TicketData[2048] = {0};
+    uint32_t TicketSize = 0;
 };
 
 typedef struct SteamUserStruct {

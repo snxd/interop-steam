@@ -21,7 +21,7 @@ class UserStatsResults {
     CCallResult<UserStatsResults, GlobalAchievementPercentagesReady_t> GlobalAchievementPercentages;
     void OnGlobalAchievementPercentages(GlobalAchievementPercentagesReady_t *Result, bool bIOFailure);
 
-    SteamAPICall_t Call;
+    SteamAPICall_t Call = k_uAPICallInvalid;
 };
 
 typedef struct SteamUserStatsStruct {
