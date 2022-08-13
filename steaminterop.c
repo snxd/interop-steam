@@ -51,7 +51,7 @@ bool Interop_SetOverride(const char *Key, void *Value) {
     return true;
 }
 
-bool Interop_SetOption(const char *Key, char *Value) {
+bool Interop_SetOption(const char *Key, void *Value) {
     return true;
 }
 
