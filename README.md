@@ -14,7 +14,7 @@ The steam interop example shows how to get information from the Steamworks API. 
 
 ### Requirements
 
-* CMake 2.8
+* CMake 3.0
 
 ### Build Instructions
 
