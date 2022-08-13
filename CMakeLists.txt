@@ -1,10 +1,7 @@
 cmake_minimum_required(VERSION 3.0)
 cmake_policy(SET CMP0015 NEW)
 
-include_directories(.)
-include_directories(interop)
-
-add_subdirectory(interop)
+add_subdirectory(lib/interop)
 
 set(STEAM_SRC
     steamapi.cpp
@@ -80,6 +77,7 @@ project(steam C CXX)
 add_library(${PROJECT_NAME} SHARED ${STEAM_SRC} ${STEAM_HEADERS} ${STEAMWORKS_HEADERS})
 set_target_properties(${PROJECT_NAME} PROPERTIES POSITION_INDEPENDENT_CODE ON)
 target_link_libraries(${PROJECT_NAME} interoplib ${STEAMWORKS_LIBRARY})
+target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 
 if(WIN32)
     if(CMAKE_GENERATOR_PLATFORM MATCHES "x64")
