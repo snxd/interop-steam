@@ -252,10 +252,8 @@ bool SteamUserStats_Invoke(void *SteamUserStatsContext, echandle MethodDictionar
     } else if (String_Compare(Method, "requestUserStats") == true) {
         int32 ImageIndex = 0;
         RetVal = IDictionary_GetStringPtrByKey(MethodDictionaryHandle, "steamId", &ValueString);
-        if (RetVal == true) {
-            Value64 = String_AtoI64(ValueString);
-            RetVal = SteamUserStats_RequestUserStats(Value64);
-        }
+        if (RetVal == true)
+            RetVal = SteamUserStats_RequestUserStats(String_AtoI64(ValueString));
         IDictionary_AddBoolean(ReturnDictionaryHandle, "returnValue", true, &ItemHandle);
     } else if (String_Compare(Method, "requestGlobalAchievementPercentages") == true) {
         RetVal = SteamUserStats_RequestGlobalAchievementPercentages();
