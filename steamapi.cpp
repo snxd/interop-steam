@@ -16,84 +16,84 @@
 
 /*********************************************************************/
 
-static int32 GlobalSteamIsInitialized = FALSE;
+static bool GlobalSteamIsInitialized = false;
 
 /********************************************************************/
 // Concrete functions
 
-static int32 SteamAPI_InitializeInt() {
-    if (SteamAPI_IsSteamRunning() == TRUE) {
+static bool SteamAPI_InitializeInt() {
+    if (SteamAPI_IsSteamRunning() == true) {
         if (SteamAPI_Init())
-            GlobalSteamIsInitialized = TRUE;
+            GlobalSteamIsInitialized = true;
         else
-            GlobalSteamIsInitialized = FALSE;
+            GlobalSteamIsInitialized = false;
     } else
-        GlobalSteamIsInitialized = FALSE;
+        GlobalSteamIsInitialized = false;
 
     return GlobalSteamIsInitialized;
 }
 
-int32 SteamAPI_IsInitialized() {
+bool SteamAPI_IsInitialized() {
     return GlobalSteamIsInitialized;
 }
 
-static int32 SteamAPI_SetAppId(int32 AppId) {
+static bool SteamAPI_SetAppId(int32_t AppId) {
     char EnvVar[320] = {0};
 
-    if (SteamAPI_IsInitialized() == TRUE)
-        return FALSE;
+    if (SteamAPI_IsInitialized() == true)
+        return false;
     if (AppId == 0)
-        return FALSE;
+        return false;
 
     String_Print(EnvVar, Element_Count(EnvVar), "SteamAppId=%d", AppId);
     putenv(EnvVar);
     String_Print(EnvVar, Element_Count(EnvVar), "SteamGameId=%d", AppId);
     putenv(EnvVar);
-    return TRUE;
+    return true;
 }
 
 /*********************************************************************/
 // Interop functions
 
-int32 SteamAPI_Process(void *SteamAPIContext) {
+bool SteamAPI_Process(void *SteamAPIContext) {
     // This function is called once per tick and can be used to process simple operations and
     // thread synchronization.
 
     SteamAPI_RunCallbacks();
-    return TRUE;
+    return true;
 }
 
-int32 SteamAPI_Invoke(void *SteamAPIContext, echandle MethodDictionaryHandle, echandle ReturnDictionaryHandle) {
+bool SteamAPI_Invoke(void *SteamAPIContext, echandle MethodDictionaryHandle, echandle ReturnDictionaryHandle) {
     // EVERYTHING is marshaled in AND out as a JSON string, use any type supported by JSON and
     // it should marshal ok.
 
     echandle ItemHandle = NULL;
-    int32 RetVal = FALSE;
-    int32 ReturnValue = FALSE;
-    int32 Value32 = 0;
-    char *Method = NULL;
+    bool RetVal = false;
+    int32_t ReturnValue = false;
+    int32_t Value32 = 0;
+    const char *Method = NULL;
     char *ValueString = NULL;
 
-    if (IDictionary_GetStringPtrByKey(MethodDictionaryHandle, "method", &Method) == FALSE)
-        return FALSE;
+    if (IDictionary_GetStringPtrByKey(MethodDictionaryHandle, "method", &Method) == false)
+        return false;
 
-    if (String_Compare(Method, "initialize") == TRUE) {
+    if (String_Compare(Method, "initialize") == true) {
         ReturnValue = SteamAPI_InitializeInt();
         RetVal = IDictionary_AddBoolean(ReturnDictionaryHandle, "returnValue", ReturnValue, &ItemHandle);
-    } else if (String_Compare(Method, "isSteamRunning") == TRUE) {
+    } else if (String_Compare(Method, "isSteamRunning") == true) {
         ReturnValue = (int32)SteamAPI_IsSteamRunning();
         RetVal = IDictionary_AddBoolean(ReturnDictionaryHandle, "returnValue", ReturnValue, &ItemHandle);
-    } else if (String_Compare(Method, "isInitialized") == TRUE) {
+    } else if (String_Compare(Method, "isInitialized") == true) {
         ReturnValue = SteamAPI_IsInitialized();
         RetVal = IDictionary_AddBoolean(ReturnDictionaryHandle, "returnValue", ReturnValue, &ItemHandle);
-    } else if (String_Compare(Method, "restartAppIfNecessary") == TRUE) {
+    } else if (String_Compare(Method, "restartAppIfNecessary") == true) {
         RetVal = IDictionary_GetInt32ByKey(MethodDictionaryHandle, "id", &Value32);
-        if (RetVal == TRUE)
+        if (RetVal == true)
             ReturnValue = (int32)SteamAPI_RestartAppIfNecessary(Value32);
         IDictionary_AddBoolean(ReturnDictionaryHandle, "returnValue", ReturnValue, &ItemHandle);
-    } else if (String_Compare(Method, "setAppId") == TRUE) {
+    } else if (String_Compare(Method, "setAppId") == true) {
         RetVal = IDictionary_GetInt32ByKey(MethodDictionaryHandle, "id", &Value32);
-        if (RetVal == TRUE)
+        if (RetVal == true)
             ReturnValue = SteamAPI_SetAppId(Value32);
         IDictionary_AddBoolean(ReturnDictionaryHandle, "returnValue", ReturnValue, &ItemHandle);
     }
@@ -104,7 +104,7 @@ int32 SteamAPI_Invoke(void *SteamAPIContext, echandle MethodDictionaryHandle, ec
 /*********************************************************************/
 // Global initialization functions
 
-int32 SteamAPI_InitLib(void) {
+bool SteamAPI_InitLib(void) {
     wchar_t Filename[320] = {0};
     wchar_t *FilenamePtr = NULL;
     wchar_t *Slash = 0;
@@ -120,14 +120,14 @@ int32 SteamAPI_InitLib(void) {
     wcscat_s(Filename, Element_Count(Filename), L"\\steam_api.dll");
     LoadLibraryW(Filename);
 #endif
-    return TRUE;
+    return true;
 }
 
-int32 SteamAPI_RemoveLib(void) {
-    if (SteamAPI_IsInitialized() == TRUE)
+bool SteamAPI_RemoveLib(void) {
+    if (SteamAPI_IsInitialized() == true)
         SteamAPI_Shutdown();
 
-    return TRUE;
+    return true;
 }
 
 /*********************************************************************/

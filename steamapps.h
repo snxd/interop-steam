@@ -9,8 +9,8 @@ extern "C" {
 
 /*********************************************************************/
 
-int32 SteamApps_Process(void *SteamAppsContext);
-int32 SteamApps_Invoke(void *SteamAppsContext, echandle MethodDictionaryHandle, echandle ReturnDictionaryHandle);
+bool SteamApps_Process(void *SteamAppsContext);
+bool SteamApps_Invoke(void *SteamAppsContext, echandle MethodDictionaryHandle, echandle ReturnDictionaryHandle);
 
 /*********************************************************************/
 
