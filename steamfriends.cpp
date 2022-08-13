@@ -92,7 +92,7 @@ bool SteamFriends_Invoke(void *SteamFriendsContext, echandle MethodDictionaryHan
         RetVal = IDictionary_GetInt32ByKey(MethodDictionaryHandle, "index", &Value32);
         if (RetVal == true)
             SteamFriends_GetFriendByIndex(Value32, (uint64_t *)&Value64);
-        String_Print(Value64String, Element_Count(Value64String), "%lld", Value64);
+        String_Print(Value64String, Element_Count(Value64String), "%lld", (uint64_t)Value64);
         IDictionary_AddString(ReturnDictionaryHandle, "returnValue", Value64String, &ItemHandle);
     } else if (String_Compare(Method, "getFriendPersonaName") == true) {
         char PersonaName[320] = {0};
