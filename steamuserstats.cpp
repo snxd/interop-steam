@@ -35,7 +35,7 @@ typedef struct SteamUserStatsStruct {
 static SteamUserStatsStruct *GlobalSteamUserStats = NULL;
 
 /********************************************************************/
-// Callback Functions
+// Callback functions
 
 void UserStatsResults::OnNumberOfCurrentPlayers(NumberOfCurrentPlayers_t *Result, bool bIOFailure) {
     NotificationCenter_FireAfterDelayWithJSON("SteamUserStats", "NumberOfCurrentPlayersResponse", GlobalSteamUserStats,
@@ -63,7 +63,7 @@ void UserStatsResults::OnGlobalAchievementPercentages(GlobalAchievementPercentag
 }
 
 /********************************************************************/
-// Concrete Functions
+// Concrete functions
 
 static int32 SteamUserStats_GetNumberOfCurrentPlayers(void) {
     UserStatsResults *ApiCall = new UserStatsResults();
@@ -158,7 +158,7 @@ static int32 SteamUserStats_ResetAllStats(int32 AchievementsToo) {
 }
 
 /*********************************************************************/
-// Interop Functions
+// Interop functions
 
 int32 SteamUserStats_GetInstanceId(char *String, int32 MaxString) {
     SteamUserStatsStruct *UserStats = (SteamUserStatsStruct *)GlobalSteamUserStats;
@@ -270,7 +270,7 @@ int32 SteamUserStats_Invoke(void *SteamUserStatsContext, echandle MethodDictiona
 }
 
 /*********************************************************************/
-// Creation/Deletion Functions
+// Global initialization functions
 
 int32 SteamUserStats_Init(void) {
     SteamUserStatsStruct *UserStats = NULL;

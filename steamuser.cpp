@@ -191,7 +191,7 @@ int32 SteamUser_Invoke(void *SteamUserContext, echandle MethodDictionaryHandle, 
 }
 
 /*********************************************************************/
-// Creation/Deletion Functions
+// Global initialization functions
 
 int32 SteamUser_Init(void) {
     SteamUserStruct *User = NULL;
