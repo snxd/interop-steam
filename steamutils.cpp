@@ -11,7 +11,7 @@
 #include "steamutils.h"
 
 /*********************************************************************/
-// Concrete Functions
+// Concrete functions
 
 static bool SteamUtils_IsOverlayEnabled(void) {
     return SteamUtils()->IsOverlayEnabled() != 0;
@@ -104,7 +104,7 @@ static bool SteamUtils_StartVRDashboard(void) {
 }
 
 /*********************************************************************/
-// Interop Functions
+// Interop functions
 
 bool SteamUtils_Process(void *SteamUtilsContext) {
     // This function is called once per tick and can be used to process simple operations and

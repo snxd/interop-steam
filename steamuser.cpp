@@ -190,7 +190,7 @@ bool SteamUser_Invoke(void *SteamUserContext, echandle MethodDictionaryHandle, e
 }
 
 /*********************************************************************/
-// Creation/Deletion Functions
+// Global initialization functions
 
 bool SteamUser_Init(void) {
     SteamUserStruct *User = NULL;

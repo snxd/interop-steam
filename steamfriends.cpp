@@ -11,7 +11,7 @@
 #include "steamfriends.h"
 
 /*********************************************************************/
-// Concrete Functions
+// Concrete functions
 
 static bool SteamFriends_GetFriendCount(int32_t *FriendCount) {
     *FriendCount = SteamFriends()->GetFriendCount(k_EFriendFlagAll);  // All
@@ -59,7 +59,7 @@ static bool SteamFriends_ActivateGameOverlayToWebPage(const char *URL) {
 }
 
 /*********************************************************************/
-// Interop Functions
+// Interop functions
 
 bool SteamFriends_Process(void *SteamFriendsContext) {
     // This function is called once per tick and can be used to process simple operations and
