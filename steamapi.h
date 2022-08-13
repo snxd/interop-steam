@@ -9,13 +9,13 @@ extern "C" {
 
 /*********************************************************************/
 
-int32 SteamAPI_IsInitialized(void);
+bool SteamAPI_IsInitialized(void);
 
-int32 SteamAPI_Process(void *SteamAPIContext);
-int32 SteamAPI_Invoke(void *SteamAPIContext, echandle MethodDictionaryHandle, echandle ReturnDictionaryHandle);
+bool SteamAPI_Process(void *SteamAPIContext);
+bool SteamAPI_Invoke(void *SteamAPIContext, echandle MethodDictionaryHandle, echandle ReturnDictionaryHandle);
 
-int32 SteamAPI_InitLib(void);
-int32 SteamAPI_RemoveLib(void);
+bool SteamAPI_InitLib(void);
+bool SteamAPI_RemoveLib(void);
 
 /*********************************************************************/
 

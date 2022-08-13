@@ -9,16 +9,16 @@ extern "C" {
 
 /*********************************************************************/
 
-int32 SteamUserStats_GetInstanceId(char *String, int32 MaxString);
+bool SteamUserStats_GetInstanceId(char *String, int32_t MaxString);
 
-int32 SteamUserStats_Process(void *SteamUserStatsContext);
-int32 SteamUserStats_Invoke(void *SteamUserStatsContext, echandle MethodDictionaryHandle,
-                            echandle ReturnDictionaryHandle);
+bool SteamUserStats_Process(void *SteamUserStatsContext);
+bool SteamUserStats_Invoke(void *SteamUserStatsContext, echandle MethodDictionaryHandle,
+                           echandle ReturnDictionaryHandle);
 
 /*********************************************************************/
 
-int32 SteamUserStats_Init(void);
-int32 SteamUserStats_Remove(void);
+bool SteamUserStats_Init(void);
+bool SteamUserStats_Remove(void);
 
 /*********************************************************************/
 
