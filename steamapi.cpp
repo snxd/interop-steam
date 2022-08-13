@@ -21,29 +21,24 @@ static int32 GlobalSteamIsInitialized = FALSE;
 /********************************************************************/
 // Concrete Functions
 
-static int32 SteamAPI_InitializeInt()
-{
-    if (SteamAPI_IsSteamRunning() == TRUE)
-    {
+static int32 SteamAPI_InitializeInt() {
+    if (SteamAPI_IsSteamRunning() == TRUE) {
         if (SteamAPI_Init())
             GlobalSteamIsInitialized = TRUE;
         else
             GlobalSteamIsInitialized = FALSE;
-    }
-    else
+    } else
         GlobalSteamIsInitialized = FALSE;
 
     return GlobalSteamIsInitialized;
 }
 
-int32 SteamAPI_IsInitialized()
-{
+int32 SteamAPI_IsInitialized() {
     return GlobalSteamIsInitialized;
 }
 
-static int32 SteamAPI_SetAppId(int32 AppId)
-{
-    char EnvVar[320] = { 0 };
+static int32 SteamAPI_SetAppId(int32 AppId) {
+    char EnvVar[320] = {0};
 
     if (SteamAPI_IsInitialized() == TRUE)
         return FALSE;
@@ -60,8 +55,7 @@ static int32 SteamAPI_SetAppId(int32 AppId)
 /*********************************************************************/
 // Interop Functions
 
-int32 SteamAPI_Process(void *SteamAPIContext)
-{
+int32 SteamAPI_Process(void *SteamAPIContext) {
     // This function is called once per tick and can be used to process simple operations and
     // thread synchronization.
 
@@ -69,8 +63,7 @@ int32 SteamAPI_Process(void *SteamAPIContext)
     return TRUE;
 }
 
-int32 SteamAPI_Invoke(void *SteamAPIContext, echandle MethodDictionaryHandle, echandle ReturnDictionaryHandle)
-{
+int32 SteamAPI_Invoke(void *SteamAPIContext, echandle MethodDictionaryHandle, echandle ReturnDictionaryHandle) {
     // EVERYTHING is marshaled in AND out as a JSON string, use any type supported by JSON and
     // it should marshal ok.
 
@@ -81,34 +74,24 @@ int32 SteamAPI_Invoke(void *SteamAPIContext, echandle MethodDictionaryHandle, ec
     char *Method = NULL;
     char *ValueString = NULL;
 
-
     if (IDictionary_GetStringPtrByKey(MethodDictionaryHandle, "method", &Method) == FALSE)
         return FALSE;
 
-    if (String_Compare(Method, "initialize") == TRUE)
-    {
+    if (String_Compare(Method, "initialize") == TRUE) {
         ReturnValue = SteamAPI_InitializeInt();
         RetVal = IDictionary_AddBoolean(ReturnDictionaryHandle, "returnValue", ReturnValue, &ItemHandle);
-    }
-    else if (String_Compare(Method, "isSteamRunning") == TRUE)
-    {
+    } else if (String_Compare(Method, "isSteamRunning") == TRUE) {
         ReturnValue = (int32)SteamAPI_IsSteamRunning();
         RetVal = IDictionary_AddBoolean(ReturnDictionaryHandle, "returnValue", ReturnValue, &ItemHandle);
-    }
-    else if (String_Compare(Method, "isInitialized") == TRUE)
-    {
+    } else if (String_Compare(Method, "isInitialized") == TRUE) {
         ReturnValue = SteamAPI_IsInitialized();
         RetVal = IDictionary_AddBoolean(ReturnDictionaryHandle, "returnValue", ReturnValue, &ItemHandle);
-    }
-    else if (String_Compare(Method, "restartAppIfNecessary") == TRUE)
-    {
+    } else if (String_Compare(Method, "restartAppIfNecessary") == TRUE) {
         RetVal = IDictionary_GetInt32ByKey(MethodDictionaryHandle, "id", &Value32);
         if (RetVal == TRUE)
             ReturnValue = (int32)SteamAPI_RestartAppIfNecessary(Value32);
         IDictionary_AddBoolean(ReturnDictionaryHandle, "returnValue", ReturnValue, &ItemHandle);
-    }
-    else if (String_Compare(Method, "setAppId") == TRUE)
-    {
+    } else if (String_Compare(Method, "setAppId") == TRUE) {
         RetVal = IDictionary_GetInt32ByKey(MethodDictionaryHandle, "id", &Value32);
         if (RetVal == TRUE)
             ReturnValue = SteamAPI_SetAppId(Value32);
@@ -121,8 +104,7 @@ int32 SteamAPI_Invoke(void *SteamAPIContext, echandle MethodDictionaryHandle, ec
 /*********************************************************************/
 // Creation/Deletion Functions
 
-int32 SteamAPI_InitLib(void)
-{
+int32 SteamAPI_InitLib(void) {
     wchar_t Filename[320] = {0};
     wchar_t *FilenamePtr = NULL;
     wchar_t *Slash = 0;
@@ -130,8 +112,7 @@ int32 SteamAPI_InitLib(void)
 #if defined(_WIN32)
     GetModuleFileNameW(NULL, Filename, Element_Count(Filename));
 
-    for (FilenamePtr = Filename; *FilenamePtr != 0; FilenamePtr += 1)
-    {
+    for (FilenamePtr = Filename; *FilenamePtr != 0; FilenamePtr += 1) {
         if (*FilenamePtr == L'\\')
             Slash = FilenamePtr;
     }
@@ -142,8 +123,7 @@ int32 SteamAPI_InitLib(void)
     return TRUE;
 }
 
-int32 SteamAPI_RemoveLib(void)
-{
+int32 SteamAPI_RemoveLib(void) {
     if (SteamAPI_IsInitialized() == TRUE)
         SteamAPI_Shutdown();
 
