@@ -1,6 +1,5 @@
-#include <string.h>
-#include <malloc.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "interoplib.h"
 #include "interopstub.h"

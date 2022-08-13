@@ -1,6 +1,5 @@
-#include <string.h>
-#include <malloc.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "interoplib.h"
 #include "interopstub.h"
@@ -326,7 +325,7 @@ int32 SteamUserStats_Init(void)
     UserStats = (SteamUserStatsStruct*)malloc(sizeof(SteamUserStatsStruct));
     memset(UserStats, 0, sizeof(SteamUserStatsStruct));
     Interop_GenerateInstanceId(UserStats->Class.InstanceId, 40);
-    
+
     UserStats->Class.RefCount = 1;
 
     GlobalSteamUserStats = UserStats;
