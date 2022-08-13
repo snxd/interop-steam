@@ -12,7 +12,8 @@ extern "C" {
 int32 SteamUserStats_GetInstanceId(char *String, int32 MaxString);
 
 int32 SteamUserStats_Process(void *SteamUserStatsContext);
-int32 SteamUserStats_Invoke(void *SteamUserStatsContext, echandle MethodDictionaryHandle, echandle ReturnDictionaryHandle);
+int32 SteamUserStats_Invoke(void *SteamUserStatsContext, echandle MethodDictionaryHandle,
+                            echandle ReturnDictionaryHandle);
 
 /*********************************************************************/
 
