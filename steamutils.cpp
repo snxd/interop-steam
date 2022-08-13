@@ -1,5 +1,4 @@
 #include <string.h>
-#include <malloc.h>
 #include <stdlib.h>
 
 #include "interoplib.h"
@@ -70,7 +69,7 @@ static int32 SteamUtils_GetImageRGBAPtr(int32 Index, uint8 **Base64Buffer, int32
     int32 Base64Length = 0;
     int32 BufferSize = 0;
     uint8 *Buffer = NULL;
-    
+
     if (!SteamUtils()->GetImageSize(Index, (uint32 *)&Width, (uint32 *)&Height))
         return FALSE;
 
