@@ -196,6 +196,8 @@ bool SteamUser_Init(void) {
     SteamUserStruct *User = NULL;
 
     User = (SteamUserStruct *)malloc(sizeof(SteamUserStruct));
+    if (User == NULL)
+        return false;
     memset(User, 0, sizeof(SteamUserStruct));
     Interop_GenerateInstanceId(User->Class.InstanceId, 40);
 
