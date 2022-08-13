@@ -1,0 +1,3 @@
+[submodule "lib/interop"]
+	path = lib/interop
+	url = ../interop-lib
