@@ -7,6 +7,7 @@
 
 #if defined(_WIN32)
 #include <windows.h>
+#define putenv _putenv
 #endif
 
 #include "steam_api.h"
@@ -50,9 +51,9 @@ static int32 SteamAPI_SetAppId(int32 AppId)
         return FALSE;
 
     String_Print(EnvVar, Element_Count(EnvVar), "SteamAppId=%d", AppId);
-    _putenv(EnvVar);
+    putenv(EnvVar);
     String_Print(EnvVar, Element_Count(EnvVar), "SteamGameId=%d", AppId);
-    _putenv(EnvVar);
+    putenv(EnvVar);
     return TRUE;
 }
 
