@@ -19,7 +19,7 @@
 static int32 GlobalSteamIsInitialized = FALSE;
 
 /********************************************************************/
-// Concrete Functions
+// Concrete functions
 
 static int32 SteamAPI_InitializeInt() {
     if (SteamAPI_IsSteamRunning() == TRUE) {
@@ -53,7 +53,7 @@ static int32 SteamAPI_SetAppId(int32 AppId) {
 }
 
 /*********************************************************************/
-// Interop Functions
+// Interop functions
 
 int32 SteamAPI_Process(void *SteamAPIContext) {
     // This function is called once per tick and can be used to process simple operations and
@@ -102,7 +102,7 @@ int32 SteamAPI_Invoke(void *SteamAPIContext, echandle MethodDictionaryHandle, ec
 }
 
 /*********************************************************************/
-// Creation/Deletion Functions
+// Global initialization functions
 
 int32 SteamAPI_InitLib(void) {
     wchar_t Filename[320] = {0};
