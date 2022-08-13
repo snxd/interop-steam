@@ -116,7 +116,8 @@ bool SteamAPI_InitLib(void) {
         if (*FilenamePtr == L'\\')
             Slash = FilenamePtr;
     }
-    *Slash = 0;
+    if (Slash)
+        *Slash = 0;
     wcscat_s(Filename, Element_Count(Filename), L"\\steam_api.dll");
     LoadLibraryW(Filename);
 #endif

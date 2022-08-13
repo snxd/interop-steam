@@ -277,6 +277,8 @@ bool SteamUserStats_Init(void) {
     SteamUserStatsStruct *UserStats = NULL;
 
     UserStats = (SteamUserStatsStruct *)malloc(sizeof(SteamUserStatsStruct));
+    if (UserStats == NULL)
+        return false;
     memset(UserStats, 0, sizeof(SteamUserStatsStruct));
     Interop_GenerateInstanceId(UserStats->Class.InstanceId, 40);
 
