@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <string.h>
+#include <inttypes.h>
 
 #include "interoplib.h"
 #include "interopstub.h"
@@ -148,8 +149,8 @@ bool SteamUser_Invoke(void *SteamUserContext, echandle MethodDictionaryHandle, e
         return false;
 
     if (String_Compare(Method, "getSteamId") == true) {
-        RetVal = SteamUser_GetSteamId((uint64 *)&Value64);
-        String_Print(Value64String, Element_Count(Value64String), "%lld", Value64);
+        RetVal = SteamUser_GetSteamId((uint64_t *)&Value64);
+        String_Print(Value64String, Element_Count(Value64String), "%" PRIu64, (uint64_t)Value64);
         IDictionary_AddString(ReturnDictionaryHandle, "returnValue", Value64String, &ItemHandle);
     } else if (String_Compare(Method, "getAuthSessionTicket") == true) {
         SteamUser_GetAuthSessionTicket(&Value32);
