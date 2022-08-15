@@ -78,11 +78,11 @@ target_link_directories(${PROJECT_NAME} PRIVATE ${STEAMWORKS_LIBRARY_DIRS})
 target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR} ${STEAMWORKS_INCLUDE_DIR})
 
 if(WIN32)
-    if(CMAKE_GENERATOR_PLATFORM MATCHES "x64")
-        set_target_properties(${PROJECT_NAME} PROPERTIES
-            LINK_FLAGS "/DELAYLOAD:steam_api64.dll")
-    else()
+    if(CMAKE_GENERATOR_PLATFORM MATCHES "Win32")
         set_target_properties(${PROJECT_NAME} PROPERTIES
             LINK_FLAGS "/DELAYLOAD:steam_api.dll")
+    else()
+        set_target_properties(${PROJECT_NAME} PROPERTIES
+            LINK_FLAGS "/DELAYLOAD:steam_api64.dll")
     endif()
 endif()
