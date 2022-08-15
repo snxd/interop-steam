@@ -110,6 +110,7 @@ bool SteamAPI_InitLib(void) {
     wchar_t *Slash = 0;
 
 #if defined(_WIN32)
+    // Delay load steamworks library from the same directory as our executable
     GetModuleFileNameW(NULL, Filename, Element_Count(Filename));
 
     for (FilenamePtr = Filename; *FilenamePtr != 0; FilenamePtr += 1) {
@@ -118,7 +119,11 @@ bool SteamAPI_InitLib(void) {
     }
     if (Slash)
         *Slash = 0;
+#if defined(_WIN64)
+    wcscat_s(Filename, Element_Count(Filename), L"\\steam_api64.dll");
+#else
     wcscat_s(Filename, Element_Count(Filename), L"\\steam_api.dll");
+#endif
     LoadLibraryW(Filename);
 #endif
     return true;
