@@ -49,9 +49,6 @@ else()
     endif()
 endif()
 
-link_directories(${STEAMWORKS_LIBRARY_DIRS})
-include_directories(${STEAMWORKS_INCLUDE_DIR})
-
 source_group("Steamworks" FILES ${STEAMWORKS_HEADERS})
 
 if(WIN32)
@@ -77,7 +74,8 @@ project(steam C CXX)
 add_library(${PROJECT_NAME} SHARED ${STEAM_SRC} ${STEAM_HEADERS} ${STEAMWORKS_HEADERS})
 set_target_properties(${PROJECT_NAME} PROPERTIES POSITION_INDEPENDENT_CODE ON)
 target_link_libraries(${PROJECT_NAME} interoplib ${STEAMWORKS_LIBRARY})
-target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+target_link_directories(${PROJECT_NAME} PRIVATE ${STEAMWORKS_LIBRARY_DIRS})
+target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR} ${STEAMWORKS_INCLUDE_DIR})
 
 if(WIN32)
     if(CMAKE_GENERATOR_PLATFORM MATCHES "x64")
