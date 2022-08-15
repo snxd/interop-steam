@@ -4,13 +4,13 @@ cmake_policy(SET CMP0015 NEW)
 add_subdirectory(lib/interop)
 
 set(STEAM_SRC
-    steamapi.cpp
-    steamapps.cpp
-    steamfriends.cpp
+    steamapi.cc
+    steamapps.cc
+    steamfriends.cc
     steaminterop.c
-    steamuser.cpp
-    steamuserstats.cpp
-    steamutils.cpp)
+    steamuser.cc
+    steamuserstats.cc
+    steamutils.cc)
 set(STEAM_HEADERS
     steamapi.h
     steamapps.h
