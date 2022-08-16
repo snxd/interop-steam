@@ -167,7 +167,7 @@ bool SteamUtils_Invoke(void *SteamUtilsContext, echandle MethodDictionaryHandle,
     } else if (String_Compare(Method, "getImageRGBA") == true) {
         RetVal = IDictionary_GetInt32ByKey(MethodDictionaryHandle, "index", &Value32);
         if (RetVal == true) {
-            uint8 *Base64Buffer = NULL;
+            uint8_t *Base64Buffer = NULL;
             int32_t Base64BufferSize = 0;
             RetVal = SteamUtils_GetImageRGBAPtr(Value32, &Base64Buffer, &Base64BufferSize);
             if (RetVal == true) {
