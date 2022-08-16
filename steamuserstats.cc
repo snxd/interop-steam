@@ -45,7 +45,7 @@ void UserStatsResults::OnNumberOfCurrentPlayers(NumberOfCurrentPlayers_t *Result
 
 void UserStatsResults::OnUserStatsReceived(UserStatsReceived_t *Result, bool bIOFailure) {
     char SteamIdString[120] = {0};
-    String_Print(SteamIdString, Element_Count(SteamIdString), "%lld", Result->m_steamIDUser.ConvertToUint64());
+    String_Print(SteamIdString, sizeof(SteamIdString), "%lld", Result->m_steamIDUser.ConvertToUint64());
     NotificationCenter_FireAfterDelayWithJSON(
         "SteamUserStats", "UserStatsReceivedResponse", GlobalSteamUserStats, 0,
         "{ \"successful\": %s, \"result\": %d, \"appID\": %lld,  \"steamId\": \"%s\"}",

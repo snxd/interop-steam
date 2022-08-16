@@ -129,7 +129,7 @@ bool SteamApps_Invoke(void *SteamAppsContext, echandle MethodDictionaryHandle, e
         char InstallDir[320] = {0};
         RetVal = IDictionary_GetInt32ByKey(MethodDictionaryHandle, "id", &Value32);
         if (RetVal == true)
-            ReturnValue = SteamApps_GetAppInstallDir(Value32, InstallDir, Element_Count(InstallDir));
+            ReturnValue = SteamApps_GetAppInstallDir(Value32, InstallDir, sizeof(InstallDir));
         IDictionary_AddString(ReturnDictionaryHandle, "returnValue", InstallDir, &ItemHandle);
     } else if (String_Compare(Method, "getAppBuildId") == true) {
         ReturnValue = SteamApps_GetAppBuildId();
@@ -148,7 +148,7 @@ bool SteamApps_Invoke(void *SteamAppsContext, echandle MethodDictionaryHandle, e
         int32_t Available = false;
         RetVal = IDictionary_GetInt32ByKey(MethodDictionaryHandle, "index", &Value32);
         if (RetVal == true)
-            RetVal = SteamApps_GetDLCData(Value32, &AppId, &Available, Name, Element_Count(Name));
+            RetVal = SteamApps_GetDLCData(Value32, &AppId, &Available, Name, sizeof(Name));
         if (RetVal == true) {
             echandle ReturnObjDictHandle = NULL;
 
@@ -187,7 +187,7 @@ bool SteamApps_Invoke(void *SteamAppsContext, echandle MethodDictionaryHandle, e
         RetVal = IDictionary_AddBoolean(ReturnDictionaryHandle, "returnValue", ReturnValue, &ItemHandle);
     } else if (String_Compare(Method, "getCurrentBetaName") == true) {
         char Name[320] = {0};
-        SteamApps_GetCurrentBetaName(Name, Element_Count(Name));
+        SteamApps_GetCurrentBetaName(Name, sizeof(Name));
         RetVal = IDictionary_AddString(ReturnDictionaryHandle, "returnValue", Name, &ItemHandle);
     } else if (String_Compare(Method, "markContentCorrupt") == true) {
         RetVal = IDictionary_GetBooleanByKey(MethodDictionaryHandle, "missingFilesOnly", &ValueBool);
