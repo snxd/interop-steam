@@ -51,4 +51,4 @@ If you intend to use the interop with-in JavaScript use the following steps:
     <canvas width="300" height="600" id="friendsList"/>
     ```
 5. Run `host` application with `--devtools --disablesecurity` (during production if you sign the dll you won't need this).
-6. If it integrated properly, you will see the following lines in console window. <br/><img src="screenshots/console-ok.png"/><br/>And you will see the Steam friends list populated. <br/><img src="screenshots/friendslist2.png"/> <br/>If you do not have steam running you will see a warning in the console window. <br/><img src="screenshots/console-fail.png"/>
+6. If it integrated properly, you will see the following lines in console window. <br/><img src="screenshots/console-ok.png"/><br/>And you will see the Steam friends list populated. <br/><img src="screenshots/friendslist.png"/> <br/>If you do not have steam running you will see a warning in the console window. <br/><img src="screenshots/console-fail.png"/>
