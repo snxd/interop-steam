@@ -119,9 +119,9 @@ bool SteamAPI_InitLib(void) {
     if (Slash)
         *Slash = 0;
 #if defined(_WIN64)
-    wcscat_s(Filename, sizeof(Filename), L"\\steam_api64.dll");
+    wcscat_s(Filename, _countof(Filename), L"\\steam_api64.dll");
 #else
-    wcscat_s(Filename, sizeof(Filename), L"\\steam_api.dll");
+    wcscat_s(Filename, _countof(Filename), L"\\steam_api.dll");
 #endif
     LoadLibraryW(Filename);
 #endif
