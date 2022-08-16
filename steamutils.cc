@@ -68,7 +68,7 @@ static bool SteamUtils_GetImageRGBAPtr(int32_t Index, uint8_t **Base64Buffer, in
     int32_t Height = 0;
     int32_t Base64Length = 0;
     int32_t BufferSize = 0;
-    uint8_t *Buffer = NULL;
+    uint8_t *Buffer = nullptr;
 
     if (!SteamUtils()->GetImageSize(Index, (uint32_t *)&Width, (uint32_t *)&Height))
         return false;
@@ -78,7 +78,7 @@ static bool SteamUtils_GetImageRGBAPtr(int32_t Index, uint8_t **Base64Buffer, in
     SteamUtils()->GetImageRGBA(Index, Buffer, BufferSize);
 
     *Base64BufferSize = 0;
-    *Base64Buffer = NULL;
+    *Base64Buffer = nullptr;
 
     Base64_CalculateEncodeSize(BufferSize, Base64BufferSize);
     *Base64Buffer = (uint8_t *)malloc(*Base64BufferSize);
@@ -88,11 +88,11 @@ static bool SteamUtils_GetImageRGBAPtr(int32_t Index, uint8_t **Base64Buffer, in
 }
 
 static bool SteamUtils_ReleaseImageRGBAPtr(uint8_t **Base64Buffer, int32_t *Base64BufferSize) {
-    if (Base64Buffer != NULL && *Base64Buffer != NULL) {
+    if (Base64Buffer != nullptr && *Base64Buffer != nullptr) {
         free(*Base64Buffer);
-        *Base64Buffer = NULL;
+        *Base64Buffer = nullptr;
     }
-    if (Base64BufferSize != NULL) {
+    if (Base64BufferSize != nullptr) {
         *Base64BufferSize = 0;
     }
     return true;
@@ -116,13 +116,13 @@ bool SteamUtils_Invoke(void *SteamUtilsContext, echandle MethodDictionaryHandle,
     // EVERYTHING is marshaled in AND out as a JSON string, use any type supported by JSON and
     // it should marshal ok.
 
-    echandle ItemHandle = NULL;
+    echandle ItemHandle = nullptr;
     int64_t Value64 = 0;
     bool RetVal = false;
     int32_t ReturnValue = false;
     int32_t Value32 = 0;
-    const char *Method = NULL;
-    char *ValueString = NULL;
+    const char *Method = nullptr;
+    char *ValueString = nullptr;
     char Value[120] = {0};
 
     if (SteamAPI_IsInitialized() == false)
@@ -167,7 +167,7 @@ bool SteamUtils_Invoke(void *SteamUtilsContext, echandle MethodDictionaryHandle,
     } else if (String_Compare(Method, "getImageRGBA") == true) {
         RetVal = IDictionary_GetInt32ByKey(MethodDictionaryHandle, "index", &Value32);
         if (RetVal == true) {
-            uint8 *Base64Buffer = NULL;
+            uint8 *Base64Buffer = nullptr;
             int32_t Base64BufferSize = 0;
             RetVal = SteamUtils_GetImageRGBAPtr(Value32, &Base64Buffer, &Base64BufferSize);
             if (RetVal == true) {

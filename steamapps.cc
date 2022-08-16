@@ -107,13 +107,13 @@ bool SteamApps_Invoke(void *SteamAppsContext, echandle MethodDictionaryHandle, e
     // EVERYTHING is marshaled in AND out as a JSON string, use any type supported by JSON and
     // it should marshal ok.
 
-    echandle ItemHandle = NULL;
+    echandle ItemHandle = nullptr;
     bool RetVal = false;
     int32_t ReturnValue = false;
     int32_t Value32 = 0;
     bool ValueBool = false;
-    const char *Method = NULL;
-    char *ValueString = NULL;
+    const char *Method = nullptr;
+    char *ValueString = nullptr;
 
     if (SteamAPI_IsInitialized() == false)
         return false;
@@ -150,7 +150,7 @@ bool SteamApps_Invoke(void *SteamAppsContext, echandle MethodDictionaryHandle, e
         if (RetVal == true)
             RetVal = SteamApps_GetDLCData(Value32, &AppId, &Available, Name, Element_Count(Name));
         if (RetVal == true) {
-            echandle ReturnObjDictHandle = NULL;
+            echandle ReturnObjDictHandle = nullptr;
 
             IDictionary_AddDictionary(ReturnDictionaryHandle, "returnValue", &ReturnObjDictHandle, &ItemHandle);
 

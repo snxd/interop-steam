@@ -18,7 +18,7 @@ class UserResults {
     CCallbackManual<UserResults, GetAuthSessionTicketResponse_t, false> AuthSessionTicket;
     void OnAuthSessionTicketResponse(GetAuthSessionTicketResponse_t *Response);
 
-    void *User = NULL;
+    void *User = nullptr;
     HAuthTicket Ticket = k_HAuthTicketInvalid;
     char TicketData[2048] = {0};
     uint32_t TicketSize = 0;
@@ -31,7 +31,7 @@ typedef struct SteamUserStruct {
 
 /********************************************************************/
 
-static SteamUserStruct *GlobalSteamUser = NULL;
+static SteamUserStruct *GlobalSteamUser = nullptr;
 
 /********************************************************************/
 // Callback functions
@@ -134,13 +134,13 @@ bool SteamUser_Invoke(void *SteamUserContext, echandle MethodDictionaryHandle, e
     // EVERYTHING is marshaled in AND out as a JSON string, use any type supported by JSON and
     // it should marshal ok.
 
-    echandle ItemHandle = NULL;
+    echandle ItemHandle = nullptr;
     int64_t Value64 = 0;
     int32_t RetVal = false;
     int32_t ReturnValue = false;
     int32_t Value32 = 0;
-    const char *Method = NULL;
-    char *ValueString = NULL;
+    const char *Method = nullptr;
+    char *ValueString = nullptr;
     char Value64String[120] = {0};
 
     if (SteamAPI_IsInitialized() == false)
@@ -194,10 +194,10 @@ bool SteamUser_Invoke(void *SteamUserContext, echandle MethodDictionaryHandle, e
 // Global initialization functions
 
 bool SteamUser_Init(void) {
-    SteamUserStruct *User = NULL;
+    SteamUserStruct *User = nullptr;
 
     User = (SteamUserStruct *)malloc(sizeof(SteamUserStruct));
-    if (User == NULL)
+    if (User)
         return false;
     memset(User, 0, sizeof(SteamUserStruct));
     Interop_GenerateInstanceId(User->Class.InstanceId, 40);
@@ -221,7 +221,7 @@ bool SteamUser_Remove(void) {
         free(User);
     }
 
-    GlobalSteamUser = NULL;
+    GlobalSteamUser = nullptr;
     return true;
 }
 

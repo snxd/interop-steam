@@ -31,7 +31,7 @@ typedef struct SteamUserStatsStruct {
 
 /********************************************************************/
 
-static SteamUserStatsStruct *GlobalSteamUserStats = NULL;
+static SteamUserStatsStruct *GlobalSteamUserStats = nullptr;
 
 /********************************************************************/
 // Callback functions
@@ -90,7 +90,7 @@ static bool SteamUserStats_GetAchievement(const char *Name, int32 *Achieved) {
 
 static bool SteamUserStats_GetAchievementNamePtr(int32 Index, const char **Name) {
     *Name = (char *)SteamUserStats()->GetAchievementName(Index);
-    if (*Name == NULL) {
+    if (*Name == nullptr) {
         *Name = "";
         return false;
     }
@@ -105,7 +105,7 @@ static bool SteamUserStats_GetAchievementIcon(const char *Name, int32 *ImageInde
 static bool SteamUserStats_GetAchievementDisplayAttributePtr(const char *Name, const char *Key,
                                                              const char **AttributeValue) {
     *AttributeValue = (char *)SteamUserStats()->GetAchievementDisplayAttribute(Name, Key);
-    if (*AttributeValue == NULL) {
+    if (*AttributeValue == nullptr) {
         *AttributeValue = "";
         return false;
     }
@@ -177,15 +177,15 @@ bool SteamUserStats_Invoke(void *SteamUserStatsContext, echandle MethodDictionar
     // EVERYTHING is marshaled in AND out as a JSON string, use any type supported by JSON and
     // it should marshal ok.
 
-    echandle ItemHandle = NULL;
+    echandle ItemHandle = nullptr;
     float32_t ValueFloat32 = 0;
     int64_t Value64 = 0;
     bool RetVal = false;
     int32_t ReturnValue = false;
     int32_t Value32 = 0;
     bool ValueBool = false;
-    const char *Method = NULL;
-    const char *ValueString = NULL;
+    const char *Method = nullptr;
+    const char *ValueString = nullptr;
 
     if (SteamAPI_IsInitialized() == false)
         return false;
@@ -216,7 +216,7 @@ bool SteamUserStats_Invoke(void *SteamUserStatsContext, echandle MethodDictionar
             RetVal = SteamUserStats_GetAchievementIcon(ValueString, &ImageIndex);
         IDictionary_AddInt32(ReturnDictionaryHandle, "returnValue", ImageIndex, &ItemHandle);
     } else if (String_Compare(Method, "getAchievementDisplayAttribute") == true) {
-        const char *KeyString = NULL;
+        const char *KeyString = nullptr;
         const char *AttributeValue = "";
         RetVal = IDictionary_GetStringPtrByKey(MethodDictionaryHandle, "name", &ValueString);
         if (RetVal == true) {
@@ -272,10 +272,10 @@ bool SteamUserStats_Invoke(void *SteamUserStatsContext, echandle MethodDictionar
 // Global initialization functions
 
 bool SteamUserStats_Init(void) {
-    SteamUserStatsStruct *UserStats = NULL;
+    SteamUserStatsStruct *UserStats = nullptr;
 
     UserStats = (SteamUserStatsStruct *)malloc(sizeof(SteamUserStatsStruct));
-    if (UserStats == NULL)
+    if (UserStats)
         return false;
     memset(UserStats, 0, sizeof(SteamUserStatsStruct));
     Interop_GenerateInstanceId(UserStats->Class.InstanceId, 40);
@@ -293,7 +293,7 @@ bool SteamUserStats_Remove(void) {
         free(UserStats);
     }
 
-    GlobalSteamUserStats = NULL;
+    GlobalSteamUserStats = nullptr;
     return true;
 }
 

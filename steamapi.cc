@@ -67,12 +67,12 @@ bool SteamAPI_Invoke(void *SteamAPIContext, echandle MethodDictionaryHandle, ech
     // EVERYTHING is marshaled in AND out as a JSON string, use any type supported by JSON and
     // it should marshal ok.
 
-    echandle ItemHandle = NULL;
+    echandle ItemHandle = nullptr;
     bool RetVal = false;
     int32_t ReturnValue = false;
     int32_t Value32 = 0;
-    const char *Method = NULL;
-    char *ValueString = NULL;
+    const char *Method = nullptr;
+    char *ValueString = nullptr;
 
     if (IDictionary_GetStringPtrByKey(MethodDictionaryHandle, "method", &Method) == false)
         return false;

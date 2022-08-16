@@ -73,13 +73,13 @@ bool SteamFriends_Invoke(void *SteamFriendsContext, echandle MethodDictionaryHan
     // EVERYTHING is marshaled in AND out as a JSON string, use any type supported by JSON and
     // it should marshal ok.
 
-    echandle ItemHandle = NULL;
+    echandle ItemHandle = nullptr;
     int64_t Value64 = 0;
     bool RetVal = false;
     int32_t ReturnValue = false;
     int32_t Value32 = 0;
-    const char *Method = NULL;
-    const char *ValueString = NULL;
+    const char *Method = nullptr;
+    const char *ValueString = nullptr;
     char Value64String[120] = {0};
 
     if (SteamAPI_IsInitialized() == false)
