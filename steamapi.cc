@@ -45,9 +45,9 @@ static bool SteamAPI_SetAppId(int32_t AppId) {
     if (AppId == 0)
         return false;
 
-    String_Print(EnvVar, Element_Count(EnvVar), "SteamAppId=%d", AppId);
+    String_Print(EnvVar, sizeof(EnvVar), "SteamAppId=%d", AppId);
     putenv(EnvVar);
-    String_Print(EnvVar, Element_Count(EnvVar), "SteamGameId=%d", AppId);
+    String_Print(EnvVar, sizeof(EnvVar), "SteamGameId=%d", AppId);
     putenv(EnvVar);
     return true;
 }
@@ -110,7 +110,7 @@ bool SteamAPI_InitLib(void) {
     wchar_t *Slash = 0;
 
 #if defined(_WIN32)
-    GetModuleFileNameW(NULL, Filename, Element_Count(Filename));
+    GetModuleFileNameW(NULL, Filename, sizeof(Filename));
 
     for (FilenamePtr = Filename; *FilenamePtr != 0; FilenamePtr += 1) {
         if (*FilenamePtr == L'\\')
@@ -119,9 +119,9 @@ bool SteamAPI_InitLib(void) {
     if (Slash)
         *Slash = 0;
 #if defined(_WIN64)
-    wcscat_s(Filename, Element_Count(Filename), L"\\steam_api64.dll");
+    wcscat_s(Filename, sizeof(Filename), L"\\steam_api64.dll");
 #else
-    wcscat_s(Filename, Element_Count(Filename), L"\\steam_api.dll");
+    wcscat_s(Filename, sizeof(Filename), L"\\steam_api.dll");
 #endif
     LoadLibraryW(Filename);
 #endif

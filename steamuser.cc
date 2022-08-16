@@ -43,7 +43,7 @@ void UserResults::OnAuthSessionTicketResponse(GetAuthSessionTicketResponse_t *Re
     if (Response->m_eResult == k_EResultOK)
         Successful = true;
     if (Response->m_hAuthTicket == this->Ticket) {
-        String_ConvertToHex(this->TicketData, this->TicketSize, HexTicket, Element_Count(HexTicket));
+        String_ConvertToHex(this->TicketData, this->TicketSize, HexTicket, sizeof(HexTicket));
         NotificationCenter_FireAfterDelayWithJSON(
             "SteamUser", "AuthSessionTicketResponse", this->User, 0,
             "{ \"ticket\": %d, \"ticketData\": \"%s\", \"successful\": %s, \"errorCode\": %d }", this->Ticket,
@@ -87,7 +87,7 @@ static bool SteamUser_GetAuthSessionTicket(int32_t *Ticket) {
     SteamUserStruct *User = (SteamUserStruct *)GlobalSteamUser;
 
     User->Results->Ticket = SteamUser()->GetAuthSessionTicket(
-        User->Results->TicketData, Element_Count(User->Results->TicketData), &User->Results->TicketSize);
+        User->Results->TicketData, sizeof(User->Results->TicketData), &User->Results->TicketSize);
 
     *Ticket = User->Results->Ticket;
     return true;
@@ -150,7 +150,7 @@ bool SteamUser_Invoke(void *SteamUserContext, echandle MethodDictionaryHandle, e
 
     if (String_Compare(Method, "getSteamId") == true) {
         RetVal = SteamUser_GetSteamId((uint64_t *)&Value64);
-        String_Print(Value64String, Element_Count(Value64String), "%" PRIu64, (uint64_t)Value64);
+        String_Print(Value64String, sizeof(Value64String), "%" PRIu64, (uint64_t)Value64);
         IDictionary_AddString(ReturnDictionaryHandle, "returnValue", Value64String, &ItemHandle);
     } else if (String_Compare(Method, "getAuthSessionTicket") == true) {
         SteamUser_GetAuthSessionTicket(&Value32);

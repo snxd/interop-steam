@@ -146,7 +146,7 @@ bool SteamUtils_Invoke(void *SteamUtilsContext, echandle MethodDictionaryHandle,
         RetVal = SteamUtils_GetServerRealTime(&Value64);
         IDictionary_AddInt64(ReturnDictionaryHandle, "returnValue", Value64, &ItemHandle);
     } else if (String_Compare(Method, "getIPCountry") == true) {
-        RetVal = SteamUtils_GetIPCountry(Value, Element_Count(Value));
+        RetVal = SteamUtils_GetIPCountry(Value, sizeof(Value));
         IDictionary_AddString(ReturnDictionaryHandle, "returnValue", Value, &ItemHandle);
     } else if (String_Compare(Method, "getCurrentBatteryPower") == true) {
         RetVal = SteamUtils_GetCurrentBatteryPower(&Value32);
