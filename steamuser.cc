@@ -120,7 +120,8 @@ static bool SteamUser_StopVoiceRecording(void) {
 
 bool SteamUser_GetInstanceId(char *String, int32_t MaxString) {
     SteamUserStruct *User = (SteamUserStruct *)GlobalSteamUser;
-    String_CopyLength(String, Class_InstanceId(User), MaxString);
+    strncpy(String, Class_InstanceId(User), MaxString);
+    String[MaxString - 1] = 0;
     return true;
 }
 
@@ -148,41 +149,41 @@ bool SteamUser_Invoke(void *SteamUserContext, echandle MethodDictionaryHandle, e
     if (IDictionary_GetStringPtrByKey(MethodDictionaryHandle, "method", &Method) == false)
         return false;
 
-    if (String_Compare(Method, "getSteamId") == true) {
+    if (strcmp(Method, "getSteamId") == 0) {
         RetVal = SteamUser_GetSteamId((uint64_t *)&Value64);
-        String_Print(Value64String, sizeof(Value64String), "%" PRIu64, (uint64_t)Value64);
+        snprintf(Value64String, sizeof(Value64String), "%" PRIu64, (uint64_t)Value64);
         IDictionary_AddString(ReturnDictionaryHandle, "returnValue", Value64String, &ItemHandle);
-    } else if (String_Compare(Method, "getAuthSessionTicket") == true) {
+    } else if (strcmp(Method, "getAuthSessionTicket") == 0) {
         SteamUser_GetAuthSessionTicket(&Value32);
         RetVal = IDictionary_AddInt32(ReturnDictionaryHandle, "returnValue", Value32, &ItemHandle);
-    } else if (String_Compare(Method, "cancelAuthTicket") == true) {
+    } else if (strcmp(Method, "cancelAuthTicket") == 0) {
         ReturnValue = SteamUser_CancelAuthTicket();
         RetVal = IDictionary_AddBoolean(ReturnDictionaryHandle, "returnValue", ReturnValue, &ItemHandle);
-    } else if (String_Compare(Method, "isLoggedOn") == true) {
+    } else if (strcmp(Method, "isLoggedOn") == 0) {
         ReturnValue = SteamUser_IsLoggedOn();
         RetVal = IDictionary_AddBoolean(ReturnDictionaryHandle, "returnValue", ReturnValue, &ItemHandle);
-    } else if (String_Compare(Method, "isBehindNAT") == true) {
+    } else if (strcmp(Method, "isBehindNAT") == 0) {
         ReturnValue = SteamUser_IsBehindNAT();
         RetVal = IDictionary_AddBoolean(ReturnDictionaryHandle, "returnValue", ReturnValue, &ItemHandle);
-    } else if (String_Compare(Method, "isPhoneVerified") == true) {
+    } else if (strcmp(Method, "isPhoneVerified") == 0) {
         ReturnValue = SteamUser_IsPhoneVerified();
         RetVal = IDictionary_AddBoolean(ReturnDictionaryHandle, "returnValue", ReturnValue, &ItemHandle);
-    } else if (String_Compare(Method, "isTwoFactorEnabled") == true) {
+    } else if (strcmp(Method, "isTwoFactorEnabled") == 0) {
         ReturnValue = SteamUser_IsPhoneIdentifying();
         RetVal = IDictionary_AddBoolean(ReturnDictionaryHandle, "returnValue", ReturnValue, &ItemHandle);
-    } else if (String_Compare(Method, "isPhoneIdentifying") == true) {
+    } else if (strcmp(Method, "isPhoneIdentifying") == 0) {
         ReturnValue = SteamUser_IsBehindNAT();
         RetVal = IDictionary_AddBoolean(ReturnDictionaryHandle, "returnValue", ReturnValue, &ItemHandle);
-    } else if (String_Compare(Method, "isPhoneRequiringVerification") == true) {
+    } else if (strcmp(Method, "isPhoneRequiringVerification") == 0) {
         ReturnValue = SteamUser_IsPhoneRequiringVerification();
         RetVal = IDictionary_AddBoolean(ReturnDictionaryHandle, "returnValue", ReturnValue, &ItemHandle);
-    } else if (String_Compare(Method, "getPlayerSteamLevel") == true) {
+    } else if (strcmp(Method, "getPlayerSteamLevel") == 0) {
         RetVal = SteamUser_GetPlayerSteamLevel(&Value32);
         IDictionary_AddInt32(ReturnDictionaryHandle, "returnValue", Value32, &ItemHandle);
-    } else if (String_Compare(Method, "startVoiceRecording") == true) {
+    } else if (strcmp(Method, "startVoiceRecording") == 0) {
         ReturnValue = SteamUser_StartVoiceRecording();
         RetVal = IDictionary_AddBoolean(ReturnDictionaryHandle, "returnValue", ReturnValue, &ItemHandle);
-    } else if (String_Compare(Method, "stopVoiceRecording") == true) {
+    } else if (strcmp(Method, "stopVoiceRecording") == 0) {
         ReturnValue = SteamUser_StopVoiceRecording();
         RetVal = IDictionary_AddBoolean(ReturnDictionaryHandle, "returnValue", ReturnValue, &ItemHandle);
     }

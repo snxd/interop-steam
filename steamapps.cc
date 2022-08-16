@@ -120,29 +120,29 @@ bool SteamApps_Invoke(void *SteamAppsContext, echandle MethodDictionaryHandle, e
     if (IDictionary_GetStringPtrByKey(MethodDictionaryHandle, "method", &Method) == false)
         return false;
 
-    if (String_Compare(Method, "isAppInstalled") == true) {
+    if (strcmp(Method, "isAppInstalled") == 0) {
         RetVal = IDictionary_GetInt32ByKey(MethodDictionaryHandle, "id", &Value32);
         if (RetVal == true)
             ReturnValue = SteamApps_IsAppInstalled(Value32);
         IDictionary_AddBoolean(ReturnDictionaryHandle, "returnValue", ReturnValue, &ItemHandle);
-    } else if (String_Compare(Method, "getAppInstallDir") == true) {
+    } else if (strcmp(Method, "getAppInstallDir") == 0) {
         char InstallDir[320] = {0};
         RetVal = IDictionary_GetInt32ByKey(MethodDictionaryHandle, "id", &Value32);
         if (RetVal == true)
             ReturnValue = SteamApps_GetAppInstallDir(Value32, InstallDir, sizeof(InstallDir));
         IDictionary_AddString(ReturnDictionaryHandle, "returnValue", InstallDir, &ItemHandle);
-    } else if (String_Compare(Method, "getAppBuildId") == true) {
+    } else if (strcmp(Method, "getAppBuildId") == 0) {
         ReturnValue = SteamApps_GetAppBuildId();
         RetVal = IDictionary_AddInt32(ReturnDictionaryHandle, "returnValue", ReturnValue, &ItemHandle);
-    } else if (String_Compare(Method, "isDLCInstalled") == true) {
+    } else if (strcmp(Method, "isDLCInstalled") == 0) {
         RetVal = IDictionary_GetInt32ByKey(MethodDictionaryHandle, "id", &Value32);
         if (RetVal == true)
             ReturnValue = SteamApps_IsDLCInstalled(Value32);
         IDictionary_AddBoolean(ReturnDictionaryHandle, "returnValue", ReturnValue, &ItemHandle);
-    } else if (String_Compare(Method, "getDLCCount") == true) {
+    } else if (strcmp(Method, "getDLCCount") == 0) {
         ReturnValue = SteamApps_GetDLCCount();
         RetVal = IDictionary_AddInt32(ReturnDictionaryHandle, "returnValue", ReturnValue, &ItemHandle);
-    } else if (String_Compare(Method, "getDLCData") == true) {
+    } else if (strcmp(Method, "getDLCData") == 0) {
         char Name[320] = {0};
         int32_t AppId = 0;
         int32_t Available = false;
@@ -160,36 +160,36 @@ bool SteamApps_Invoke(void *SteamAppsContext, echandle MethodDictionaryHandle, e
         }
         if (RetVal == false)
             RetVal = IDictionary_AddNull(ReturnDictionaryHandle, "returnValue", &ItemHandle);
-    } else if (String_Compare(Method, "installDLC") == true) {
+    } else if (strcmp(Method, "installDLC") == 0) {
         RetVal = IDictionary_GetInt32ByKey(MethodDictionaryHandle, "id", &Value32);
         if (RetVal == true)
             ReturnValue = SteamApps_InstallDLC(Value32);
         IDictionary_AddBoolean(ReturnDictionaryHandle, "returnValue", ReturnValue, &ItemHandle);
-    } else if (String_Compare(Method, "uninstallDLC") == true) {
+    } else if (strcmp(Method, "uninstallDLC") == 0) {
         RetVal = IDictionary_GetInt32ByKey(MethodDictionaryHandle, "id", &Value32);
         if (RetVal == true)
             ReturnValue = SteamApps_UninstallDLC(Value32);
         IDictionary_AddBoolean(ReturnDictionaryHandle, "returnValue", ReturnValue, &ItemHandle);
-    } else if (String_Compare(Method, "isVACBanned") == true) {
+    } else if (strcmp(Method, "isVACBanned") == 0) {
         ReturnValue = SteamApps_IsVACBanned();
         RetVal = IDictionary_AddBoolean(ReturnDictionaryHandle, "returnValue", ReturnValue, &ItemHandle);
-    } else if (String_Compare(Method, "isSubscribed") == true) {
+    } else if (strcmp(Method, "isSubscribed") == 0) {
         ReturnValue = SteamApps_IsSubscribed();
         RetVal = IDictionary_AddBoolean(ReturnDictionaryHandle, "returnValue", ReturnValue, &ItemHandle);
-    } else if (String_Compare(Method, "isLowViolence") == true) {
+    } else if (strcmp(Method, "isLowViolence") == 0) {
         ReturnValue = SteamApps_IsLowViolence();
         RetVal = IDictionary_AddBoolean(ReturnDictionaryHandle, "returnValue", ReturnValue, &ItemHandle);
-    } else if (String_Compare(Method, "isCybercafe") == true) {
+    } else if (strcmp(Method, "isCybercafe") == 0) {
         ReturnValue = SteamApps_IsCybercafe();
         RetVal = IDictionary_AddBoolean(ReturnDictionaryHandle, "returnValue", ReturnValue, &ItemHandle);
-    } else if (String_Compare(Method, "isSubscribedFromWeekend") == true) {
+    } else if (strcmp(Method, "isSubscribedFromWeekend") == 0) {
         ReturnValue = SteamApps_IsSubscribedFromFreeWeekend();
         RetVal = IDictionary_AddBoolean(ReturnDictionaryHandle, "returnValue", ReturnValue, &ItemHandle);
-    } else if (String_Compare(Method, "getCurrentBetaName") == true) {
+    } else if (strcmp(Method, "getCurrentBetaName") == 0) {
         char Name[320] = {0};
         SteamApps_GetCurrentBetaName(Name, sizeof(Name));
         RetVal = IDictionary_AddString(ReturnDictionaryHandle, "returnValue", Name, &ItemHandle);
-    } else if (String_Compare(Method, "markContentCorrupt") == true) {
+    } else if (strcmp(Method, "markContentCorrupt") == 0) {
         RetVal = IDictionary_GetBooleanByKey(MethodDictionaryHandle, "missingFilesOnly", &ValueBool);
         if (RetVal == true)
             ReturnValue = SteamApps_MarkContentCorrupt(ValueBool);

@@ -45,9 +45,9 @@ static bool SteamAPI_SetAppId(int32_t AppId) {
     if (AppId == 0)
         return false;
 
-    String_Print(EnvVar, sizeof(EnvVar), "SteamAppId=%d", AppId);
+    snprintf(EnvVar, sizeof(EnvVar), "SteamAppId=%d", AppId);
     putenv(EnvVar);
-    String_Print(EnvVar, sizeof(EnvVar), "SteamGameId=%d", AppId);
+    snprintf(EnvVar, sizeof(EnvVar), "SteamGameId=%d", AppId);
     putenv(EnvVar);
     return true;
 }
@@ -77,21 +77,21 @@ bool SteamAPI_Invoke(void *SteamAPIContext, echandle MethodDictionaryHandle, ech
     if (IDictionary_GetStringPtrByKey(MethodDictionaryHandle, "method", &Method) == false)
         return false;
 
-    if (String_Compare(Method, "initialize") == true) {
+    if (strcmp(Method, "initialize") == 0) {
         ReturnValue = SteamAPI_InitializeInt();
         RetVal = IDictionary_AddBoolean(ReturnDictionaryHandle, "returnValue", ReturnValue, &ItemHandle);
-    } else if (String_Compare(Method, "isSteamRunning") == true) {
+    } else if (strcmp(Method, "isSteamRunning") == 0) {
         ReturnValue = (int32)SteamAPI_IsSteamRunning();
         RetVal = IDictionary_AddBoolean(ReturnDictionaryHandle, "returnValue", ReturnValue, &ItemHandle);
-    } else if (String_Compare(Method, "isInitialized") == true) {
+    } else if (strcmp(Method, "isInitialized") == 0) {
         ReturnValue = SteamAPI_IsInitialized();
         RetVal = IDictionary_AddBoolean(ReturnDictionaryHandle, "returnValue", ReturnValue, &ItemHandle);
-    } else if (String_Compare(Method, "restartAppIfNecessary") == true) {
+    } else if (strcmp(Method, "restartAppIfNecessary") == 0) {
         RetVal = IDictionary_GetInt32ByKey(MethodDictionaryHandle, "id", &Value32);
         if (RetVal == true)
             ReturnValue = (int32)SteamAPI_RestartAppIfNecessary(Value32);
         IDictionary_AddBoolean(ReturnDictionaryHandle, "returnValue", ReturnValue, &ItemHandle);
-    } else if (String_Compare(Method, "setAppId") == true) {
+    } else if (strcmp(Method, "setAppId") == 0) {
         RetVal = IDictionary_GetInt32ByKey(MethodDictionaryHandle, "id", &Value32);
         if (RetVal == true)
             ReturnValue = SteamAPI_SetAppId(Value32);
