@@ -1,6 +1,3 @@
-#include <string.h>
-#include <stdlib.h>
-
 #include "interoplib.h"
 #include "interopstub.h"
 #include "dictionaryi.h"

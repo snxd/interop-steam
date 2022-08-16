@@ -1,5 +1,4 @@
-#include <string.h>
-#include <stdlib.h>
+#include <stdlib.h> /* putenv */
 
 #include "interoplib.h"
 #include "interopstub.h"
