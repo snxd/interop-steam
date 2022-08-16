@@ -21,25 +21,25 @@ bool Interop_CreateInstance(const char *TypeName, char *InstanceId, int32_t Inst
     *ProcessInstance = NULL;
     *UserPtr = NULL;
 
-    if (String_Compare(TypeName, "Steam.API") == true) {
+    if (strcmp(TypeName, "Steam.API") == 0) {
         *InvokeInstance = SteamAPI_Invoke;
         *ProcessInstance = SteamAPI_Process;
         return true;
-    } else if (String_Compare(TypeName, "Steam.Apps") == true) {
+    } else if (strcmp(TypeName, "Steam.Apps") == 0) {
         *InvokeInstance = SteamApps_Invoke;
         return true;
-    } else if (String_Compare(TypeName, "Steam.User") == true) {
+    } else if (strcmp(TypeName, "Steam.User") == 0) {
         *InvokeInstance = SteamUser_Invoke;
         SteamUser_GetInstanceId(InstanceId, InstanceIdLength);
         return true;
-    } else if (String_Compare(TypeName, "Steam.UserStats") == true) {
+    } else if (strcmp(TypeName, "Steam.UserStats") == 0) {
         *InvokeInstance = SteamUserStats_Invoke;
         SteamUserStats_GetInstanceId(InstanceId, InstanceIdLength);
         return true;
-    } else if (String_Compare(TypeName, "Steam.Utils") == true) {
+    } else if (strcmp(TypeName, "Steam.Utils") == 0) {
         *InvokeInstance = SteamUtils_Invoke;
         return true;
-    } else if (String_Compare(TypeName, "Steam.Friends") == true) {
+    } else if (strcmp(TypeName, "Steam.Friends") == 0) {
         *InvokeInstance = SteamFriends_Invoke;
         return true;
     }

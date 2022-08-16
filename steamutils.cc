@@ -35,7 +35,8 @@ static bool SteamUtils_GetServerRealTime(int64_t *ServerRealTime) {
 }
 
 static bool SteamUtils_GetIPCountry(char *IPCountry, int32_t MaxIPCountry) {
-    String_CopyLength(IPCountry, (char *)SteamUtils()->GetIPCountry(), MaxIPCountry);
+    strncpy(IPCountry, (char *)SteamUtils()->GetIPCountry(), MaxIPCountry);
+    IPCountry[MaxIPCountry - 1] = 0;
     return true;
 }
 
@@ -130,41 +131,41 @@ bool SteamUtils_Invoke(void *SteamUtilsContext, echandle MethodDictionaryHandle,
     if (IDictionary_GetStringPtrByKey(MethodDictionaryHandle, "method", &Method) == false)
         return false;
 
-    if (String_Compare(Method, "isOverlayEnabled") == true) {
+    if (strcmp(Method, "isOverlayEnabled") == 0) {
         ReturnValue = SteamUtils_IsOverlayEnabled();
         RetVal = IDictionary_AddBoolean(ReturnDictionaryHandle, "returnValue", ReturnValue, &ItemHandle);
-    } else if (String_Compare(Method, "isSteamRunningInVR") == true) {
+    } else if (strcmp(Method, "isSteamRunningInVR") == 0) {
         ReturnValue = SteamUtils_IsSteamRunningInVR();
         RetVal = IDictionary_AddBoolean(ReturnDictionaryHandle, "returnValue", ReturnValue, &ItemHandle);
-    } else if (String_Compare(Method, "isSteamInBigPictureMode") == true) {
+    } else if (strcmp(Method, "isSteamInBigPictureMode") == 0) {
         ReturnValue = SteamUtils_IsSteamInBigPictureMode();
         RetVal = IDictionary_AddBoolean(ReturnDictionaryHandle, "returnValue", ReturnValue, &ItemHandle);
-    } else if (String_Compare(Method, "isVRHeadsetStreamingEnabled") == true) {
+    } else if (strcmp(Method, "isVRHeadsetStreamingEnabled") == 0) {
         ReturnValue = SteamUtils_IsVRHeadsetStreamingEnabled();
         RetVal = IDictionary_AddBoolean(ReturnDictionaryHandle, "returnValue", ReturnValue, &ItemHandle);
-    } else if (String_Compare(Method, "getServerRealTime") == true) {
+    } else if (strcmp(Method, "getServerRealTime") == 0) {
         RetVal = SteamUtils_GetServerRealTime(&Value64);
         IDictionary_AddInt64(ReturnDictionaryHandle, "returnValue", Value64, &ItemHandle);
-    } else if (String_Compare(Method, "getIPCountry") == true) {
+    } else if (strcmp(Method, "getIPCountry") == 0) {
         RetVal = SteamUtils_GetIPCountry(Value, sizeof(Value));
         IDictionary_AddString(ReturnDictionaryHandle, "returnValue", Value, &ItemHandle);
-    } else if (String_Compare(Method, "getCurrentBatteryPower") == true) {
+    } else if (strcmp(Method, "getCurrentBatteryPower") == 0) {
         RetVal = SteamUtils_GetCurrentBatteryPower(&Value32);
         IDictionary_AddInt32(ReturnDictionaryHandle, "returnValue", Value32, &ItemHandle);
-    } else if (String_Compare(Method, "getAppID") == true) {
+    } else if (strcmp(Method, "getAppID") == 0) {
         RetVal = SteamUtils_GetAppID(&Value32);
         IDictionary_AddInt32(ReturnDictionaryHandle, "returnValue", Value32, &ItemHandle);
-    } else if (String_Compare(Method, "getImageWidth") == true) {
+    } else if (strcmp(Method, "getImageWidth") == 0) {
         RetVal = IDictionary_GetInt32ByKey(MethodDictionaryHandle, "index", &Value32);
         if (RetVal == true)
             RetVal = SteamUtils_GetImageWidth(Value32, &Value32);
         IDictionary_AddInt32(ReturnDictionaryHandle, "returnValue", Value32, &ItemHandle);
-    } else if (String_Compare(Method, "getImageHeight") == true) {
+    } else if (strcmp(Method, "getImageHeight") == 0) {
         RetVal = IDictionary_GetInt32ByKey(MethodDictionaryHandle, "index", &Value32);
         if (RetVal == true)
             RetVal = SteamUtils_GetImageHeight(Value32, &Value32);
         IDictionary_AddInt32(ReturnDictionaryHandle, "returnValue", Value32, &ItemHandle);
-    } else if (String_Compare(Method, "getImageRGBA") == true) {
+    } else if (strcmp(Method, "getImageRGBA") == 0) {
         RetVal = IDictionary_GetInt32ByKey(MethodDictionaryHandle, "index", &Value32);
         if (RetVal == true) {
             uint8_t *Base64Buffer = NULL;
@@ -177,7 +178,7 @@ bool SteamUtils_Invoke(void *SteamUtilsContext, echandle MethodDictionaryHandle,
         }
         if (RetVal == false)
             IDictionary_AddNull(ReturnDictionaryHandle, "returnValue", &ItemHandle);
-    } else if (String_Compare(Method, "startVRDashboard") == true) {
+    } else if (strcmp(Method, "startVRDashboard") == 0) {
         RetVal = SteamUtils_StartVRDashboard();
         IDictionary_AddBoolean(ReturnDictionaryHandle, "returnValue", RetVal, &ItemHandle);
     }
