@@ -4,8 +4,7 @@ The steam interop example shows how to get information from the Steamworks API. 
 
 ### Contents
 
-* bin - Steam shared libraries
-* steamworks - Steamworks headers
+* steamworks - Steamworks libraries and headers
 * js - Javascript classes
 * interop - DIRECT interop headers
 * mac - macOS specific files
