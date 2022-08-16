@@ -17,7 +17,7 @@ function interopLoaded() {
   //interop.verbose = true;
 
   var isSteamRunning = steamAPI.isSteamRunning();
-  console.log("SteamAPI - IsSteamRunning - {0}".format(isSteamRunning));
+  console.log(`SteamAPI - IsSteamRunning - ${isSteamRunning}`);
   if (!isSteamRunning) {
     console.warn("Steam must be running");
     return;
@@ -30,61 +30,61 @@ function interopLoaded() {
   }
 
   var isLoggedOn = steamUser.isLoggedOn();
-  console.log("SteamUser - IsLoggedOn - {0}".format(isLoggedOn));
+  console.log(`SteamUser - IsLoggedOn - ${isLoggedOn}`);
   if (!isLoggedOn) {
     return;
   }
 
   var appId = steamUtils.getAppID();
 
-  console.log("SteamUtils - AppID - {0}".format(appId));
-  console.log("SteamUtils - IsOverlayEnabled - {0}".format(steamUtils.isOverlayEnabled()));
-  console.log("SteamUtils - IsSteamRunningInVR - {0}".format(steamUtils.isSteamRunningInVR()));
-  console.log("SteamUtils - IsSteamInBigPictureMode - {0}".format(steamUtils.isSteamInBigPictureMode()));
-  console.log("SteamUtils - IsVRHeadsetStreamingEnabled - {0}".format(steamUtils.isVRHeadsetStreamingEnabled()));
-  console.log("SteamUtils - ServerRealTime - {0}".format(steamUtils.getServerRealTime()));
-  console.log("SteamUtils - IPCountry - {0}".format(steamUtils.getIPCountry()));
-  console.log("SteamUtils - CurrentBatteryPower - {0}".format(steamUtils.getCurrentBatteryPower()));
+  console.log(`SteamUtils - AppID - ${appId}`);
+  console.log(`SteamUtils - IsOverlayEnabled - ${steamUtils.isOverlayEnabled()}`);
+  console.log(`SteamUtils - IsSteamRunningInVR - ${steamUtils.isSteamRunningInVR()}`);
+  console.log(`SteamUtils - IsSteamInBigPictureMode - ${steamUtils.isSteamInBigPictureMode()}`);
+  console.log(`SteamUtils - IsVRHeadsetStreamingEnabled - ${steamUtils.isVRHeadsetStreamingEnabled()}`);
+  console.log(`SteamUtils - ServerRealTime - ${steamUtils.getServerRealTime()}`);
+  console.log(`SteamUtils - IPCountry - ${steamUtils.getIPCountry()}`);
+  console.log(`SteamUtils - CurrentBatteryPower - ${steamUtils.getCurrentBatteryPower()}`);
 
-  console.log("SteamApps - IsAppInstalled - {0}".format(steamApps.isAppInstalled(appId)));
-  console.log("SteamApps - IsSubscribed - {0}".format(steamApps.isSubscribed()));
-  console.log("SteamApps - IsSubscribedFromWeekend - {0}".format(steamApps.isSubscribedFromWeekend()));
-  console.log("SteamApps - IsVACBanned - {0}".format(steamApps.isVACBanned()));
-  console.log("SteamApps - IsCybercafe - {0}".format(steamApps.isCybercafe()));
-  console.log("SteamApps - IsLowViolence - {0}".format(steamApps.isLowViolence()));
-  console.log("SteamApps - CurrentBetaName - {0}".format(steamApps.getCurrentBetaName()));
-  console.log("SteamApps - AppInstallDir - {0}".format(steamApps.getAppInstallDir(appId)));
-  console.log("SteamApps - AppBuildId - {0}".format(steamApps.getAppBuildId()));
-  console.log("SteamApps - GetDLCCount - {0}".format(steamApps.getDLCCount()));
+  console.log(`SteamApps - IsAppInstalled - ${steamApps.isAppInstalled(appId)}`);
+  console.log(`SteamApps - IsSubscribed - ${steamApps.isSubscribed()}`);
+  console.log(`SteamApps - IsSubscribedFromWeekend - ${steamApps.isSubscribedFromWeekend()}`);
+  console.log(`SteamApps - IsVACBanned - ${steamApps.isVACBanned()}`);
+  console.log(`SteamApps - IsCybercafe - ${steamApps.isCybercafe()}`);
+  console.log(`SteamApps - IsLowViolence - ${steamApps.isLowViolence()}`);
+  console.log(`SteamApps - CurrentBetaName - ${steamApps.getCurrentBetaName()}`);
+  console.log(`SteamApps - AppInstallDir - ${steamApps.getAppInstallDir(appId)}`);
+  console.log(`SteamApps - AppBuildId - ${steamApps.getAppBuildId()}`);
+  console.log(`SteamApps - GetDLCCount - ${steamApps.getDLCCount()}`);
 
   for (var x = 0; x < steamApps.getDLCCount(); x += 1) {
     var dlcData = steamApps.getDLCData(x, appId);
-    console.log("SteamApps - DLC - {0} - Data {1}".format(x, JSON.stringify(dlcData)));
+    console.log(`SteamApps - DLC - ${x} - Data ${JSON.stringify(dlcData)}`);
     var isDLCInstalled = steamApps.isDLCInstalled(dlcData.id);
-    console.log("SteamApps - DLC - {0} - IsInstalled {1}".format(x, isDLCInstalled));
+    console.log(`SteamApps - DLC - ${x} - IsInstalled ${isDLCInstalled}`);
   }
 
   var mySteamId = steamUser.getSteamId();
 
-  console.log("SteamUser - GetSteamId - {0}".format(mySteamId));
-  console.log("SteamUser - IsBehindNAT - {0}".format(steamUser.isBehindNAT()));
-  console.log("SteamUser - IsPhoneVerified - {0}".format(steamUser.isPhoneVerified()));
-  console.log("SteamUser - IsTwoFactorEnabled - {0}".format(steamUser.isTwoFactorEnabled()));
-  console.log("SteamUser - IsPhoneIdentifying - {0}".format(steamUser.isPhoneIdentifying()));
-  console.log("SteamUser - IsPhoneRequiringVerification - {0}".format(steamUser.isPhoneRequiringVerification()));
-  console.log("SteamUser - GetPlayerSteamLevel - {0}".format(steamUser.getPlayerSteamLevel()));
+  console.log(`SteamUser - GetSteamId - ${mySteamId}`);
+  console.log(`SteamUser - IsBehindNAT - ${steamUser.isBehindNAT()}`);
+  console.log(`SteamUser - IsPhoneVerified - ${steamUser.isPhoneVerified()}`);
+  console.log(`SteamUser - IsTwoFactorEnabled - ${steamUser.isTwoFactorEnabled()}`);
+  console.log(`SteamUser - IsPhoneIdentifying - ${steamUser.isPhoneIdentifying()}`);
+  console.log(`SteamUser - IsPhoneRequiringVerification - ${steamUser.isPhoneRequiringVerification()}`);
+  console.log(`SteamUser - GetPlayerSteamLevel - ${steamUser.getPlayerSteamLevel()}`);
 
   var ob0 = notificationCenter.addInstanceObserver("SteamUser", "AuthSessionTicketResponse", steamUser, function (sender, info) {
-    console.log("SteamUser - AuthSessionTicketResponse - {0}".format(JSON.stringify(info)));
+    console.log(`SteamUser - AuthSessionTicketResponse - ${JSON.stringify(info)}`);
     ob0.release();
   });
-  console.log("SteamUser - AuthSessionTicket - {0}".format(steamUser.getAuthSessionTicket()));
+  console.log(`SteamUser - AuthSessionTicket - ${steamUser.getAuthSessionTicket()}`);
 
   var myPersonaName = steamFriends.getFriendPersonaName(mySteamId);
   var myPersonaState = steamFriends.getFriendPersonaState(mySteamId);
   var myPersonaStateString = steamFriendsPersonaState.nameFromId(myPersonaState);
 
-  console.log("SteamFriends - Current User - {0} ({1})".format(myPersonaName, myPersonaStateString));
+  console.log(`SteamFriends - Current User - ${myPersonaName} (${myPersonaStateString})`);
 
   function convertBase64ToBinary(base64) {
     var raw = window.atob(base64);
@@ -103,7 +103,7 @@ function interopLoaded() {
   }
 
   var friendCount = steamFriends.getFriendCount();
-  console.log("SteamFriends - FriendCount - {0}".format(friendCount));
+  console.log(`SteamFriends - FriendCount - ${friendCount}`);
 
   for (var i = 0, y = 0; i < friendCount; i += 1) {
     var friendSteamId = steamFriends.getFriendByIndex(i);
@@ -113,14 +113,13 @@ function interopLoaded() {
     var friendRelationship = steamFriends.getFriendRelationship(friendSteamId);
     var friendRelationshipString = steamFriendsRelationship.nameFromId(friendRelationship);
 
-    console.log("SteamFriends - Friend {0} - {1} - {2} ({3}) - {4}"
-      .format((i + 1), friendSteamId, friendPersonaName, friendPersonaStateString, friendRelationshipString));
+    console.log(`SteamFriends - Friend ${(i + 1)} - ${friendSteamId} - ${friendPersonaName} (${friendPersonaStateString}) - ${friendRelationshipString}`);
 
     var friendAvatarIndex = steamFriends.getSmallFriendAvatar(friendSteamId);
     var friendAvatarWidth = steamUtils.getImageWidth(friendAvatarIndex);
     var friendAvatarHeight = steamUtils.getImageHeight(friendAvatarIndex);
 
-    console.log("SteamUtils - Image {0} - {1}x{2}".format(friendAvatarIndex, friendAvatarWidth, friendAvatarHeight));
+    console.log(`SteamUtils - Image ${friendAvatarIndex} - ${friendAvatarWidth}x${friendAvatarHeight}`);
 
     if (canvas) {
       var friendAvatarRGBA = steamUtils.getImageRGBA(friendAvatarIndex);
@@ -129,25 +128,25 @@ function interopLoaded() {
 
       ctx.putImageData(friendAvatarImageData, 0, y);
       ctx.fillStyle = "white";
-      ctx.fillText("{0} ({1})".format(friendPersonaName, friendPersonaState), friendAvatarWidth + 10, y + ((friendAvatarHeight / 2) + 10));
+      ctx.fillText(`${friendPersonaName} (${friendPersonaState})`, friendAvatarWidth + 10, y + ((friendAvatarHeight / 2) + 10));
 
       y += friendAvatarHeight;
     }
   }
 
   var ob1 = notificationCenter.addInstanceObserver("SteamUserStats", "NumberOfCurrentPlayersResponse", steamUserStats, function (sender, info) {
-    console.log("SteamUserStats - NumberOfCurrentPlayersResponse - {0}".format(JSON.stringify(info)));
+    console.log(`SteamUserStats - NumberOfCurrentPlayersResponse - ${JSON.stringify(info)}`);
     ob1.release();
   });
 
   var achievementCount = steamUserStats.getNumberOfAchievements();
   var ob2 = notificationCenter.addInstanceObserver("SteamUserStats", "UserStatsReceivedResponse", steamUserStats, function (sender, info) {
 
-    console.log("SteamUserStats - UserStatsReceivedResponse - {0}".format(JSON.stringify(info)));
+    console.log(`SteamUserStats - UserStatsReceivedResponse - ${JSON.stringify(info)}`);
     steamUserStats.requestGlobalAchievementPercentages();
 
     var ob3 = notificationCenter.addInstanceObserver("SteamUserStats", "GlobalAchievementPercentagesResponse", steamUserStats, function (sender, info) {
-      console.log("SteamUserStats - NumberOfAchievements - {0}".format(achievementCount));
+      console.log(`SteamUserStats - NumberOfAchievements - ${achievementCount}`);
 
       for (var i = 0; i < achievementCount; i += 1) {
         var achievementName = steamUserStats.getAchievementName(i);
@@ -157,10 +156,7 @@ function interopLoaded() {
         var achievementAchieved = steamUserStats.getAchievement(achievementName);
         var achievementAchievedPercent = steamUserStats.getAchievementAchievedPercent(achievementName);
 
-        console.log("SteamUserStats - Achievement {0} - {1} - \"{2}\" - {3} - {4}{5}{6}%"
-          .format((i + 1), achievementName, achievementFriendlyName, achievementDescription,
-            (achievementHidden === "1") ? "Invisible " : "", (achievementAchieved) ? "Achieved ": "",
-            achievementAchievedPercent));
+        console.log(`SteamUserStats - Achievement ${(i + 1)} - ${achievementName} - "${achievementFriendlyName}" - ${achievementDescription} - ${(achievementHidden === "1") ? "Invisible " : ""}${(achievementAchieved) ? "Achieved ": ""}${achievementAchievedPercent}%`);
       }
 
       ob3.release();
