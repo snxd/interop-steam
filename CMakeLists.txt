@@ -3,25 +3,24 @@ cmake_policy(SET CMP0015 NEW)
 
 add_subdirectory(lib/interop)
 
-set(STEAM_SRC
+set(STEAM_SRCS
+    steamapi.h
     steamapi.cc
+    steamapps.h
     steamapps.cc
+    steamfriends.h
     steamfriends.cc
     steaminterop.c
-    steamuser.cc
-    steamuserstats.cc
-    steamutils.cc)
-set(STEAM_HEADERS
-    steamapi.h
-    steamapps.h
-    steamfriends.h
     steamuser.h
+    steamuser.cc
     steamuserstats.h
-    steamutils.h)
-
+    steamuserstats.cc
+    steamutils.h
+    steamutils.cc)
 if(WIN32)
-    list(APPEND STEAM_SRC windows/resource.rc)
-    list(APPEND STEAM_HEADERS windows/resource.h)
+    list(APPEND STEAM_SRCS
+        windows/resource.h
+        windows/resource.rc)
 
     add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 endif()
@@ -52,11 +51,6 @@ endif()
 source_group("Steamworks" FILES ${STEAMWORKS_HEADERS})
 
 if(WIN32)
-    set(CMAKE_C_FLAGS_DEBUG "/MTd")
-    set(CMAKE_C_FLAGS_RELEASE "/MT")
-    set(CMAKE_C_FLAGS_MINSIZEREL "/MT")
-    set(CMAKE_C_FLAGS_RELWITHDEBINFO "/MT")
-
     set(CMAKE_SHARED_LINKER_FLAGS
         "${CMAKE_MODULE_LINKER_FLAGS} \"/DEF:${CMAKE_CURRENT_SOURCE_DIR}/windows/steam.def\"")
 elseif(APPLE)
@@ -71,7 +65,7 @@ endif()
 
 project(steam C CXX)
 
-add_library(${PROJECT_NAME} SHARED ${STEAM_SRC} ${STEAM_HEADERS} ${STEAMWORKS_HEADERS})
+add_library(${PROJECT_NAME} SHARED ${STEAM_SRCS})
 set_target_properties(${PROJECT_NAME} PROPERTIES POSITION_INDEPENDENT_CODE ON)
 target_link_libraries(${PROJECT_NAME} interoplib ${STEAMWORKS_LIBRARY})
 target_link_directories(${PROJECT_NAME} PRIVATE ${STEAMWORKS_LIBRARY_DIRS})

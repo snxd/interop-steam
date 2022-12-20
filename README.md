@@ -13,7 +13,7 @@ The steam interop example shows how to get information from the Steamworks API. 
 
 ### Requirements
 
-* CMake 3.0
+* CMake 3.15
 
 ### Build Instructions
 
@@ -29,6 +29,9 @@ CMake is a makefile generator that produces solutions and project files for vari
 cmake -S . -B build
 cmake --build build --config Debug
 ```
+
+The target architecture of the shared library must match the architecture of the DIRECT client you are using. For example, if you are using host.exe for 32-bit Windows, then you must configure for x86 by using CMake argument -A Win32. If configuring on Windows, it is recommended that you statically link against MSVC runtime using `-D CMAKE_MSVC_RUNTIME_LIBRARY=MultiThreaded` to prevent the user from having to install the Visual C++ runtime separately.
+
 ### Setup Instructions
 
 First copy the interop the SteamWorks shared libraries to the directory where you intended to load it from. For our example, we use the same directory as the client's executable: `{moduleAppDirectory}`
