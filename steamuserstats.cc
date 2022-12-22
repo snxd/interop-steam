@@ -280,7 +280,7 @@ bool SteamUserStats_Init(void) {
     if (UserStats == NULL)
         return false;
     memset(UserStats, 0, sizeof(SteamUserStatsStruct));
-    Interop_GenerateInstanceId(UserStats->Class.InstanceId, 40);
+    Interop_GenerateInstanceId(UserStats->Class.InstanceId, sizeof(UserStats->Class.InstanceId));
 
     UserStats->Class.RefCount = 1;
 

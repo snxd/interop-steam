@@ -201,7 +201,7 @@ bool SteamUser_Init(void) {
     if (User == NULL)
         return false;
     memset(User, 0, sizeof(SteamUserStruct));
-    Interop_GenerateInstanceId(User->Class.InstanceId, 40);
+    Interop_GenerateInstanceId(User->Class.InstanceId, sizeof(User->Class.InstanceId));
 
     User->Class.RefCount = 1;
 
