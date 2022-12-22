@@ -46,11 +46,6 @@ bool Interop_CreateInstance(const char *TypeName, char *InstanceId, int32_t Inst
     return false;
 }
 
-bool Interop_SetOverride(const char *Key, void *Value) {
-    InteropLib_SetOverride(Key, Value);
-    return true;
-}
-
 bool Interop_SetOption(const char *Key, void *Value) {
     return true;
 }
