@@ -20,7 +20,7 @@ class UserResults {
 
     void *User = NULL;
     HAuthTicket Ticket = k_HAuthTicketInvalid;
-    char TicketData[2048] = {0};
+    uint8_t TicketData[2048] = {0};
     uint32_t TicketSize = 0;
 };
 
@@ -43,7 +43,7 @@ void UserResults::OnAuthSessionTicketResponse(GetAuthSessionTicketResponse_t *Re
     if (Response->m_eResult == k_EResultOK)
         Successful = true;
     if (Response->m_hAuthTicket == this->Ticket) {
-        String_ConvertToHex(this->TicketData, this->TicketSize, HexTicket, sizeof(HexTicket));
+        String_ConvertToHex(this->TicketData, this->TicketSize, true, HexTicket, sizeof(HexTicket));
         NotificationCenter_FireAfterDelayWithJSON(
             "SteamUser", "AuthSessionTicketResponse", this->User, 0,
             "{ \"ticket\": %d, \"ticketData\": \"%s\", \"successful\": %s, \"errorCode\": %d }", this->Ticket,
