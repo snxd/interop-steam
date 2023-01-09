@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.0)
+cmake_minimum_required(VERSION 3.15)
 cmake_policy(SET CMP0015 NEW)
 
 add_subdirectory(lib/interop)
