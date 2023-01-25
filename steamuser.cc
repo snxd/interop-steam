@@ -45,7 +45,7 @@ void UserResults::OnAuthSessionTicketResponse(GetAuthSessionTicketResponse_t *Re
     if (Response->m_hAuthTicket == this->Ticket) {
         String_ConvertToHex(this->TicketData, this->TicketSize, true, HexTicket, sizeof(HexTicket));
         NotificationCenter_FireAfterDelayWithJSON(
-            "SteamUser", "AuthSessionTicketResponse", this->User, 0,
+            "SteamUser", "AuthSessionTicketResponse", Class_InstanceId((SteamUserStruct *)this->User), 0,
             "{ \"ticket\": %d, \"ticketData\": \"%s\", \"successful\": %s, \"errorCode\": %d }", this->Ticket,
             HexTicket, Successful ? "true" : "false", Response->m_eResult);
     }

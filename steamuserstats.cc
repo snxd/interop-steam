@@ -38,9 +38,9 @@ static SteamUserStatsStruct *GlobalSteamUserStats = NULL;
 // Callback functions
 
 void UserStatsResults::OnNumberOfCurrentPlayers(NumberOfCurrentPlayers_t *Result, bool bIOFailure) {
-    NotificationCenter_FireAfterDelayWithJSON("SteamUserStats", "NumberOfCurrentPlayersResponse", GlobalSteamUserStats,
-                                              0, "{ \"successful\": %s,  \"playerCount\": %d }",
-                                              Result->m_bSuccess ? "true" : "false", Result->m_cPlayers);
+    NotificationCenter_FireAfterDelayWithJSON(
+        "SteamUserStats", "NumberOfCurrentPlayersResponse", Class_InstanceId(GlobalSteamUserStats), 0,
+        "{ \"successful\": %s,  \"playerCount\": %d }", Result->m_bSuccess ? "true" : "false", Result->m_cPlayers);
     delete this;
 }
 
@@ -48,7 +48,7 @@ void UserStatsResults::OnUserStatsReceived(UserStatsReceived_t *Result, bool bIO
     char SteamIdString[120] = {0};
     snprintf(SteamIdString, sizeof(SteamIdString), "%" PRIu64, Result->m_steamIDUser.ConvertToUint64());
     NotificationCenter_FireAfterDelayWithJSON(
-        "SteamUserStats", "UserStatsReceivedResponse", GlobalSteamUserStats, 0,
+        "SteamUserStats", "UserStatsReceivedResponse", Class_InstanceId(GlobalSteamUserStats), 0,
         "{ \"successful\": %s, \"result\": %d, \"appID\": %lld,  \"steamId\": \"%s\"}",
         (Result->m_eResult == k_EResultOK) ? "true" : "false", Result->m_eResult, Result->m_nGameID, SteamIdString);
     delete this;
@@ -56,7 +56,7 @@ void UserStatsResults::OnUserStatsReceived(UserStatsReceived_t *Result, bool bIO
 
 void UserStatsResults::OnGlobalAchievementPercentages(GlobalAchievementPercentagesReady_t *Result, bool bIOFailure) {
     NotificationCenter_FireAfterDelayWithJSON(
-        "SteamUserStats", "GlobalAchievementPercentagesResponse", GlobalSteamUserStats, 0,
+        "SteamUserStats", "GlobalAchievementPercentagesResponse", Class_InstanceId(GlobalSteamUserStats), 0,
         "{ \"successful\": %s, \"result\": %d, \"appID\": %lld }",
         (Result->m_eResult == k_EResultOK) ? "true" : "false", Result->m_eResult, Result->m_nGameID);
     delete this;
