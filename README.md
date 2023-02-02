@@ -2,6 +2,9 @@
 
 The steam interop example shows how to get information from the Steamworks API. It retrieves information such as whether or not the user is logged on, what their steam ID is, and what their session token is. The Javascript classes provided mirror the classes that the Steamworks API provides.
 
+> **Note**
+> Please use the branch corresponding to your version of DIRECT.
+
 ### Contents
 
 * steamworks - Steamworks libraries and headers
