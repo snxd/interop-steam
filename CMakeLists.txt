@@ -5,18 +5,18 @@ add_subdirectory(lib/interop)
 
 set(STEAM_SRCS
     interop.c
-    steamapi.h
     steamapi.cc
-    steamapps.h
+    steamapi.h
     steamapps.cc
-    steamfriends.h
+    steamapps.h
     steamfriends.cc
-    steamuser.h
+    steamfriends.h
     steamuser.cc
-    steamuserstats.h
+    steamuser.h
     steamuserstats.cc
-    steamutils.h
-    steamutils.cc)
+    steamuserstats.h
+    steamutils.cc
+    steamutils.h)
 if(WIN32)
     list(APPEND STEAM_SRCS
         windows/resource.h
