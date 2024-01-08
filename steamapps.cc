@@ -133,7 +133,7 @@ bool SteamApps_Invoke(void *SteamAppsContext, echandle MethodDictionaryHandle, e
         IDictionary_AddString(ReturnDictionaryHandle, "returnValue", InstallDir, &ItemHandle);
     } else if (strcmp(Method, "getAppBuildId") == 0) {
         ReturnValue = SteamApps_GetAppBuildId();
-        RetVal = IDictionary_AddInt32(ReturnDictionaryHandle, "returnValue", ReturnValue, &ItemHandle);
+        RetVal = IDictionary_AddInt(ReturnDictionaryHandle, "returnValue", ReturnValue, &ItemHandle);
     } else if (strcmp(Method, "isDLCInstalled") == 0) {
         RetVal = IDictionary_GetInt32ByKey(MethodDictionaryHandle, "id", &Value32);
         if (RetVal == true)
@@ -141,7 +141,7 @@ bool SteamApps_Invoke(void *SteamAppsContext, echandle MethodDictionaryHandle, e
         IDictionary_AddBoolean(ReturnDictionaryHandle, "returnValue", ReturnValue, &ItemHandle);
     } else if (strcmp(Method, "getDLCCount") == 0) {
         ReturnValue = SteamApps_GetDLCCount();
-        RetVal = IDictionary_AddInt32(ReturnDictionaryHandle, "returnValue", ReturnValue, &ItemHandle);
+        RetVal = IDictionary_AddInt(ReturnDictionaryHandle, "returnValue", ReturnValue, &ItemHandle);
     } else if (strcmp(Method, "getDLCData") == 0) {
         char Name[320] = {0};
         int32_t AppId = 0;
@@ -154,7 +154,7 @@ bool SteamApps_Invoke(void *SteamAppsContext, echandle MethodDictionaryHandle, e
 
             IDictionary_AddDictionary(ReturnDictionaryHandle, "returnValue", &ReturnObjDictHandle, &ItemHandle);
 
-            IDictionary_AddInt32(ReturnObjDictHandle, "id", AppId, &ItemHandle);
+            IDictionary_AddInt(ReturnObjDictHandle, "id", AppId, &ItemHandle);
             IDictionary_AddBoolean(ReturnObjDictHandle, "available", Available, &ItemHandle);
             IDictionary_AddString(ReturnObjDictHandle, "name", Name, &ItemHandle);
         }

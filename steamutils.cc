@@ -145,26 +145,26 @@ bool SteamUtils_Invoke(void *SteamUtilsContext, echandle MethodDictionaryHandle,
         RetVal = IDictionary_AddBoolean(ReturnDictionaryHandle, "returnValue", ReturnValue, &ItemHandle);
     } else if (strcmp(Method, "getServerRealTime") == 0) {
         RetVal = SteamUtils_GetServerRealTime(&Value64);
-        IDictionary_AddInt64(ReturnDictionaryHandle, "returnValue", Value64, &ItemHandle);
+        IDictionary_AddInt(ReturnDictionaryHandle, "returnValue", Value64, &ItemHandle);
     } else if (strcmp(Method, "getIPCountry") == 0) {
         RetVal = SteamUtils_GetIPCountry(Value, sizeof(Value));
         IDictionary_AddString(ReturnDictionaryHandle, "returnValue", Value, &ItemHandle);
     } else if (strcmp(Method, "getCurrentBatteryPower") == 0) {
         RetVal = SteamUtils_GetCurrentBatteryPower(&Value32);
-        IDictionary_AddInt32(ReturnDictionaryHandle, "returnValue", Value32, &ItemHandle);
+        IDictionary_AddInt(ReturnDictionaryHandle, "returnValue", Value32, &ItemHandle);
     } else if (strcmp(Method, "getAppID") == 0) {
         RetVal = SteamUtils_GetAppID(&Value32);
-        IDictionary_AddInt32(ReturnDictionaryHandle, "returnValue", Value32, &ItemHandle);
+        IDictionary_AddInt(ReturnDictionaryHandle, "returnValue", Value32, &ItemHandle);
     } else if (strcmp(Method, "getImageWidth") == 0) {
         RetVal = IDictionary_GetInt32ByKey(MethodDictionaryHandle, "index", &Value32);
         if (RetVal == true)
             RetVal = SteamUtils_GetImageWidth(Value32, &Value32);
-        IDictionary_AddInt32(ReturnDictionaryHandle, "returnValue", Value32, &ItemHandle);
+        IDictionary_AddInt(ReturnDictionaryHandle, "returnValue", Value32, &ItemHandle);
     } else if (strcmp(Method, "getImageHeight") == 0) {
         RetVal = IDictionary_GetInt32ByKey(MethodDictionaryHandle, "index", &Value32);
         if (RetVal == true)
             RetVal = SteamUtils_GetImageHeight(Value32, &Value32);
-        IDictionary_AddInt32(ReturnDictionaryHandle, "returnValue", Value32, &ItemHandle);
+        IDictionary_AddInt(ReturnDictionaryHandle, "returnValue", Value32, &ItemHandle);
     } else if (strcmp(Method, "getImageRGBA") == 0) {
         RetVal = IDictionary_GetInt32ByKey(MethodDictionaryHandle, "index", &Value32);
         if (RetVal == true) {

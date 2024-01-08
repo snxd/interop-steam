@@ -196,10 +196,10 @@ bool SteamUserStats_Invoke(void *SteamUserStatsContext, echandle MethodDictionar
 
     if (strcmp(Method, "getNumberOfCurrentPlayers") == 0) {
         Value64 = SteamUserStats_GetNumberOfCurrentPlayers();
-        RetVal = IDictionary_AddInt64(ReturnDictionaryHandle, "returnValue", Value64, &ItemHandle);
+        RetVal = IDictionary_AddInt(ReturnDictionaryHandle, "returnValue", Value64, &ItemHandle);
     } else if (strcmp(Method, "getNumberOfAchievements") == 0) {
         RetVal = SteamUserStats_GetNumberOfAchievements(&Value32);
-        IDictionary_AddInt64(ReturnDictionaryHandle, "returnValue", Value32, &ItemHandle);
+        IDictionary_AddInt(ReturnDictionaryHandle, "returnValue", Value32, &ItemHandle);
     } else if (strcmp(Method, "getAchievement") == 0) {
         RetVal = IDictionary_GetStringPtrByKey(MethodDictionaryHandle, "name", &ValueString);
         if (RetVal == true)
@@ -216,7 +216,7 @@ bool SteamUserStats_Invoke(void *SteamUserStatsContext, echandle MethodDictionar
         RetVal = IDictionary_GetStringPtrByKey(MethodDictionaryHandle, "name", &ValueString);
         if (RetVal == true)
             RetVal = SteamUserStats_GetAchievementIcon(ValueString, &ImageIndex);
-        IDictionary_AddInt32(ReturnDictionaryHandle, "returnValue", ImageIndex, &ItemHandle);
+        IDictionary_AddInt(ReturnDictionaryHandle, "returnValue", ImageIndex, &ItemHandle);
     } else if (strcmp(Method, "getAchievementDisplayAttribute") == 0) {
         const char *KeyString = NULL;
         const char *AttributeValue = "";
@@ -250,7 +250,7 @@ bool SteamUserStats_Invoke(void *SteamUserStatsContext, echandle MethodDictionar
         RetVal = IDictionary_GetStringPtrByKey(MethodDictionaryHandle, "name", &ValueString);
         if (RetVal == true)
             RetVal = SteamUserStats_GetAchievementAchievedPercent(ValueString, &ValueFloat32);
-        IDictionary_AddFloat64(ReturnDictionaryHandle, "returnValue", ValueFloat32, &ItemHandle);
+        IDictionary_AddFloat(ReturnDictionaryHandle, "returnValue", ValueFloat32, &ItemHandle);
     } else if (strcmp(Method, "requestUserStats") == 0) {
         int32 ImageIndex = 0;
         RetVal = IDictionary_GetStringPtrByKey(MethodDictionaryHandle, "steamId", &ValueString);
