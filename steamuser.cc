@@ -155,7 +155,7 @@ bool SteamUser_Invoke(void *SteamUserContext, echandle MethodDictionaryHandle, e
         IDictionary_AddString(ReturnDictionaryHandle, "returnValue", Value64String, &ItemHandle);
     } else if (strcmp(Method, "getAuthSessionTicket") == 0) {
         SteamUser_GetAuthSessionTicket(&Value32);
-        RetVal = IDictionary_AddInt32(ReturnDictionaryHandle, "returnValue", Value32, &ItemHandle);
+        RetVal = IDictionary_AddInt(ReturnDictionaryHandle, "returnValue", Value32, &ItemHandle);
     } else if (strcmp(Method, "cancelAuthTicket") == 0) {
         ReturnValue = SteamUser_CancelAuthTicket();
         RetVal = IDictionary_AddBoolean(ReturnDictionaryHandle, "returnValue", ReturnValue, &ItemHandle);
@@ -179,7 +179,7 @@ bool SteamUser_Invoke(void *SteamUserContext, echandle MethodDictionaryHandle, e
         RetVal = IDictionary_AddBoolean(ReturnDictionaryHandle, "returnValue", ReturnValue, &ItemHandle);
     } else if (strcmp(Method, "getPlayerSteamLevel") == 0) {
         RetVal = SteamUser_GetPlayerSteamLevel(&Value32);
-        IDictionary_AddInt32(ReturnDictionaryHandle, "returnValue", Value32, &ItemHandle);
+        IDictionary_AddInt(ReturnDictionaryHandle, "returnValue", Value32, &ItemHandle);
     } else if (strcmp(Method, "startVoiceRecording") == 0) {
         ReturnValue = SteamUser_StartVoiceRecording();
         RetVal = IDictionary_AddBoolean(ReturnDictionaryHandle, "returnValue", ReturnValue, &ItemHandle);
