@@ -107,28 +107,28 @@ bool SteamApps_Invoke(void *SteamAppsContext, echandle MethodDictionaryHandle, e
     // EVERYTHING is marshaled in AND out as a JSON string, use any type supported by JSON and
     // it should marshal ok.
 
-    echandle ItemHandle = NULL;
+    echandle ItemHandle = nullptr;
     bool RetVal = false;
     int32_t ReturnValue = false;
     int32_t Value32 = 0;
     bool ValueBool = false;
-    const char *Method = NULL;
-    char *ValueString = NULL;
+    const char *Method = nullptr;
+    char *ValueString = nullptr;
 
-    if (SteamAPI_IsInitialized() == false)
+    if (!SteamAPI_IsInitialized())
         return false;
-    if (IDictionary_GetStringPtrByKey(MethodDictionaryHandle, "method", &Method) == false)
+    if (!IDictionary_GetStringPtrByKey(MethodDictionaryHandle, "method", &Method))
         return false;
 
     if (strcmp(Method, "isAppInstalled") == 0) {
         RetVal = IDictionary_GetInt32ByKey(MethodDictionaryHandle, "id", &Value32);
-        if (RetVal == true)
+        if (RetVal)
             ReturnValue = SteamApps_IsAppInstalled(Value32);
         IDictionary_AddBoolean(ReturnDictionaryHandle, "returnValue", ReturnValue, &ItemHandle);
     } else if (strcmp(Method, "getAppInstallDir") == 0) {
         char InstallDir[320] = {0};
         RetVal = IDictionary_GetInt32ByKey(MethodDictionaryHandle, "id", &Value32);
-        if (RetVal == true)
+        if (RetVal)
             ReturnValue = SteamApps_GetAppInstallDir(Value32, InstallDir, sizeof(InstallDir));
         IDictionary_AddString(ReturnDictionaryHandle, "returnValue", InstallDir, &ItemHandle);
     } else if (strcmp(Method, "getAppBuildId") == 0) {
@@ -136,21 +136,21 @@ bool SteamApps_Invoke(void *SteamAppsContext, echandle MethodDictionaryHandle, e
         RetVal = IDictionary_AddInt(ReturnDictionaryHandle, "returnValue", ReturnValue, &ItemHandle);
     } else if (strcmp(Method, "isDLCInstalled") == 0) {
         RetVal = IDictionary_GetInt32ByKey(MethodDictionaryHandle, "id", &Value32);
-        if (RetVal == true)
+        if (RetVal)
             ReturnValue = SteamApps_IsDLCInstalled(Value32);
         IDictionary_AddBoolean(ReturnDictionaryHandle, "returnValue", ReturnValue, &ItemHandle);
     } else if (strcmp(Method, "getDLCCount") == 0) {
         ReturnValue = SteamApps_GetDLCCount();
         RetVal = IDictionary_AddInt(ReturnDictionaryHandle, "returnValue", ReturnValue, &ItemHandle);
     } else if (strcmp(Method, "getDLCData") == 0) {
-        char Name[320] = {0};
+        char Name[320]{};
         int32_t AppId = 0;
         int32_t Available = false;
         RetVal = IDictionary_GetInt32ByKey(MethodDictionaryHandle, "index", &Value32);
-        if (RetVal == true)
+        if (RetVal)
             RetVal = SteamApps_GetDLCData(Value32, &AppId, &Available, Name, sizeof(Name));
-        if (RetVal == true) {
-            echandle ReturnObjDictHandle = NULL;
+        if (RetVal) {
+            echandle ReturnObjDictHandle = nullptr;
 
             IDictionary_AddDictionary(ReturnDictionaryHandle, "returnValue", &ReturnObjDictHandle, &ItemHandle);
 
@@ -162,12 +162,12 @@ bool SteamApps_Invoke(void *SteamAppsContext, echandle MethodDictionaryHandle, e
             RetVal = IDictionary_AddNull(ReturnDictionaryHandle, "returnValue", &ItemHandle);
     } else if (strcmp(Method, "installDLC") == 0) {
         RetVal = IDictionary_GetInt32ByKey(MethodDictionaryHandle, "id", &Value32);
-        if (RetVal == true)
+        if (RetVal)
             ReturnValue = SteamApps_InstallDLC(Value32);
         IDictionary_AddBoolean(ReturnDictionaryHandle, "returnValue", ReturnValue, &ItemHandle);
     } else if (strcmp(Method, "uninstallDLC") == 0) {
         RetVal = IDictionary_GetInt32ByKey(MethodDictionaryHandle, "id", &Value32);
-        if (RetVal == true)
+        if (RetVal)
             ReturnValue = SteamApps_UninstallDLC(Value32);
         IDictionary_AddBoolean(ReturnDictionaryHandle, "returnValue", ReturnValue, &ItemHandle);
     } else if (strcmp(Method, "isVACBanned") == 0) {
@@ -191,7 +191,7 @@ bool SteamApps_Invoke(void *SteamAppsContext, echandle MethodDictionaryHandle, e
         RetVal = IDictionary_AddString(ReturnDictionaryHandle, "returnValue", Name, &ItemHandle);
     } else if (strcmp(Method, "markContentCorrupt") == 0) {
         RetVal = IDictionary_GetBooleanByKey(MethodDictionaryHandle, "missingFilesOnly", &ValueBool);
-        if (RetVal == true)
+        if (RetVal)
             ReturnValue = SteamApps_MarkContentCorrupt(ValueBool);
         IDictionary_AddBoolean(ReturnDictionaryHandle, "returnValue", ReturnValue, &ItemHandle);
     }
