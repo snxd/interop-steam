@@ -74,8 +74,8 @@ cmake --build .
 
 In the dev tools you can see the information being retrieved from the Steam client using the Steamworks API. The source code that prints all the details to the console can be found in _steamtest.js_.
 
-![image](https://gitlab.com/snxd/interop/steam/uploads/08224347b79a0a6f5d5e109ce2b102e1/image.png)
+![image](screenshots/console-ok.png)
 
 If a canvas element with an id of canvas is present in the html it will draw the avatars for all the friends.
 
-![image](https://gitlab.com/snxd/interop/steam/uploads/63427911682f15e167244f61b7275c28/image.png)
+![image](screenshots/friendslist.png)
