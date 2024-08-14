@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 3.15)
 cmake_policy(SET CMP0015 NEW)
 
 include_directories(.)
@@ -58,11 +58,6 @@ include_directories(${STEAMWORKS_INCLUDE_DIR})
 source_group("Steamworks" FILES ${STEAMWORKS_HEADERS})
 
 if(WIN32)
-    set(CMAKE_C_FLAGS_DEBUG "/MTd")
-    set(CMAKE_C_FLAGS_RELEASE "/MT")
-    set(CMAKE_C_FLAGS_MINSIZEREL "/MT")
-    set(CMAKE_C_FLAGS_RELWITHDEBINFO "/MT")
-
     set(CMAKE_SHARED_LINKER_FLAGS
         "${CMAKE_MODULE_LINKER_FLAGS} \"/DEF:${CMAKE_CURRENT_SOURCE_DIR}/windows/steam.def\"")
 elseif(APPLE)

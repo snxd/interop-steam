@@ -1,4 +1,4 @@
-## Steam Interop Example for DIRECT 6.1
+## Steam Interop Example for DIRECT 6.2
 
 The steam interop example shows how to get information from the Steamworks API. It retrieves information such as whether or not the user is logged on, what their steam ID is, and what their session token is. The Javascript classes provided mirror the classes that the Steamworks API provides.
 
@@ -14,7 +14,7 @@ The steam interop example shows how to get information from the Steamworks API. 
 
 ### Requirements
 
-* CMake 2.8
+* CMake 3.15
 
 ### Build Instructions
 
