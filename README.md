@@ -33,7 +33,7 @@ cmake -S . -B build
 cmake --build build --config Debug
 ```
 
-The target architecture of the shared library must match the architecture of the DIRECT client you are using. For example, if you are using host.exe for 32-bit Windows, then you must configure for x86 by using CMake argument -A Win32. If configuring on Windows, it is recommended that you statically link against MSVC runtime using `-D CMAKE_MSVC_RUNTIME_LIBRARY=MultiThreaded` to prevent the user from having to install the Visual C++ runtime separately.
+The target architecture of the shared library must match the architecture of the DIRECT client you are using. For example, if you are using host.exe for 32-bit Windows, then you must configure for x86 by using CMake argument -A Win32. If configuring on Windows, it is recommended that you statically link against MSVC runtime using `-D CMAKE_MSVC_RUNTIME_LIBRARY=MultiThreaded` to prevent the user from having to install the Visual C++ runtime separately. To build on macOS, using Xcode, supply the `-G Xcode` argument.
 
 ### Setup Instructions
 
@@ -44,17 +44,22 @@ First copy the interop the SteamWorks shared libraries to the directory where yo
 If you intend to use the interop with-in JavaScript use the following steps:
 
 1. Copy all of the javascript source files from the `js` directory to a directory in your skin called `src/interop`.
-2. Load the example code and interop using `app.loadInterop`:
+2. Load the example code and interop in `/src/App.jsx` using `app.loadInterop`:
     ```js
-    require("./interop/SteamExample");
+    import "./interop/SteamExample.js";
 
     const steamPath = app.expandString("{moduleAppDirectory}{libraryPrefix}steam.{libraryExtension}");
     app.loadInterop("steam", steamPath);
     ```
-3. Modify app.yaml and set `cef.enabled: true`
-4. Add the following html element which will display the friends list:
+3. Call `app.unloadInterop` before `skinWindow.close()` in `src/App.jsx`:
+    ```js
+    app.unloadInterop("steam", steamPath);
+    ``` 
+4. Modify app.yaml and set `cef.enabled: true`
+5. Add the following React component to your React app which will draw the friends list in a canvas element:
     ```html
-    <canvas width="300" height="600" id="friendsList"/>
+    import FriendsList from "../interop/FriendsList.jsx";
+    <FriendsList/>
     ```
-5. Run `host` application with `--devtools --disablesecurity` (during production if you sign the dll you won't need this).
-6. If it integrated properly, you will see the following lines in console window. <br/><img src="screenshots/console-ok.png"/><br/>And you will see the Steam friends list populated. <br/><img src="screenshots/friendslist.png"/> <br/>If you do not have steam running you will see a warning in the console window. <br/><img src="screenshots/console-fail.png"/>
+6. Run `host` application with `--devtools --disablesecurity` (during production if you sign the dll you won't need this).
+7. If it integrated properly, you will see the following lines in console window. <br/><img src="screenshots/console-ok.png"/><br/>And you will see the Steam friends list populated. <br/><img src="screenshots/friendslist.png"/> <br/>If you do not have steam running you will see a warning in the console window. <br/><img src="screenshots/console-fail.png"/>
