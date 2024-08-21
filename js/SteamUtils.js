@@ -2,166 +2,133 @@
  *  @class Steam utils
  *  @brief
  */
+import {EventEmitter} from "events";
 
 import {interop} from "../direct/Host";
 
-// Node JS support
-var EventEmitter;
-if (typeof (require) !== "undefined") {
-  if (typeof (EventEmitter) == "undefined") {
-    EventEmitter = require("events");
+class SteamUtils extends EventEmitter {
+  constructor(instanceId) {
+    super();
+    this.instanceId = instanceId;
+    this.refCount = 1;
+  }
+
+  addRef() {
+    this.refCount++;
+  }
+  release() {
+    if (--this.refCount === 0) {
+      this.emit("release");
+
+      return interop.releaseInstance(this.instanceId);
+    }
+  }
+  invoke(method, methodArgs) {
+    return interop.invoke(this.instanceId, method, methodArgs);
+  }
+  /**
+   * Gets if steam overlay is enabled
+   * @returns bool
+   */
+  isOverlayEnabled() {
+    return this.invoke("isOverlayEnabled");
+  }
+  /**
+   * Gets if steam is running in VR mode
+   * @returns bool
+   */
+  isSteamRunningInVR() {
+    return this.invoke("isSteamRunningInVR");
+  }
+  /**
+   * Gets if steam is running in big picture mode
+   * @returns bool
+   */
+  isSteamInBigPictureMode() {
+    return this.invoke("isSteamInBigPictureMode");
+  }
+  /**
+   * Gets if steam VR headset has streaming enabled
+   * @returns bool
+   */
+  isVRHeadsetStreamingEnabled() {
+    return this.invoke("isVRHeadsetStreamingEnabled");
+  }
+  /**
+   * Gets the steam server unix time
+   * @returns int
+   */
+  getServerRealTime() {
+    return this.invoke("getServerRealTime");
+  }
+  /**
+   * Gets the IP country for the current user
+   * @returns string
+   */
+  getIPCountry() {
+    return this.invoke("getIPCountry");
+  }
+  /**
+   * Gets the current battery power level (0-255)
+   * @returns int
+   */
+  getCurrentBatteryPower() {
+    return this.invoke("getCurrentBatteryPower");
+  }
+  /**
+   * Gets the app id for the current process
+   * @returns int
+   */
+  getAppID() {
+    return this.invoke("getAppID");
+  }
+  /**
+   * Gets the image's width
+   * @returns int
+   */
+  getImageWidth(index) {
+    return this.invoke("getImageWidth", {index});
+  }
+  /**
+   * Gets the image's height
+   * @returns int
+   */
+  getImageHeight(index) {
+    return this.invoke("getImageHeight", {index});
+  }
+  /**
+   * Gets the base64 rgba buffer
+   * @returns string
+   */
+  getImageRGBA(index) {
+    return this.invoke("getImageRGBA", {index});
+  }
+  /**
+   * Starts the VR dashboard for steam
+   * @returns int
+   */
+  startVRDashboard() {
+    return this.invoke("startVRDashboard");
   }
 }
 
-function SteamUtils(instanceId) {
-  this.instanceId = instanceId;
-}
-
-SteamUtils.prototype = Object.create(EventEmitter.prototype, {
-  constructor: {value: SteamUtils, enumerable: false, writable: true, configurable: true}
-});
-
-SteamUtils.prototype.release = function() {
-  this.emit("finalize");
-  this.releaseInstance();
-};
-SteamUtils.prototype.invoke = function(methodBinding) {
-  return interop.invoke(this.instanceId, methodBinding);
-};
-SteamUtils.prototype.releaseInstance = function() {
-  interop.releaseInstance(this.instanceId);
-};
-
-/**
- * Gets if steam overlay is enabled
- * @returns bool
- */
-SteamUtils.prototype.isOverlayEnabled = function () {
-  return this.invoke({
-    "method": "isOverlayEnabled"
-  });
-};
-/**
- * Gets if steam is running in VR mode
- * @returns bool
- */
-SteamUtils.prototype.isSteamRunningInVR = function () {
-  return this.invoke({
-    "method": "isSteamRunningInVR"
-  });
-};
-/**
- * Gets if steam is running in big picture mode
- * @returns bool
- */
-SteamUtils.prototype.isSteamInBigPictureMode = function () {
-  return this.invoke({
-    "method": "isSteamInBigPictureMode"
-  });
-};
-/**
- * Gets if steam VR headset has streaming enabled
- * @returns bool
- */
-SteamUtils.prototype.isVRHeadsetStreamingEnabled = function () {
-  return this.invoke({
-    "method": "isVRHeadsetStreamingEnabled"
-  });
-};
-/**
- * Gets the steam server unix time
- * @returns int
- */
-SteamUtils.prototype.getServerRealTime = function () {
-  return this.invoke({
-    "method": "getServerRealTime"
-  });
-};
-/**
- * Gets the IP country for the current user
- * @returns string
- */
-SteamUtils.prototype.getIPCountry = function () {
-  return this.invoke({
-    "method": "getIPCountry"
-  });
-};
-/**
- * Gets the current battery power level (0-255)
- * @returns int
- */
-SteamUtils.prototype.getCurrentBatteryPower = function () {
-  return this.invoke({
-    "method": "getCurrentBatteryPower"
-  });
-};
-/**
- * Gets the app id for the current process
- * @returns int
- */
-SteamUtils.prototype.getAppID = function () {
-  return this.invoke({
-    "method": "getAppID"
-  });
-};
-/**
- * Gets the image's width
- * @returns int
- */
-SteamUtils.prototype.getImageWidth = function (index) {
-  return this.invoke({
-    "method": "getImageWidth",
-    "index": index
-  });
-};
-/**
- * Gets the image's height
- * @returns int
- */
-SteamUtils.prototype.getImageHeight = function (index) {
-  return this.invoke({
-    "method": "getImageHeight",
-    "index": index
-  });
-};
-/**
- * Gets the base64 rgba buffer
- * @returns string
- */
-SteamUtils.prototype.getImageRGBA = function (index) {
-  return this.invoke({
-    "method": "getImageRGBA",
-    "index": index
-  });
-};
-/**
- * Starts the VR dashboard for steam
- * @returns int
- */
-SteamUtils.prototype.startVRDashboard = function (index) {
-  return this.invoke({
-    "method": "startVRDashboard"
-  });
-};
-
-var createSteamUtils = function(instanceId) {
-  return interop.createInstance("Steam.Utils", SteamUtils, instanceId);
-};
+export const createSteamUtils = (instanceId) =>
+  interop.createInstance("Steam.Utils", SteamUtils, instanceId);
 
 /** Global instance of SteamUtils
  *  @type SteamUtils
  */
 var steamUtils;
-interop.on("load", function(info) {
+interop.on("load", (info) => {
   if (info.name === "steam") {
     steamUtils = createSteamUtils();
   }
 });
-interop.on("unload", function(info) {
+interop.on("unload", (info) =>{
   if (info.name === "steam") {
     steamUtils.release();
     steamUtils = null;
   }
 });
 
-export {createSteamUtils, steamUtils};
+export {steamUtils};

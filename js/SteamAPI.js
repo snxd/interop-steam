@@ -2,100 +2,82 @@
  *  @class Steam API
  *  @brief
  */
+import {EventEmitter} from "events";
 
 import {interop} from "../direct/Host";
 
-// Node JS support
-var EventEmitter;
-if (typeof (require) !== "undefined") {
-  if (typeof (EventEmitter) == "undefined") {
-    EventEmitter = require("events");
+class SteamAPI extends EventEmitter {
+  constructor(instanceId) {
+    super();
+    this.instanceId = instanceId;
+    this.refCount = 1;
+  }
+
+  addRef() {
+    this.refCount++;
+  }
+  release() {
+    if (--this.refCount === 0) {
+      this.emit("release");
+
+      return interop.releaseInstance(this.instanceId);
+    }
+  }
+  invoke(method, methodArgs) {
+    return interop.invoke(this.instanceId, method, methodArgs);
+  }
+  /**
+   * Initialize steam api
+   */
+  initialize() {
+    return this.invoke("initialize");
+  }
+  /**
+   * Gets whether or not steam is running
+   */
+  isSteamRunning() {
+    return this.invoke("isSteamRunning");
+  }
+  /**
+   * Gets whether or not steam api is initialized
+   */
+  isInitialized() {
+    return this.invoke("isInitialized");
+  }
+  /**
+   * Sets the current app id
+   */
+  setAppId(id) {
+    return this.invoke("setAppId", {id});
+  }
+  /**
+   * Restarts the app if not started from steam
+   */
+  restartAppIfNecessary(id) {
+    return this.invoke("restartAppIfNecessary", {id});
   }
 }
-
-function SteamAPI(instanceId) {
-  this.instanceId = instanceId;
-}
-
-SteamAPI.prototype = Object.create(EventEmitter.prototype, {
-  constructor: {value: SteamAPI, enumerable: false, writable: true, configurable: true}
-});
-
-SteamAPI.prototype.release = function() {
-  this.emit("finalize");
-  this.releaseInstance();
-};
-SteamAPI.prototype.invoke = function(methodBinding) {
-  return interop.invoke(this.instanceId, methodBinding);
-};
-SteamAPI.prototype.releaseInstance = function() {
-  interop.releaseInstance(this.instanceId);
-};
-
-/**
- * Initialize steam api
- */
-SteamAPI.prototype.initialize = function () {
-  return this.invoke({
-    "method": "initialize"
-  });
-};
-/**
- * Gets whether or not steam is running
- */
-SteamAPI.prototype.isSteamRunning = function () {
-  return this.invoke({
-    "method": "isSteamRunning"
-  });
-};
-/**
- * Gets whether or not steam api is initialized
- */
-SteamAPI.prototype.isInitialized = function () {
-  return this.invoke({
-    "method": "isInitialized"
-  });
-};
-/**
- * Sets the current app id
- */
-SteamAPI.prototype.setAppId = function (id) {
-  return this.invoke({
-    "method": "setAppId",
-    "id": id
-  });
-};
-/**
- * Restarts the app if not started from steam
- */
-SteamAPI.prototype.restartAppIfNecessary = function (id) {
-  return this.invoke({
-    "method": "restartAppIfNecessary",
-    "id": id
-  });
-};
 
 /** Global instance of SteamAPI
  *  @type SteamAPI
  */
-var createSteamAPI = function() {
-  return interop.createInstance("Steam.API", SteamAPI);
-};
+export const createSteamAPI = (instanceId) =>
+  interop.createInstance("Steam.API", SteamAPI, instanceId);
 
 /** Global instance of SteamAPI created when interop loaded
  *  @type SteamAPI
  */
 var steamAPI;
-interop.on("load", function(info) {
+interop.on("load", (info) => {
   if (info.name === "steam") {
     steamAPI = createSteamAPI();
   }
 });
-interop.on("unload", function(info) {
+interop.on("unload", (info) => {
   if (info.name === "steam") {
     steamAPI.release();
     steamAPI = null;
   }
 });
 
-export{createSteamAPI, steamAPI};
+export {steamAPI};

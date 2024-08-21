@@ -2,135 +2,106 @@
  *  @class Steam friends
  *  @brief
  */
+import {EventEmitter} from "events";
 
 import {interop} from "../direct/Host";
 
-// Node JS support
-var EventEmitter;
-if (typeof (require) !== "undefined") {
-  if (typeof (EventEmitter) == "undefined") {
-    EventEmitter = require("events");
+class SteamFriends extends EventEmitter {
+  constructor(instanceId) {
+    super();
+    this.instanceId = instanceId;
+    this.refCount = 1;
+  }
+
+  addRef() {
+    this.refCount++;
+  }
+  release() {
+    if (--this.refCount === 0) {
+      this.emit("release");
+
+      return interop.releaseInstance(this.instanceId);
+    }
+  }
+  invoke(method, methodArgs) {
+    return interop.invoke(this.instanceId, method, methodArgs);
+  }
+  /**
+   * Gets the number of friends
+   * @returns integer
+   */
+  getFriendCount() {
+    return this.invoke("getFriendCount");
+  }
+  /**
+   * Gets the steam id of a friend by index
+   * @returns integer
+   */
+  getFriendByIndex(index) {
+    return this.invoke("getFriendByIndex", {index});
+  }
+  /**
+   * Gets the persona name of a friend by steam id
+   * @returns integer
+   */
+  getFriendPersonaName(steamId) {
+    return this.invoke("getFriendPersonaName", {steamId});
+  }
+  /**
+   * Gets the persona state of a friend by steam id
+   * @returns string
+   */
+  getFriendPersonaState(steamId) {
+    return this.invoke("getFriendPersonaState", {steamId});
+  }
+  /**
+   * Gets the relationship of a friend by steam id
+   * @returns string
+   */
+  getFriendRelationship(steamId) {
+    return this.invoke("getFriendRelationship", {steamId});
+  }
+  /**
+   * Gets the image index of the small friend avatar
+   * @returns string
+   */
+  getSmallFriendAvatar(steamId) {
+    return this.invoke("getSmallFriendAvatar", {steamId});
+  }
+  /**
+   * Gets the image index of the medium friend avatar
+   * @returns string
+   */
+  getMediumFriendAvatar(steamId) {
+    return this.invoke("getMediumFriendAvatar", {steamId});
+  }
+  /**
+   * Gets the image index of the large friend avatar
+   * @returns string
+   */
+  getLargeFriendAvatar(steamId) {
+    return this.invoke("getLargeFriendAvatar", {steamId});
+  }
+
+  activateGameOverlayToWebPage(url) {
+    return this.invoke("activateGameOverlayToWebPage", {url});
   }
 }
 
-function SteamFriends(instanceId) {
-  this.instanceId = instanceId;
-}
+export const createSteamFriends = (instanceId) =>
+  interop.createInstance("Steam.Friends", SteamFriends, instanceId);
 
-SteamFriends.prototype = new EventEmitter();
-
-SteamFriends.prototype.release = function() {
-  this.emit("finalize");
-  this.releaseInstance();
-};
-SteamFriends.prototype.invoke = function(methodBinding) {
-  return interop.invoke(this.instanceId, methodBinding);
-};
-SteamFriends.prototype.releaseInstance = function() {
-  interop.releaseInstance(this.instanceId);
-};
-
-/**
- * Gets the number of friends
- * @returns integer
- */
-SteamFriends.prototype.getFriendCount = function () {
-  return this.invoke({
-    "method": "getFriendCount"
-  });
-};
-/**
- * Gets the steam id of a friend by index
- * @returns integer
- */
-SteamFriends.prototype.getFriendByIndex = function (index) {
-  return this.invoke({
-    "method": "getFriendByIndex",
-    "index": index
-  });
-};
-/**
- * Gets the persona name of a friend by steam id
- * @returns integer
- */
-SteamFriends.prototype.getFriendPersonaName = function (steamId) {
-  return this.invoke({
-    "method": "getFriendPersonaName",
-    "steamId": steamId
-  });
-};
-/**
- * Gets the persona state of a friend by steam id
- * @returns string
- */
-SteamFriends.prototype.getFriendPersonaState = function (steamId) {
-  return this.invoke({
-    "method": "getFriendPersonaState",
-    "steamId": steamId
-  });
-};
-/**
- * Gets the relationship of a friend by steam id
- * @returns string
- */
-SteamFriends.prototype.getFriendRelationship = function (steamId) {
-  return this.invoke({
-    "method": "getFriendRelationship",
-    "steamId": steamId
-  });
-};
-/**
- * Gets the image index of the small friend avatar
- * @returns string
- */
-SteamFriends.prototype.getSmallFriendAvatar = function (steamId) {
-  return this.invoke({
-    "method": "getSmallFriendAvatar",
-    "steamId": steamId
-  });
-};
-/**
- * Gets the image index of the medium friend avatar
- * @returns string
- */
-SteamFriends.prototype.getMediumFriendAvatar = function (steamId) {
-  return this.invoke({
-    "method": "getMediumFriendAvatar",
-    "steamId": steamId
-  });
-};
-/**
- * Gets the image index of the large friend avatar
- * @returns string
- */
-SteamFriends.prototype.getLargeFriendAvatar = function (steamId) {
-  return this.invoke({
-    "method": "getLargeFriendAvatar",
-    "steamId": steamId
-  });
-};
-
-SteamFriends.prototype.activateGameOverlayToWebPage = function (url) {
-  return this.invoke({
-    "method": "activateGameOverlayToWebPage",
-    "url": url
-  });
-};
-
-var createSteamFriends = function (instanceId) {
-  return interop.createInstance("Steam.Friends", SteamFriends, instanceId);
-};
 
 /** Global instance of SteamFriends
  *  @type SteamFriends
  */
 var steamFriends;
-interop.on("load", function(info) {
+interop.on("load", (info) => {
   if (info.name === "steam") {
     steamFriends = createSteamFriends();
   }
 });
-interop.on("unload", function(info) {
+interop.on("unload", (info) => {
   if (info.name === "steam") {
     steamFriends.release();
     steamFriends = null;
@@ -183,7 +154,7 @@ function SteamFriendsPersonaState() {
  *  @type string
  *  @returns stringified name of persona state
  */
-SteamFriendsPersonaState.prototype.nameFromId = function(id, separator) {
+SteamFriendsPersonaState.prototype.nameFromId = (id) => {
   var nameMap = [
     "Offline",
     "Online",
@@ -197,7 +168,7 @@ SteamFriendsPersonaState.prototype.nameFromId = function(id, separator) {
     return nameMap[id];
   }
   return id.toString();
-}
+};
 
 var steamFriendsPersonaState = new SteamFriendsPersonaState();
 
@@ -252,7 +223,7 @@ function SteamFriendsRelationship() {
  *  @type string
  *  @returns stringified name of relationship
  */
-SteamFriendsRelationship.prototype.nameFromId = function(id, separator) {
+SteamFriendsRelationship.prototype.nameFromId = (id) => {
   var nameMap = [
     "None",
     "Blocked",
@@ -267,8 +238,8 @@ SteamFriendsRelationship.prototype.nameFromId = function(id, separator) {
     return nameMap[id];
   }
   return id.toString();
-}
+};
 
 var steamFriendsRelationship = new SteamFriendsRelationship();
 
-export {createSteamFriends, steamFriends, steamFriendsRelationship, steamFriendsPersonaState};
+export {steamFriends, steamFriendsRelationship, steamFriendsPersonaState};

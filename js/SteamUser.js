@@ -2,163 +2,133 @@
  *  @class Steam user
  *  @brief
  */
+import {EventEmitter} from "events";
 
 import {interop} from "../direct/Host";
 
-// Node JS support
-var EventEmitter;
-if (typeof (require) !== "undefined") {
-  if (typeof (EventEmitter) == "undefined") {
-    EventEmitter = require("events");
+class SteamUser extends EventEmitter {
+  constructor(instanceId) {
+    super();
+    this.instanceId = instanceId;
+    this.refCount = 1;
+  }
+
+  addRef() {
+    this.refCount++;
+  }
+  release() {
+    if (--this.refCount === 0) {
+      this.emit("release");
+
+      return interop.releaseInstance(this.instanceId);
+    }
+  }
+  invoke(method, methodArgs) {
+    return interop.invoke(this.instanceId, method, methodArgs);
+  }
+  /**
+   * Checks if the client is logged into steam
+   * @returns bool
+   */
+  isLoggedOn() {
+    return this.invoke("isLoggedOn");
+  }
+  /**
+   * Checks if the client is behind a NAT
+   * @returns bool
+   */
+  isBehindNAT() {
+    return this.invoke("isBehindNAT");
+  }
+  /**
+   * Checks if the user is phone verified
+   * @returns bool
+   */
+  isPhoneVerified() {
+    return this.invoke("isPhoneVerified");
+  }
+  /**
+   * Checks if the user has two factor authentication enabled
+   * @returns bool
+   */
+  isTwoFactorEnabled() {
+    return this.invoke("isTwoFactorEnabled");
+  }
+  /**
+   * Checks if the user's phone is identifying
+   * @returns bool
+   */
+  isPhoneIdentifying() {
+    return this.invoke("isPhoneIdentifying");
+  }
+  /**
+   * Checks if the user's phone requires verification
+   * @returns bool
+   */
+  isPhoneRequiringVerification() {
+    return this.invoke("isPhoneRequiringVerification");
+  }
+  /**
+   * Gets the SteamID for the current player
+   * @returns integer
+   */
+  getSteamId() {
+    return this.invoke("getSteamId");
+  }
+  /**
+   * Gets a session ticket for the current player
+   * @returns integer
+   */
+  getAuthSessionTicket() {
+    return this.invoke("getAuthSessionTicket");
+  }
+  /**
+   * Cancels a session ticket for the current player
+   * @returns bool
+   */
+  cancelSessionTicket() {
+    return this.invoke("cancelAuthTicket");
+  }
+  /**
+   * Gets the user's player steam level
+   * @returns bool
+   */
+  getPlayerSteamLevel() {
+    return this.invoke("getPlayerSteamLevel");
+  }
+  /**
+   * Starts voice recording in steam
+   * @returns bool
+   */
+  startVoiceRecording() {
+    return this.invoke("startVoiceRecording");
+  }
+  /**
+   * Stops voice recording in steam
+   * @returns bool
+   */
+  stopVoiceRecording() {
+    return this.invoke("stopVoiceRecording");
   }
 }
 
-function SteamUser(instanceId) {
-  this.instanceId = instanceId;
-}
-
-SteamUser.prototype = Object.create(EventEmitter.prototype, {
-  constructor: {value: SteamUser, enumerable: false, writable: true, configurable: true}
-});
-
-SteamUser.prototype.release = function() {
-  this.emit("finalize");
-  this.releaseInstance();
-};
-SteamUser.prototype.invoke = function(methodBinding) {
-  return interop.invoke(this.instanceId, methodBinding);
-};
-SteamUser.prototype.releaseInstance = function() {
-  interop.releaseInstance(this.instanceId);
-};
-
-/**
- * Checks if the client is logged into steam
- * @returns bool
- */
-SteamUser.prototype.isLoggedOn = function () {
-  return this.invoke({
-    "method": "isLoggedOn"
-  });
-};
-/**
- * Checks if the client is behind a NAT
- * @returns bool
- */
-SteamUser.prototype.isBehindNAT = function () {
-  return this.invoke({
-    "method": "isBehindNAT"
-  });
-};
-/**
- * Checks if the user is phone verified
- * @returns bool
- */
-SteamUser.prototype.isPhoneVerified = function () {
-  return this.invoke({
-    "method": "isPhoneVerified"
-  });
-};
-/**
- * Checks if the user has two factor authentication enabled
- * @returns bool
- */
-SteamUser.prototype.isTwoFactorEnabled = function () {
-  return this.invoke({
-    "method": "isTwoFactorEnabled"
-  });
-};
-/**
- * Checks if the user's phone is identifying
- * @returns bool
- */
-SteamUser.prototype.isPhoneIdentifying = function () {
-  return this.invoke({
-    "method": "isPhoneIdentifying"
-  });
-};
-/**
- * Checks if the user's phone requires verification
- * @returns bool
- */
-SteamUser.prototype.isPhoneRequiringVerification = function () {
-  return this.invoke({
-    "method": "isPhoneRequiringVerification"
-  });
-};
-/**
- * Gets the SteamID for the current player
- * @returns integer
- */
-SteamUser.prototype.getSteamId = function () {
-  return this.invoke({
-    "method": "getSteamId"
-  });
-};
-/**
- * Gets a session ticket for the current player
- * @returns integer
- */
-SteamUser.prototype.getAuthSessionTicket = function () {
-  return this.invoke({
-    "method": "getAuthSessionTicket"
-  });
-};
-/**
- * Cancels a session ticket for the current player
- * @returns bool
- */
-SteamUser.prototype.cancelSessionTicket = function () {
-  return this.invoke({
-    "method": "cancelAuthTicket"
-  });
-};
-/**
- * Gets the user's player steam level
- * @returns bool
- */
-SteamUser.prototype.getPlayerSteamLevel = function () {
-  return this.invoke({
-    "method": "getPlayerSteamLevel"
-  });
-};
-/**
- * Starts voice recording in steam
- * @returns bool
- */
-SteamUser.prototype.startVoiceRecording = function () {
-  return this.invoke({
-    "method": "startVoiceRecording"
-  });
-};
-/**
- * Stops voice recording in steam
- * @returns bool
- */
-SteamUser.prototype.stopVoiceRecording = function () {
-  return this.invoke({
-    "method": "stopVoiceRecording"
-  });
-};
-
-var createSteamUser = function(instanceId) {
-  return interop.createInstance("Steam.User", SteamUser, instanceId);
-};
+export const createSteamUser = (instanceId) =>
+  interop.createInstance("Steam.User", SteamUser, instanceId);
 
 /** Global instance of SteamUser
  *  @type SteamUser
  */
 var steamUser;
-interop.on("load", function(info) {
+interop.on("load", (info) => {
   if (info.name === "steam") {
     steamUser = createSteamUser();
   }
 });
-interop.on("unload", function(info) {
+interop.on("unload", (info) => {
   if (info.name === "steam") {
     steamUser.release();
     steamUser = null;
   }
 });
 
-export {createSteamUser, steamUser};
+export {steamUser};
