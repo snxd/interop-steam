@@ -24,6 +24,7 @@ jobs:
 
           - name: Build - macOS
             runs-on: macos-latest
+            cmake-args: -G Xcode
 
     steps:
     - name: Install packages (Linux)
