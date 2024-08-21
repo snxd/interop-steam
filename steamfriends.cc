@@ -14,145 +14,109 @@
 /*********************************************************************/
 // Concrete functions
 
-static bool SteamFriends_GetFriendCount(int32_t *FriendCount) {
-    *FriendCount = SteamFriends()->GetFriendCount(k_EFriendFlagAll);  // All
+namespace {
+
+bool GetFriendPersonaName(uint64_t friend_id, char *persona_name, int32_t max_persona_name) {
+    strncpy(persona_name, SteamFriends()->GetFriendPersonaName(CSteamID(static_cast<uint64>(friend_id))),
+            max_persona_name);
+    persona_name[max_persona_name - 1] = 0;
     return true;
 }
 
-static bool SteamFriends_GetFriendByIndex(int32_t Index, uint64_t *FriendId) {
-    *FriendId = SteamFriends()->GetFriendByIndex(Index, k_EFriendFlagAll).ConvertToUint64();  // All
-    return true;
-}
-
-static bool SteamFriends_GetFriendPersonaName(uint64_t FriendId, char *PersonaName, int32_t MaxPersonaName) {
-    strncpy(PersonaName, (char *)SteamFriends()->GetFriendPersonaName(CSteamID((uint64)FriendId)), MaxPersonaName);
-    PersonaName[MaxPersonaName - 1] = 0;
-    return true;
-}
-
-static bool SteamFriends_GetFriendPersonaState(uint64_t FriendId, int32_t *PersonaState) {
-    *PersonaState = SteamFriends()->GetFriendPersonaState(CSteamID((uint64)FriendId));
-    return true;
-}
-
-static bool SteamFriends_GetFriendRelationship(uint64_t FriendId, int32_t *Relationship) {
-    *Relationship = SteamFriends()->GetFriendRelationship(CSteamID((uint64)FriendId));
-    return true;
-}
-
-static bool SteamFriends_GetSmallFriendAvatar(uint64_t FriendId, int32_t *SmallFriendAvatar) {
-    *SmallFriendAvatar = SteamFriends()->GetSmallFriendAvatar(CSteamID((uint64)FriendId));
-    return true;
-}
-
-static bool SteamFriends_GetMediumFriendAvatar(uint64_t FriendId, int32_t *MediumFriendAvatar) {
-    *MediumFriendAvatar = SteamFriends()->GetMediumFriendAvatar(CSteamID((uint64)FriendId));
-    return true;
-}
-
-static bool SteamFriends_GetLargeFriendAvatar(uint64_t FriendId, int32_t *LargeFriendAvatar) {
-    *LargeFriendAvatar = SteamFriends()->GetLargeFriendAvatar(CSteamID((uint64)FriendId));
-    return true;
-}
-
-static bool SteamFriends_ActivateGameOverlayToWebPage(const char *URL) {
-    SteamFriends()->ActivateGameOverlayToWebPage(URL);
-    return true;
-}
+}  // namespace
 
 /*********************************************************************/
 // Interop functions
 
-bool SteamFriends_Process(void *SteamFriendsContext) {
-    // This function is called once per tick and can be used to process simple operations and
-    // thread synchronization.
-    return true;
-}
-
-bool SteamFriends_Invoke(void *SteamFriendsContext, echandle MethodDictionaryHandle, echandle ReturnDictionaryHandle) {
+bool SteamFriends_Invoke(void *handle, echandle method_dictionary_handle, echandle return_dictionary_handle) {
     // EVERYTHING is marshaled in AND out as a JSON string, use any type supported by JSON and
     // it should marshal ok.
 
-    echandle ItemHandle = nullptr;
-    uint64_t Value64 = 0;
-    bool RetVal = false;
-    int32_t ReturnValue = false;
-    int32_t Value32 = 0;
-    const char *Method = nullptr;
-    const char *ValueString = nullptr;
-    char Value64String[120]{};
+    bool ret = true;
+    const char *method = nullptr;
 
     if (!SteamAPI_IsInitialized())
         return false;
-    if (!IDictionary_GetStringPtrByKey(MethodDictionaryHandle, "method", &Method))
+    if (!IDictionary_GetStringPtrByKey(method_dictionary_handle, "method", &method))
         return false;
 
-    if (strcmp(Method, "getFriendCount") == 0) {
-        RetVal = SteamFriends_GetFriendCount(&Value32);
-        IDictionary_AddInt(ReturnDictionaryHandle, "returnValue", Value32, &ItemHandle);
-    } else if (strcmp(Method, "getFriendByIndex") == 0) {
-        RetVal = IDictionary_GetInt32ByKey(MethodDictionaryHandle, "index", &Value32);
-        if (RetVal)
-            SteamFriends_GetFriendByIndex(Value32, (uint64_t *)&Value64);
-        snprintf(Value64String, sizeof(Value64String), "%" PRIu64, (uint64_t)Value64);
-        IDictionary_AddString(ReturnDictionaryHandle, "returnValue", Value64String, &ItemHandle);
-    } else if (strcmp(Method, "getFriendPersonaName") == 0) {
-        char PersonaName[320] = {0};
-        RetVal = IDictionary_GetStringPtrByKey(MethodDictionaryHandle, "steamId", &ValueString);
-        if (RetVal) {
-            Value64 = strtoull(ValueString, nullptr, 10);
-            SteamFriends_GetFriendPersonaName(Value64, PersonaName, sizeof(PersonaName));
+    if (strcmp(method, "getFriendCount") == 0) {
+        const auto count = SteamFriends()->GetFriendCount(k_EFriendFlagAll);
+        IDictionary_AddInt(return_dictionary_handle, "returnValue", count, nullptr);
+    } else if (strcmp(method, "getFriendByIndex") == 0) {
+        int32_t index = 0;
+        uint64_t friend_id = 0;
+        ret = IDictionary_GetInt32ByKey(method_dictionary_handle, "index", &index);
+        if (ret)
+            friend_id = SteamFriends()->GetFriendByIndex(index, k_EFriendFlagAll).ConvertToUint64();
+        char friend_id_string[120]{};
+        snprintf(friend_id_string, sizeof(friend_id_string), "%" PRIu64, static_cast<uint64_t>(friend_id));
+        IDictionary_AddString(return_dictionary_handle, "returnValue", friend_id_string, nullptr);
+    } else if (strcmp(method, "getFriendPersonaName") == 0) {
+        char persona_name[320] = {0};
+        const char *steam_id = nullptr;
+        ret = IDictionary_GetStringPtrByKey(method_dictionary_handle, "steamId", &steam_id);
+        if (ret) {
+            const auto friend_id = strtoull(steam_id, nullptr, 10);
+            GetFriendPersonaName(friend_id, persona_name, sizeof(persona_name));
         }
-        IDictionary_AddString(ReturnDictionaryHandle, "returnValue", PersonaName, &ItemHandle);
-    } else if (strcmp(Method, "getFriendPersonaState") == 0) {
-        int32_t PersonaState = 0;
-        RetVal = IDictionary_GetStringPtrByKey(MethodDictionaryHandle, "steamId", &ValueString);
-        if (RetVal) {
-            Value64 = strtoull(ValueString, nullptr, 10);
-            SteamFriends_GetFriendPersonaState(Value64, &PersonaState);
+        IDictionary_AddString(return_dictionary_handle, "returnValue", persona_name, nullptr);
+    } else if (strcmp(method, "getFriendPersonaState") == 0) {
+        int32_t person_state = 0;
+        const char *steam_id = nullptr;
+        ret = IDictionary_GetStringPtrByKey(method_dictionary_handle, "steamId", &steam_id);
+        if (ret) {
+            const auto friend_id = strtoull(steam_id, nullptr, 10);
+            person_state = SteamFriends()->GetFriendPersonaState(CSteamID(static_cast<uint64>(friend_id)));
         }
-        IDictionary_AddInt(ReturnDictionaryHandle, "returnValue", PersonaState, &ItemHandle);
-    } else if (strcmp(Method, "getFriendRelationship") == 0) {
-        int32_t Relationship = 0;
-        RetVal = IDictionary_GetStringPtrByKey(MethodDictionaryHandle, "steamId", &ValueString);
-        if (RetVal) {
-            Value64 = strtoull(ValueString, nullptr, 10);
-            SteamFriends_GetFriendRelationship(Value64, &Relationship);
+        IDictionary_AddInt(return_dictionary_handle, "returnValue", person_state, nullptr);
+    } else if (strcmp(method, "getFriendRelationship") == 0) {
+        int32_t relationship = 0;
+        const char *steam_id = nullptr;
+        ret = IDictionary_GetStringPtrByKey(method_dictionary_handle, "steamId", &steam_id);
+        if (ret) {
+            const auto friend_id = strtoull(steam_id, nullptr, 10);
+            relationship = SteamFriends()->GetFriendRelationship(CSteamID(static_cast<uint64>(friend_id)));
         }
-        IDictionary_AddInt(ReturnDictionaryHandle, "returnValue", Relationship, &ItemHandle);
-    } else if (strcmp(Method, "getSmallFriendAvatar") == 0) {
-        int32_t FriendAvatar = 0;
-        RetVal = IDictionary_GetStringPtrByKey(MethodDictionaryHandle, "steamId", &ValueString);
-        if (RetVal) {
-            Value64 = strtoull(ValueString, nullptr, 10);
-            RetVal = SteamFriends_GetSmallFriendAvatar(Value64, &FriendAvatar);
+        IDictionary_AddInt(return_dictionary_handle, "returnValue", relationship, nullptr);
+    } else if (strcmp(method, "getSmallFriendAvatar") == 0) {
+        int32_t friend_avatar = 0;
+        const char *steam_id = nullptr;
+        ret = IDictionary_GetStringPtrByKey(method_dictionary_handle, "steamId", &steam_id);
+        if (ret) {
+            const auto friend_id = strtoull(steam_id, nullptr, 10);
+            friend_avatar = SteamFriends()->GetSmallFriendAvatar(CSteamID(static_cast<uint64>(friend_id)));
         }
-        IDictionary_AddInt(ReturnDictionaryHandle, "returnValue", FriendAvatar, &ItemHandle);
-    } else if (strcmp(Method, "getMediumFriendAvatar") == 0) {
-        int32_t FriendAvatar = 0;
-        RetVal = IDictionary_GetStringPtrByKey(MethodDictionaryHandle, "steamId", &ValueString);
-        if (RetVal) {
-            Value64 = strtoull(ValueString, nullptr, 10);
-            RetVal = SteamFriends_GetMediumFriendAvatar(Value64, &FriendAvatar);
+        IDictionary_AddInt(return_dictionary_handle, "returnValue", friend_avatar, nullptr);
+    } else if (strcmp(method, "getMediumFriendAvatar") == 0) {
+        int32_t friend_avatar = 0;
+        const char *steam_id = nullptr;
+        ret = IDictionary_GetStringPtrByKey(method_dictionary_handle, "steamId", &steam_id);
+        if (ret) {
+            const auto friend_id = strtoull(steam_id, nullptr, 10);
+            friend_avatar = SteamFriends()->GetMediumFriendAvatar(friend_id);
         }
-        IDictionary_AddInt(ReturnDictionaryHandle, "returnValue", FriendAvatar, &ItemHandle);
-    } else if (strcmp(Method, "getLargeFriendAvatar") == 0) {
-        int32_t FriendAvatar = 0;
-        RetVal = IDictionary_GetStringPtrByKey(MethodDictionaryHandle, "steamId", &ValueString);
-        if (RetVal) {
-            Value64 = strtoull(ValueString, nullptr, 10);
-            RetVal = SteamFriends_GetLargeFriendAvatar(Value64, &FriendAvatar);
+        IDictionary_AddInt(return_dictionary_handle, "returnValue", friend_avatar, nullptr);
+    } else if (strcmp(method, "getLargeFriendAvatar") == 0) {
+        int32_t friend_avatar = 0;
+        const char *steam_id = nullptr;
+        ret = IDictionary_GetStringPtrByKey(method_dictionary_handle, "steamId", &steam_id);
+        if (ret) {
+            const auto friend_id = strtoull(steam_id, nullptr, 10);
+            friend_avatar = SteamFriends()->GetLargeFriendAvatar(friend_id);
         }
-        IDictionary_AddInt(ReturnDictionaryHandle, "returnValue", FriendAvatar, &ItemHandle);
-    } else if (strcmp(Method, "activateGameOverlayToWebPage") == 0) {
-        char PersonaName[320] = {0};
-        RetVal = IDictionary_GetStringPtrByKey(MethodDictionaryHandle, "url", &ValueString);
-        if (RetVal)
-            ReturnValue = SteamFriends_ActivateGameOverlayToWebPage(ValueString);
-        IDictionary_AddBoolean(ReturnDictionaryHandle, "returnValue", ReturnValue, &ItemHandle);
+        IDictionary_AddInt(return_dictionary_handle, "returnValue", friend_avatar, nullptr);
+    } else if (strcmp(method, "activateGameOverlayToWebPage") == 0) {
+        const char *url = nullptr;
+        ret = IDictionary_GetStringPtrByKey(method_dictionary_handle, "url", &url);
+        if (ret)
+            SteamFriends()->ActivateGameOverlayToWebPage(url);
+        IDictionary_AddBoolean(return_dictionary_handle, "returnValue", true, nullptr);
+    } else {
+        return false;
     }
 
-    return RetVal;
+    return ret;
 }
 
 /*********************************************************************/

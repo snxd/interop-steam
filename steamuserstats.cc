@@ -25,277 +25,257 @@ class UserStatsResults {
     SteamAPICall_t Call = k_uAPICallInvalid;
 };
 
-typedef struct SteamUserStatsStruct {
-    ClassStruct Class;
-    UserStatsResults *Results;
-} SteamUserStatsStruct;
-
 /********************************************************************/
 
-static SteamUserStatsStruct *GlobalSteamUserStats = nullptr;
+namespace {
+
+struct SteamUserStatsStruct {
+    ClassStruct Class;
+    UserStatsResults *results;
+};
+
+SteamUserStatsStruct *g_steam_user_stats = nullptr;
+
+}  // namespace
 
 /********************************************************************/
 // Callback functions
 
-void UserStatsResults::OnNumberOfCurrentPlayers(NumberOfCurrentPlayers_t *Result, bool bIOFailure) {
+void UserStatsResults::OnNumberOfCurrentPlayers(NumberOfCurrentPlayers_t *result, bool io_failure) {
     NotificationCenter_FireAfterDelayWithJSON(
-        "SteamUserStats", "NumberOfCurrentPlayersResponse", Class_InstanceId(GlobalSteamUserStats), 0,
-        "{ \"successful\": %s,  \"playerCount\": %d }", Result->m_bSuccess ? "true" : "false", Result->m_cPlayers);
+        "SteamUserStats", "NumberOfCurrentPlayersResponse", Class_InstanceId(g_steam_user_stats), 0,
+        "{ \"successful\": %s,  \"playerCount\": %d }", result->m_bSuccess ? "true" : "false", result->m_cPlayers);
     delete this;
 }
 
-void UserStatsResults::OnUserStatsReceived(UserStatsReceived_t *Result, bool bIOFailure) {
-    char SteamIdString[120] = {0};
-    snprintf(SteamIdString, sizeof(SteamIdString), "%" PRIu64, Result->m_steamIDUser.ConvertToUint64());
+void UserStatsResults::OnUserStatsReceived(UserStatsReceived_t *result, bool io_failure) {
+    char steam_id_string[120] = {0};
+    snprintf(steam_id_string, sizeof(steam_id_string), "%" PRIu64,
+             static_cast<uint64_t>(result->m_steamIDUser.ConvertToUint64()));
     NotificationCenter_FireAfterDelayWithJSON(
-        "SteamUserStats", "UserStatsReceivedResponse", Class_InstanceId(GlobalSteamUserStats), 0,
+        "SteamUserStats", "UserStatsReceivedResponse", Class_InstanceId(g_steam_user_stats), 0,
         "{ \"successful\": %s, \"result\": %d, \"appID\": %lld,  \"steamId\": \"%s\"}",
-        (Result->m_eResult == k_EResultOK) ? "true" : "false", Result->m_eResult, Result->m_nGameID, SteamIdString);
+        (result->m_eResult == k_EResultOK) ? "true" : "false", result->m_eResult, result->m_nGameID, steam_id_string);
     delete this;
 }
 
-void UserStatsResults::OnGlobalAchievementPercentages(GlobalAchievementPercentagesReady_t *Result, bool bIOFailure) {
+void UserStatsResults::OnGlobalAchievementPercentages(GlobalAchievementPercentagesReady_t *result, bool io_failure) {
     NotificationCenter_FireAfterDelayWithJSON(
-        "SteamUserStats", "GlobalAchievementPercentagesResponse", Class_InstanceId(GlobalSteamUserStats), 0,
+        "SteamUserStats", "GlobalAchievementPercentagesResponse", Class_InstanceId(g_steam_user_stats), 0,
         "{ \"successful\": %s, \"result\": %d, \"appID\": %lld }",
-        (Result->m_eResult == k_EResultOK) ? "true" : "false", Result->m_eResult, Result->m_nGameID);
+        (result->m_eResult == k_EResultOK) ? "true" : "false", result->m_eResult, result->m_nGameID);
     delete this;
 }
 
 /********************************************************************/
 // Concrete functions
 
-static bool SteamUserStats_GetNumberOfCurrentPlayers(void) {
-    UserStatsResults *ApiCall = new UserStatsResults();
+namespace {
 
-    ApiCall->Call = SteamUserStats()->GetNumberOfCurrentPlayers();
-    ApiCall->NumberOfCurrentPlayers.Set(ApiCall->Call, ApiCall, &UserStatsResults::OnNumberOfCurrentPlayers);
+bool GetNumberOfCurrentPlayers(void) {
+    auto *api_call = new UserStatsResults();
 
+    api_call->Call = SteamUserStats()->GetNumberOfCurrentPlayers();
+    api_call->NumberOfCurrentPlayers.Set(api_call->Call, api_call, &UserStatsResults::OnNumberOfCurrentPlayers);
     return 0;
 }
 
-static bool SteamUserStats_GetNumberOfAchievements(int32 *Achievements) {
-    *Achievements = SteamUserStats()->GetNumAchievements();
-    return true;
+bool GetAchievement(const char *name, bool *achieved) {
+    *achieved = false;
+    bool is_set = false;
+    bool result = SteamUserStats()->GetAchievement(name, &is_set);
+    if (result && is_set)
+        *achieved = true;
+    return result != 0;
 }
 
-static bool SteamUserStats_GetAchievement(const char *Name, int32 *Achieved) {
-    bool IsSet = false;
-    bool Result = false;
-    *Achieved = false;
-    Result = SteamUserStats()->GetAchievement(Name, &IsSet);
-    if (Result && IsSet)
-        *Achieved = true;
-    return Result != 0;
-}
-
-static bool SteamUserStats_GetAchievementNamePtr(int32 Index, const char **Name) {
-    *Name = (char *)SteamUserStats()->GetAchievementName(Index);
-    if (!*Name) {
-        *Name = "";
+bool GetAchievementNamePtr(int32 index, const char **name) {
+    *name = SteamUserStats()->GetAchievementName(index);
+    if (!*name) {
+        *name = "";
         return false;
     }
     return true;
 }
 
-static bool SteamUserStats_GetAchievementIcon(const char *Name, int32 *ImageIndex) {
-    *ImageIndex = SteamUserStats()->GetAchievementIcon(Name);
-    return true;
-}
-
-static bool SteamUserStats_GetAchievementDisplayAttributePtr(const char *Name, const char *Key,
-                                                             const char **AttributeValue) {
-    *AttributeValue = (char *)SteamUserStats()->GetAchievementDisplayAttribute(Name, Key);
-    if (!*AttributeValue) {
-        *AttributeValue = "";
+bool GetAchievementDisplayAttributePtr(const char *name, const char *key, const char **attribute_value) {
+    *attribute_value = SteamUserStats()->GetAchievementDisplayAttribute(name, key);
+    if (!*attribute_value) {
+        *attribute_value = "";
         return false;
     }
     return true;
 }
 
-static bool SteamUserStats_SetAchievement(const char *Name) {
-    return SteamUserStats()->SetAchievement(Name) != 0;
+bool GetUserAchievement(uint64_t user_id, const char *name, bool *achieved) {
+    *achieved = false;
+    bool is_set = false;
+    bool result = SteamUserStats()->GetUserAchievement(CSteamID(static_cast<uint64>(user_id)), name, &is_set);
+    if (result && is_set)
+        *achieved = true;
+    return result != 0;
 }
 
-static bool SteamUserStats_ClearAchievement(const char *Name) {
-    return SteamUserStats()->ClearAchievement(Name) != 0;
-}
+bool RequestUserStats(uint64_t user_id) {
+    auto *api_call = new UserStatsResults();
 
-static bool SteamUserStats_GetUserAchievement(uint64_t SteamId, const char *Name, int32_t *Achieved) {
-    bool IsSet = false;
-    bool Result = false;
-    *Achieved = false;
-    Result = SteamUserStats()->GetUserAchievement(CSteamID((uint64)SteamId), Name, &IsSet);
-    if (Result && IsSet)
-        *Achieved = true;
-    return Result != 0;
-}
-
-static bool SteamUserStats_GetAchievementAchievedPercent(const char *Name, float32_t *PercentAchieved) {
-    SteamUserStats()->GetAchievementAchievedPercent(Name, PercentAchieved);
+    api_call->Call = SteamUserStats()->RequestUserStats(CSteamID(static_cast<uint64>(user_id)));
+    api_call->UserStatsReceived.Set(api_call->Call, api_call, &UserStatsResults::OnUserStatsReceived);
     return true;
 }
 
-static bool SteamUserStats_RequestUserStats(uint64_t FriendId) {
-    UserStatsResults *ApiCall = new UserStatsResults();
+bool RequestGlobalAchievementPercentages(void) {
+    auto *api_call = new UserStatsResults();
 
-    ApiCall->Call = SteamUserStats()->RequestUserStats(CSteamID((uint64)FriendId));
-    ApiCall->UserStatsReceived.Set(ApiCall->Call, ApiCall, &UserStatsResults::OnUserStatsReceived);
+    api_call->Call = SteamUserStats()->RequestGlobalAchievementPercentages();
+    api_call->GlobalAchievementPercentages.Set(api_call->Call, api_call,
+                                               &UserStatsResults::OnGlobalAchievementPercentages);
     return true;
 }
 
-static bool SteamUserStats_RequestGlobalAchievementPercentages(void) {
-    UserStatsResults *ApiCall = new UserStatsResults();
-
-    ApiCall->Call = SteamUserStats()->RequestGlobalAchievementPercentages();
-    ApiCall->GlobalAchievementPercentages.Set(ApiCall->Call, ApiCall,
-                                              &UserStatsResults::OnGlobalAchievementPercentages);
-    return true;
-}
-
-static bool SteamUserStats_ResetAllStats(bool AchievementsToo) {
-    SteamUserStats()->ResetAllStats(AchievementsToo);
-    return true;
-}
+}  // namespace
 
 /*********************************************************************/
 // Interop functions
 
 bool SteamUserStats_GetInstanceId(char *String, int32 MaxString) {
-    SteamUserStatsStruct *UserStats = (SteamUserStatsStruct *)GlobalSteamUserStats;
+    SteamUserStatsStruct *UserStats = (SteamUserStatsStruct *)g_steam_user_stats;
     strncpy(String, Class_InstanceId(UserStats), MaxString);
     String[MaxString - 1] = 0;
     return true;
 }
 
-bool SteamUserStats_Process(void *SteamUserStatsContext) {
-    // This function is called once per tick and can be used to process simple operations and
-    // thread synchronization.
-    return true;
-}
-
-bool SteamUserStats_Invoke(void *SteamUserStatsContext, echandle MethodDictionaryHandle,
-                           echandle ReturnDictionaryHandle) {
+bool SteamUserStats_Invoke(void *handle, echandle method_dictionary_handle, echandle return_dictionary_handle) {
     // EVERYTHING is marshaled in AND out as a JSON string, use any type supported by JSON and
     // it should marshal ok.
 
-    echandle ItemHandle = nullptr;
-    float32_t ValueFloat32 = 0;
-    uint64_t Value64 = 0;
-    bool RetVal = false;
-    int32_t ReturnValue = false;
-    int32_t Value32 = 0;
-    bool ValueBool = false;
-    const char *Method = nullptr;
-    const char *ValueString = nullptr;
+    bool ret = false;
+    const char *method = nullptr;
 
     if (!SteamAPI_IsInitialized())
         return false;
-    if (!IDictionary_GetStringPtrByKey(MethodDictionaryHandle, "method", &Method))
+    if (!IDictionary_GetStringPtrByKey(method_dictionary_handle, "method", &method))
         return false;
 
-    if (strcmp(Method, "getNumberOfCurrentPlayers") == 0) {
-        Value64 = SteamUserStats_GetNumberOfCurrentPlayers();
-        RetVal = IDictionary_AddInt(ReturnDictionaryHandle, "returnValue", Value64, &ItemHandle);
-    } else if (strcmp(Method, "getNumberOfAchievements") == 0) {
-        RetVal = SteamUserStats_GetNumberOfAchievements(&Value32);
-        IDictionary_AddInt(ReturnDictionaryHandle, "returnValue", Value32, &ItemHandle);
-    } else if (strcmp(Method, "getAchievement") == 0) {
-        RetVal = IDictionary_GetStringPtrByKey(MethodDictionaryHandle, "name", &ValueString);
-        if (RetVal)
-            RetVal = SteamUserStats_GetAchievement(ValueString, &Value32);
-        IDictionary_AddBoolean(ReturnDictionaryHandle, "returnValue", Value32, &ItemHandle);
-    } else if (strcmp(Method, "getAchievementName") == 0) {
-        const char *AchievementName = "";
-        RetVal = IDictionary_GetInt32ByKey(MethodDictionaryHandle, "index", &Value32);
-        if (RetVal)
-            RetVal = SteamUserStats_GetAchievementNamePtr(Value32, &AchievementName);
-        IDictionary_AddString(ReturnDictionaryHandle, "returnValue", AchievementName, &ItemHandle);
-    } else if (strcmp(Method, "getAchievementIcon") == 0) {
-        int32 ImageIndex = 0;
-        RetVal = IDictionary_GetStringPtrByKey(MethodDictionaryHandle, "name", &ValueString);
-        if (RetVal)
-            RetVal = SteamUserStats_GetAchievementIcon(ValueString, &ImageIndex);
-        IDictionary_AddInt(ReturnDictionaryHandle, "returnValue", ImageIndex, &ItemHandle);
-    } else if (strcmp(Method, "getAchievementDisplayAttribute") == 0) {
-        const char *KeyString = nullptr;
-        const char *AttributeValue = "";
-        RetVal = IDictionary_GetStringPtrByKey(MethodDictionaryHandle, "name", &ValueString);
-        if (RetVal) {
-            RetVal = IDictionary_GetStringPtrByKey(MethodDictionaryHandle, "key", &KeyString);
-            if (RetVal)
-                RetVal = SteamUserStats_GetAchievementDisplayAttributePtr(ValueString, KeyString, &AttributeValue);
+    if (strcmp(method, "getNumberOfCurrentPlayers") == 0) {
+        const auto return_value = GetNumberOfCurrentPlayers();
+        ret = IDictionary_AddInt(return_dictionary_handle, "returnValue", return_value, nullptr);
+    } else if (strcmp(method, "getNumberOfAchievements") == 0) {
+        const auto achievement_count = SteamUserStats()->GetNumAchievements();
+        ret = IDictionary_AddInt(return_dictionary_handle, "returnValue", achievement_count, nullptr);
+    } else if (strcmp(method, "getAchievement") == 0) {
+        const char *name = nullptr;
+        bool achieved = false;
+        ret = IDictionary_GetStringPtrByKey(method_dictionary_handle, "name", &name);
+        if (ret)
+            ret = GetAchievement(name, &achieved);
+        IDictionary_AddBoolean(return_dictionary_handle, "returnValue", achieved, nullptr);
+    } else if (strcmp(method, "getAchievementName") == 0) {
+        const char *achievement_name = "";
+        int32_t index = 0;
+        ret = IDictionary_GetInt32ByKey(method_dictionary_handle, "index", &index);
+        if (ret)
+            ret = GetAchievementNamePtr(index, &achievement_name);
+        IDictionary_AddString(return_dictionary_handle, "returnValue", achievement_name, nullptr);
+    } else if (strcmp(method, "getAchievementIcon") == 0) {
+        bool return_value = false;
+        const char *name = nullptr;
+        ret = IDictionary_GetStringPtrByKey(method_dictionary_handle, "name", &name);
+        if (ret)
+            return_value = SteamUserStats()->GetAchievementIcon(name);
+        IDictionary_AddInt(return_dictionary_handle, "returnValue", return_value, nullptr);
+    } else if (strcmp(method, "getAchievementDisplayAttribute") == 0) {
+        const char *key_string = nullptr;
+        const char *attribute_value = "";
+        const char *name = nullptr;
+        ret = IDictionary_GetStringPtrByKey(method_dictionary_handle, "name", &name);
+        if (ret) {
+            ret = IDictionary_GetStringPtrByKey(method_dictionary_handle, "key", &key_string);
+            if (ret)
+                ret = GetAchievementDisplayAttributePtr(name, key_string, &attribute_value);
         }
-        IDictionary_AddString(ReturnDictionaryHandle, "returnValue", AttributeValue, &ItemHandle);
-    } else if (strcmp(Method, "setAchievement") == 0) {
-        RetVal = IDictionary_GetStringPtrByKey(MethodDictionaryHandle, "name", &ValueString);
-        if (RetVal)
-            ReturnValue = SteamUserStats_SetAchievement(ValueString);
-        IDictionary_AddBoolean(ReturnDictionaryHandle, "returnValue", ReturnValue, &ItemHandle);
-    } else if (strcmp(Method, "clearAchievement") == 0) {
-        RetVal = IDictionary_GetStringPtrByKey(MethodDictionaryHandle, "name", &ValueString);
-        if (RetVal)
-            ReturnValue = SteamUserStats_ClearAchievement(ValueString);
-        IDictionary_AddBoolean(ReturnDictionaryHandle, "returnValue", ReturnValue, &ItemHandle);
-    } else if (strcmp(Method, "getUserAchievement") == 0) {
-        RetVal = IDictionary_GetStringPtrByKey(MethodDictionaryHandle, "steamId", &ValueString);
-        if (RetVal) {
-            Value64 = strtoull(ValueString, nullptr, 10);
-            RetVal = IDictionary_GetStringPtrByKey(MethodDictionaryHandle, "name", &ValueString);
-            if (RetVal)
-                RetVal = SteamUserStats_GetUserAchievement(Value64, ValueString, &Value32);
+        IDictionary_AddString(return_dictionary_handle, "returnValue", attribute_value, nullptr);
+    } else if (strcmp(method, "setAchievement") == 0) {
+        bool return_value = false;
+        const char *name = nullptr;
+        ret = IDictionary_GetStringPtrByKey(method_dictionary_handle, "name", &name);
+        if (ret)
+            return_value = SteamUserStats()->SetAchievement(name);
+        IDictionary_AddBoolean(return_dictionary_handle, "returnValue", return_value, nullptr);
+    } else if (strcmp(method, "clearAchievement") == 0) {
+        bool return_value = false;
+        const char *name = nullptr;
+        ret = IDictionary_GetStringPtrByKey(method_dictionary_handle, "name", &name);
+        if (ret)
+            return_value = SteamUserStats()->ClearAchievement(name);
+        IDictionary_AddBoolean(return_dictionary_handle, "returnValue", return_value, nullptr);
+    } else if (strcmp(method, "getUserAchievement") == 0) {
+        bool achieved = false;
+        const char *steam_id = nullptr;
+        ret = IDictionary_GetStringPtrByKey(method_dictionary_handle, "steamId", &steam_id);
+        if (ret) {
+            const char *name = nullptr;
+            const auto user_id = strtoull(steam_id, nullptr, 10);
+            ret = IDictionary_GetStringPtrByKey(method_dictionary_handle, "name", &name);
+            if (ret)
+                ret = GetUserAchievement(user_id, name, &achieved);
         }
-        IDictionary_AddBoolean(ReturnDictionaryHandle, "returnValue", Value32, &ItemHandle);
-    } else if (strcmp(Method, "getAchievementAchievedPercent") == 0) {
-        RetVal = IDictionary_GetStringPtrByKey(MethodDictionaryHandle, "name", &ValueString);
-        if (RetVal)
-            RetVal = SteamUserStats_GetAchievementAchievedPercent(ValueString, &ValueFloat32);
-        IDictionary_AddFloat(ReturnDictionaryHandle, "returnValue", ValueFloat32, &ItemHandle);
-    } else if (strcmp(Method, "requestUserStats") == 0) {
+        IDictionary_AddBoolean(return_dictionary_handle, "returnValue", achieved, nullptr);
+    } else if (strcmp(method, "getAchievementAchievedPercent") == 0) {
+        float32_t percent_achieved = 0.0;
+        const char *name = nullptr;
+        ret = IDictionary_GetStringPtrByKey(method_dictionary_handle, "name", &name);
+        if (ret)
+            ret = SteamUserStats()->GetAchievementAchievedPercent(name, &percent_achieved);
+        IDictionary_AddFloat(return_dictionary_handle, "returnValue", percent_achieved, nullptr);
+    } else if (strcmp(method, "requestUserStats") == 0) {
         int32 ImageIndex = 0;
-        RetVal = IDictionary_GetStringPtrByKey(MethodDictionaryHandle, "steamId", &ValueString);
-        if (RetVal)
-            RetVal = SteamUserStats_RequestUserStats(strtoull(ValueString, nullptr, 10));
-        IDictionary_AddBoolean(ReturnDictionaryHandle, "returnValue", true, &ItemHandle);
-    } else if (strcmp(Method, "requestGlobalAchievementPercentages") == 0) {
-        RetVal = SteamUserStats_RequestGlobalAchievementPercentages();
-        IDictionary_AddBoolean(ReturnDictionaryHandle, "returnValue", true, &ItemHandle);
-    } else if (strcmp(Method, "resetAllStats") == 0) {
-        RetVal = IDictionary_GetBooleanByKey(MethodDictionaryHandle, "achievementsToo", &ValueBool);
-        if (RetVal)
-            ReturnValue = SteamUserStats_ResetAllStats(ValueBool);
-        IDictionary_AddBoolean(ReturnDictionaryHandle, "returnValue", ReturnValue, &ItemHandle);
+        const char *steam_id = nullptr;
+        ret = IDictionary_GetStringPtrByKey(method_dictionary_handle, "steamId", &steam_id);
+        if (ret) {
+            const auto user_id = strtoull(steam_id, nullptr, 10);
+            ret = RequestUserStats(user_id);
+        }
+        IDictionary_AddBoolean(return_dictionary_handle, "returnValue", true, nullptr);
+    } else if (strcmp(method, "requestGlobalAchievementPercentages") == 0) {
+        ret = RequestGlobalAchievementPercentages();
+        IDictionary_AddBoolean(return_dictionary_handle, "returnValue", true, nullptr);
+    } else if (strcmp(method, "resetAllStats") == 0) {
+        bool return_value = false;
+        bool achievements_too = false;
+        ret = IDictionary_GetBooleanByKey(method_dictionary_handle, "achievementsToo", &achievements_too);
+        if (ret)
+            return_value = SteamUserStats()->ResetAllStats(achievements_too);
+        IDictionary_AddBoolean(return_dictionary_handle, "returnValue", return_value, nullptr);
     }
 
-    return RetVal;
+    return ret;
 }
 
 /*********************************************************************/
 // Global initialization functions
 
 bool SteamUserStats_Init(void) {
-    SteamUserStatsStruct *UserStats = nullptr;
-
-    UserStats = (SteamUserStatsStruct *)malloc(sizeof(SteamUserStatsStruct));
-    if (!UserStats)
+    auto *user_stats = reinterpret_cast<SteamUserStatsStruct *>(calloc(sizeof(SteamUserStatsStruct), 1));
+    if (!user_stats)
         return false;
-    memset(UserStats, 0, sizeof(SteamUserStatsStruct));
-    Interop_GenerateInstanceId(UserStats->Class.InstanceId, sizeof(UserStats->Class.InstanceId));
 
-    UserStats->Class.RefCount = 1;
+    Interop_GenerateInstanceId(user_stats->Class.InstanceId, sizeof(user_stats->Class.InstanceId));
 
-    GlobalSteamUserStats = UserStats;
+    user_stats->Class.RefCount = 1;
+
+    g_steam_user_stats = user_stats;
     return true;
 }
 
 bool SteamUserStats_Remove(void) {
-    SteamUserStatsStruct *UserStats = (SteamUserStatsStruct *)GlobalSteamUserStats;
+    auto *user_stats = g_steam_user_stats;
 
-    if (--UserStats->Class.RefCount == 0) {
-        free(UserStats);
+    if (--user_stats->Class.RefCount == 0) {
+        free(user_stats);
     }
 
-    GlobalSteamUserStats = nullptr;
+    g_steam_user_stats = nullptr;
     return true;
 }
 

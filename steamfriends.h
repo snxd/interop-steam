@@ -9,8 +9,7 @@ extern "C" {
 
 /*********************************************************************/
 
-bool SteamFriends_Process(void *SteamFriendsContext);
-bool SteamFriends_Invoke(void *SteamFriendsContext, echandle MethodDictionaryHandle, echandle ReturnDictionaryHandle);
+bool SteamFriends_Invoke(void *handle, echandle method_dictionary_handle, echandle return_dictionary_handle);
 
 /*********************************************************************/
 

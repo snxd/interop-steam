@@ -13,175 +13,133 @@
 /*********************************************************************/
 // Concrete functions
 
-static bool SteamUtils_IsOverlayEnabled(void) {
-    return SteamUtils()->IsOverlayEnabled() != 0;
-}
+namespace {
 
-static bool SteamUtils_IsSteamRunningInVR(void) {
-    return SteamUtils()->IsSteamRunningInVR() != 0;
-}
-
-static bool SteamUtils_IsSteamInBigPictureMode(void) {
-    return SteamUtils()->IsSteamInBigPictureMode() != 0;
-}
-
-static bool SteamUtils_IsVRHeadsetStreamingEnabled(void) {
-    return SteamUtils()->IsVRHeadsetStreamingEnabled() != 0;
-}
-
-static bool SteamUtils_GetServerRealTime(int64_t *ServerRealTime) {
-    *ServerRealTime = SteamUtils()->GetServerRealTime();
+bool GetIPCountry(char *ip_country, int32_t max_ip_country) {
+    strncpy(ip_country, SteamUtils()->GetIPCountry(), max_ip_country);
+    ip_country[max_ip_country - 1] = 0;
     return true;
 }
 
-static bool SteamUtils_GetIPCountry(char *IPCountry, int32_t MaxIPCountry) {
-    strncpy(IPCountry, (char *)SteamUtils()->GetIPCountry(), MaxIPCountry);
-    IPCountry[MaxIPCountry - 1] = 0;
-    return true;
+bool GetImageWidth(int32_t index, int32_t *width) {
+    uint32_t height = 0;
+    return SteamUtils()->GetImageSize(index, reinterpret_cast<uint32_t *>(width), &height);
 }
 
-static bool SteamUtils_GetCurrentBatteryPower(int32_t *CurrentBatteryPower) {
-    *CurrentBatteryPower = (int32_t)SteamUtils()->GetCurrentBatteryPower();
-    return true;
+bool GetImageHeight(int32_t index, int32_t *height) {
+    uint32_t width = 0;
+    return SteamUtils()->GetImageSize(index, &width, reinterpret_cast<uint32_t *>(height));
 }
 
-static bool SteamUtils_GetAppID(int32_t *AppID) {
-    *AppID = (int32)SteamUtils()->GetAppID();
-    return true;
-}
+bool GetImageRGBAPtr(int32_t index, uint8_t **base64_buffer, int32_t *base64_buffer_size) {
+    int32_t width = 0;
+    int32_t height = 0;
+    int32_t base64_length = 0;
 
-static bool SteamUtils_GetImageWidth(int32_t Index, int32_t *Width) {
-    uint32_t Height = 0;
-    if (!SteamUtils()->GetImageSize(Index, (uint32_t *)Width, &Height))
-        return false;
-    return true;
-}
-
-static bool SteamUtils_GetImageHeight(int32_t Index, int32_t *Height) {
-    uint32_t Width = 0;
-    if (!SteamUtils()->GetImageSize(Index, &Width, (uint32_t *)Height))
-        return false;
-    return true;
-}
-
-static bool SteamUtils_GetImageRGBAPtr(int32_t Index, uint8_t **Base64Buffer, int32_t *Base64BufferSize) {
-    int32_t Width = 0;
-    int32_t Height = 0;
-    int32_t Base64Length = 0;
-
-    if (!SteamUtils()->GetImageSize(Index, (uint32_t *)&Width, (uint32_t *)&Height))
+    if (!SteamUtils()->GetImageSize(index, reinterpret_cast<uint32_t *>(&width), reinterpret_cast<uint32_t *>(&height)))
         return false;
 
-    int32_t BufferSize = 4 * Width * Height * sizeof(char);
-    uint8_t *Buffer = (uint8_t *)malloc(BufferSize);
-    SteamUtils()->GetImageRGBA(Index, Buffer, BufferSize);
+    int32_t buffer_size = 4 * width * height * sizeof(char);
+    auto *buffer = reinterpret_cast<uint8_t *>(malloc(buffer_size));
+    SteamUtils()->GetImageRGBA(index, buffer, buffer_size);
 
-    *Base64BufferSize = 0;
-    *Base64Buffer = nullptr;
+    *base64_buffer_size = 0;
+    *base64_buffer = nullptr;
 
-    Base64_CalculateEncodeSize(BufferSize, Base64BufferSize);
-    *Base64Buffer = (uint8_t *)malloc(*Base64BufferSize);
-    Base64_Encode(Buffer, BufferSize, (char *)*Base64Buffer, *Base64BufferSize, &Base64Length);
-
+    Base64_CalculateEncodeSize(buffer_size, base64_buffer_size);
+    *base64_buffer = reinterpret_cast<uint8_t *>(malloc(*base64_buffer_size));
+    Base64_Encode(buffer, buffer_size, (char *)*base64_buffer, *base64_buffer_size, &base64_length);
     return true;
 }
 
-static bool SteamUtils_ReleaseImageRGBAPtr(uint8_t **Base64Buffer, int32_t *Base64BufferSize) {
-    if (Base64Buffer && *Base64Buffer) {
-        free(*Base64Buffer);
-        *Base64Buffer = nullptr;
+bool ReleaseImageRGBAPtr(uint8_t **base64_buffer, int32_t *base64_buffer_size) {
+    if (base64_buffer && *base64_buffer) {
+        free(*base64_buffer);
+        *base64_buffer = nullptr;
     }
-    if (Base64BufferSize) {
-        *Base64BufferSize = 0;
+    if (base64_buffer_size) {
+        *base64_buffer_size = 0;
     }
     return true;
 }
 
-static bool SteamUtils_StartVRDashboard(void) {
-    SteamUtils()->StartVRDashboard();
-    return true;
-}
+}  // namespace
 
 /*********************************************************************/
 // Interop functions
 
-bool SteamUtils_Process(void *SteamUtilsContext) {
-    // This function is called once per tick and can be used to process simple operations and
-    // thread synchronization.
-    return true;
-}
-
-bool SteamUtils_Invoke(void *SteamUtilsContext, echandle MethodDictionaryHandle, echandle ReturnDictionaryHandle) {
+bool SteamUtils_Invoke(void *handle, echandle method_dictionary_handle, echandle return_dictionary_handle) {
     // EVERYTHING is marshaled in AND out as a JSON string, use any type supported by JSON and
     // it should marshal ok.
 
-    echandle ItemHandle = nullptr;
-    int64_t Value64 = 0;
-    bool RetVal = false;
-    int32_t ReturnValue = false;
-    int32_t Value32 = 0;
-    const char *Method = nullptr;
-    char *ValueString = nullptr;
-    char Value[120]{};
+    bool ret = false;
+    const char *method = nullptr;
 
     if (!SteamAPI_IsInitialized())
         return false;
-    if (!IDictionary_GetStringPtrByKey(MethodDictionaryHandle, "method", &Method))
+    if (!IDictionary_GetStringPtrByKey(method_dictionary_handle, "method", &method))
         return false;
 
-    if (strcmp(Method, "isOverlayEnabled") == 0) {
-        ReturnValue = SteamUtils_IsOverlayEnabled();
-        RetVal = IDictionary_AddBoolean(ReturnDictionaryHandle, "returnValue", ReturnValue, &ItemHandle);
-    } else if (strcmp(Method, "isSteamRunningInVR") == 0) {
-        ReturnValue = SteamUtils_IsSteamRunningInVR();
-        RetVal = IDictionary_AddBoolean(ReturnDictionaryHandle, "returnValue", ReturnValue, &ItemHandle);
-    } else if (strcmp(Method, "isSteamInBigPictureMode") == 0) {
-        ReturnValue = SteamUtils_IsSteamInBigPictureMode();
-        RetVal = IDictionary_AddBoolean(ReturnDictionaryHandle, "returnValue", ReturnValue, &ItemHandle);
-    } else if (strcmp(Method, "isVRHeadsetStreamingEnabled") == 0) {
-        ReturnValue = SteamUtils_IsVRHeadsetStreamingEnabled();
-        RetVal = IDictionary_AddBoolean(ReturnDictionaryHandle, "returnValue", ReturnValue, &ItemHandle);
-    } else if (strcmp(Method, "getServerRealTime") == 0) {
-        RetVal = SteamUtils_GetServerRealTime(&Value64);
-        IDictionary_AddInt(ReturnDictionaryHandle, "returnValue", Value64, &ItemHandle);
-    } else if (strcmp(Method, "getIPCountry") == 0) {
-        RetVal = SteamUtils_GetIPCountry(Value, sizeof(Value));
-        IDictionary_AddString(ReturnDictionaryHandle, "returnValue", Value, &ItemHandle);
-    } else if (strcmp(Method, "getCurrentBatteryPower") == 0) {
-        RetVal = SteamUtils_GetCurrentBatteryPower(&Value32);
-        IDictionary_AddInt(ReturnDictionaryHandle, "returnValue", Value32, &ItemHandle);
-    } else if (strcmp(Method, "getAppID") == 0) {
-        RetVal = SteamUtils_GetAppID(&Value32);
-        IDictionary_AddInt(ReturnDictionaryHandle, "returnValue", Value32, &ItemHandle);
-    } else if (strcmp(Method, "getImageWidth") == 0) {
-        RetVal = IDictionary_GetInt32ByKey(MethodDictionaryHandle, "index", &Value32);
-        if (RetVal)
-            RetVal = SteamUtils_GetImageWidth(Value32, &Value32);
-        IDictionary_AddInt(ReturnDictionaryHandle, "returnValue", Value32, &ItemHandle);
-    } else if (strcmp(Method, "getImageHeight") == 0) {
-        RetVal = IDictionary_GetInt32ByKey(MethodDictionaryHandle, "index", &Value32);
-        if (RetVal)
-            RetVal = SteamUtils_GetImageHeight(Value32, &Value32);
-        IDictionary_AddInt(ReturnDictionaryHandle, "returnValue", Value32, &ItemHandle);
-    } else if (strcmp(Method, "getImageRGBA") == 0) {
-        RetVal = IDictionary_GetInt32ByKey(MethodDictionaryHandle, "index", &Value32);
-        if (RetVal) {
-            uint8_t *Base64Buffer = nullptr;
-            int32_t Base64BufferSize = 0;
-            RetVal = SteamUtils_GetImageRGBAPtr(Value32, &Base64Buffer, &Base64BufferSize);
-            if (RetVal) {
-                IDictionary_AddString(ReturnDictionaryHandle, "returnValue", (char *)Base64Buffer, &ItemHandle);
-                SteamUtils_ReleaseImageRGBAPtr(&Base64Buffer, &Base64BufferSize);
+    if (strcmp(method, "isOverlayEnabled") == 0) {
+        const auto is_enabled = SteamUtils()->IsOverlayEnabled();
+        ret = IDictionary_AddBoolean(return_dictionary_handle, "returnValue", is_enabled, nullptr);
+    } else if (strcmp(method, "isSteamRunningInVR") == 0) {
+        const auto is_running = SteamUtils()->IsSteamRunningInVR() != 0;
+        ret = IDictionary_AddBoolean(return_dictionary_handle, "returnValue", is_running, nullptr);
+    } else if (strcmp(method, "isSteamInBigPictureMode") == 0) {
+        const auto is_big_picture_mode = SteamUtils()->IsSteamInBigPictureMode() != 0;
+        ret = IDictionary_AddBoolean(return_dictionary_handle, "returnValue", is_big_picture_mode, nullptr);
+    } else if (strcmp(method, "isVRHeadsetStreamingEnabled") == 0) {
+        const auto is_vr_enabled = SteamUtils()->IsVRHeadsetStreamingEnabled() != 0;
+        ret = IDictionary_AddBoolean(return_dictionary_handle, "returnValue", is_vr_enabled, nullptr);
+    } else if (strcmp(method, "getServerRealTime") == 0) {
+        const auto server_real_time = SteamUtils()->GetServerRealTime();
+        ret = IDictionary_AddInt(return_dictionary_handle, "returnValue", server_real_time, nullptr);
+    } else if (strcmp(method, "getIPCountry") == 0) {
+        char ip_country[320]{};
+        ret = GetIPCountry(ip_country, sizeof(ip_country));
+        IDictionary_AddString(return_dictionary_handle, "returnValue", ip_country, nullptr);
+    } else if (strcmp(method, "getCurrentBatteryPower") == 0) {
+        const auto current_battery_power = SteamUtils()->GetCurrentBatteryPower();
+        ret = IDictionary_AddInt(return_dictionary_handle, "returnValue", current_battery_power, nullptr);
+    } else if (strcmp(method, "getAppID") == 0) {
+        const auto app_id = SteamUtils()->GetAppID();
+        ret = IDictionary_AddInt(return_dictionary_handle, "returnValue", app_id, nullptr);
+    } else if (strcmp(method, "getImageWidth") == 0) {
+        int32_t index = 0;
+        int32_t width = 0;
+        ret = IDictionary_GetInt32ByKey(method_dictionary_handle, "index", &index);
+        if (ret)
+            ret = GetImageWidth(index, &width);
+        IDictionary_AddInt(return_dictionary_handle, "returnValue", width, nullptr);
+    } else if (strcmp(method, "getImageHeight") == 0) {
+        int32_t index = 0;
+        int32_t height = 0;
+        ret = IDictionary_GetInt32ByKey(method_dictionary_handle, "index", &index);
+        if (ret)
+            ret = GetImageHeight(index, &height);
+        IDictionary_AddInt(return_dictionary_handle, "returnValue", height, nullptr);
+    } else if (strcmp(method, "getImageRGBA") == 0) {
+        int32_t index = 0;
+        ret = IDictionary_GetInt32ByKey(method_dictionary_handle, "index", &index);
+        if (ret) {
+            uint8_t *base64_buffer = nullptr;
+            int32_t base64_buffer_size = 0;
+            ret = GetImageRGBAPtr(index, &base64_buffer, &base64_buffer_size);
+            if (ret) {
+                IDictionary_AddString(return_dictionary_handle, "returnValue", reinterpret_cast<char *>(base64_buffer),
+                                      nullptr);
+                ReleaseImageRGBAPtr(&base64_buffer, &base64_buffer_size);
             }
         }
-        if (RetVal == false)
-            IDictionary_AddNull(ReturnDictionaryHandle, "returnValue", &ItemHandle);
-    } else if (strcmp(Method, "startVRDashboard") == 0) {
-        RetVal = SteamUtils_StartVRDashboard();
-        IDictionary_AddBoolean(ReturnDictionaryHandle, "returnValue", RetVal, &ItemHandle);
+        if (!ret)
+            IDictionary_AddNull(return_dictionary_handle, "returnValue", nullptr);
+    } else if (strcmp(method, "startVRDashboard") == 0) {
+        SteamUtils()->StartVRDashboard();
+        ret = IDictionary_AddBoolean(return_dictionary_handle, "returnValue", true, nullptr);
     }
 
-    return RetVal;
+    return ret;
 }
 
 /*********************************************************************/
