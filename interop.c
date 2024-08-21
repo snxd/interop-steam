@@ -12,41 +12,41 @@
 
 /*********************************************************************/
 
-bool Interop_CreateInstance(const char *TypeName, char *InstanceId, int32_t InstanceIdLength, void *ExecuteUserPtr,
-                            Interop_ExecuteCallback Execute, Interop_InvokeInstanceCallback *InvokeInstance,
-                            Interop_ReleaseInstanceCallback *ReleaseInstance,
-                            Interop_ProcessInstanceCallback *ProcessInstance, void **UserPtr) {
-    *InvokeInstance = NULL;
-    *ReleaseInstance = NULL;
-    *ProcessInstance = NULL;
-    *UserPtr = NULL;
+bool Interop_CreateInstance(const char *type_name, char *instance_id, int32_t max_instance_id, void *execute_user_ptr,
+                            Interop_ExecuteCallback execute, Interop_InvokeInstanceCallback *invoke_instance,
+                            Interop_ReleaseInstanceCallback *release_instance,
+                            Interop_ProcessInstanceCallback *process_instance, void **user_ptr) {
+    *invoke_instance = NULL;
+    *release_instance = NULL;
+    *process_instance = NULL;
+    *user_ptr = NULL;
 
-    if (strcmp(TypeName, "Steam.API") == 0) {
-        *InvokeInstance = SteamAPI_Invoke;
-        *ProcessInstance = SteamAPI_Process;
+    if (strcmp(type_name, "Steam.API") == 0) {
+        *invoke_instance = SteamAPI_Invoke;
+        *process_instance = SteamAPI_Process;
         return true;
-    } else if (strcmp(TypeName, "Steam.Apps") == 0) {
-        *InvokeInstance = SteamApps_Invoke;
+    } else if (strcmp(type_name, "Steam.Apps") == 0) {
+        *invoke_instance = SteamApps_Invoke;
         return true;
-    } else if (strcmp(TypeName, "Steam.User") == 0) {
-        *InvokeInstance = SteamUser_Invoke;
-        SteamUser_GetInstanceId(InstanceId, InstanceIdLength);
+    } else if (strcmp(type_name, "Steam.User") == 0) {
+        *invoke_instance = SteamUser_Invoke;
+        SteamUser_GetInstanceId(instance_id, max_instance_id);
         return true;
-    } else if (strcmp(TypeName, "Steam.UserStats") == 0) {
-        *InvokeInstance = SteamUserStats_Invoke;
-        SteamUserStats_GetInstanceId(InstanceId, InstanceIdLength);
+    } else if (strcmp(type_name, "Steam.UserStats") == 0) {
+        *invoke_instance = SteamUserStats_Invoke;
+        SteamUserStats_GetInstanceId(instance_id, max_instance_id);
         return true;
-    } else if (strcmp(TypeName, "Steam.Utils") == 0) {
-        *InvokeInstance = SteamUtils_Invoke;
+    } else if (strcmp(type_name, "Steam.Utils") == 0) {
+        *invoke_instance = SteamUtils_Invoke;
         return true;
-    } else if (strcmp(TypeName, "Steam.Friends") == 0) {
-        *InvokeInstance = SteamFriends_Invoke;
+    } else if (strcmp(type_name, "Steam.Friends") == 0) {
+        *invoke_instance = SteamFriends_Invoke;
         return true;
     }
     return false;
 }
 
-bool Interop_SetOption(const char *Key, void *Value) {
+bool Interop_SetOption(const char *key, void *value) {
     return true;
 }
 

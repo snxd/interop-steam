@@ -11,8 +11,8 @@ extern "C" {
 
 bool SteamAPI_IsInitialized(void);
 
-bool SteamAPI_Process(void *SteamAPIContext);
-bool SteamAPI_Invoke(void *SteamAPIContext, echandle MethodDictionaryHandle, echandle ReturnDictionaryHandle);
+bool SteamAPI_Process(void *handle);
+bool SteamAPI_Invoke(void *handle, echandle method_dictionary_handle, echandle return_dictionary_handle);
 
 bool SteamAPI_InitLib(void);
 bool SteamAPI_RemoveLib(void);

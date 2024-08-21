@@ -15,213 +15,160 @@
 
 class UserResults {
   public:
-    CCallbackManual<UserResults, GetAuthSessionTicketResponse_t, false> AuthSessionTicket;
-    void OnAuthSessionTicketResponse(GetAuthSessionTicketResponse_t *Response);
+    CCallbackManual<UserResults, GetAuthSessionTicketResponse_t, false> auth_session_ticket;
 
-    void *User = nullptr;
-    HAuthTicket Ticket = k_HAuthTicketInvalid;
-    uint8_t TicketData[2048] = {0};
-    uint32_t TicketSize = 0;
+    void *user = nullptr;
+
+    HAuthTicket ticket = k_HAuthTicketInvalid;
+    uint8_t ticket_data[2048] = {0};
+    uint32_t ticket_size = 0;
+
+    void OnAuthSessionTicketResponse(GetAuthSessionTicketResponse_t *response);
 };
 
-typedef struct SteamUserStruct {
+/********************************************************************/
+
+namespace {
+
+struct SteamUserStruct {
     ClassStruct Class;
-    UserResults *Results;
-} SteamUserStruct;
+    UserResults *results;
+};
 
-/********************************************************************/
-
-static SteamUserStruct *GlobalSteamUser = nullptr;
-
-/********************************************************************/
-// Callback functions
-
-void UserResults::OnAuthSessionTicketResponse(GetAuthSessionTicketResponse_t *Response) {
-    int32_t Successful = false;
-    char HexTicket[4096];
-
-    if (Response->m_eResult == k_EResultOK)
-        Successful = true;
-    if (Response->m_hAuthTicket == this->Ticket) {
-        String_ConvertToHex(this->TicketData, this->TicketSize, true, HexTicket, sizeof(HexTicket));
-        NotificationCenter_FireAfterDelayWithJSON(
-            "SteamUser", "AuthSessionTicketResponse", Class_InstanceId((SteamUserStruct *)this->User), 0,
-            "{ \"ticket\": %d, \"ticketData\": \"%s\", \"successful\": %s, \"errorCode\": %d }", this->Ticket,
-            HexTicket, Successful ? "true" : "false", Response->m_eResult);
-    }
-}
+SteamUserStruct *g_steam_user = nullptr;
 
 /********************************************************************/
 // Concrete functions
 
-static bool SteamUser_IsLoggedOn(void) {
-    return SteamUser()->BLoggedOn() != 0;
+int32_t GetAuthSessionTicket() {
+    auto *user = g_steam_user;
+
+    user->results->ticket = SteamUser()->GetAuthSessionTicket(
+        user->results->ticket_data, sizeof(user->results->ticket_data), &user->results->ticket_size);
+
+    return static_cast<int32_t>(user->results->ticket);
 }
 
-static bool SteamUser_IsBehindNAT(void) {
-    return SteamUser()->BIsBehindNAT() != 0;
-}
+}  // namespace
 
-static bool SteamUser_IsPhoneVerified(void) {
-    return SteamUser()->BIsPhoneVerified() != 0;
-}
+/********************************************************************/
+// Callback functions
 
-static bool SteamUser_IsTwoFactorEnabled(void) {
-    return SteamUser()->BIsTwoFactorEnabled() != 0;
-}
+void UserResults::OnAuthSessionTicketResponse(GetAuthSessionTicketResponse_t *response) {
+    bool successful = false;
 
-static bool SteamUser_IsPhoneIdentifying(void) {
-    return SteamUser()->BIsPhoneIdentifying() != 0;
-}
-
-static bool SteamUser_IsPhoneRequiringVerification(void) {
-    return SteamUser()->BIsPhoneRequiringVerification() != 0;
-}
-
-static bool SteamUser_GetSteamId(uint64_t *Result) {
-    *Result = SteamUser()->GetSteamID().ConvertToUint64();
-    return true;
-}
-
-static bool SteamUser_GetAuthSessionTicket(int32_t *Ticket) {
-    SteamUserStruct *User = (SteamUserStruct *)GlobalSteamUser;
-
-    User->Results->Ticket = SteamUser()->GetAuthSessionTicket(
-        User->Results->TicketData, sizeof(User->Results->TicketData), &User->Results->TicketSize);
-
-    *Ticket = User->Results->Ticket;
-    return true;
-}
-
-static bool SteamUser_CancelAuthTicket(void) {
-    SteamUserStruct *User = (SteamUserStruct *)GlobalSteamUser;
-    SteamUser()->CancelAuthTicket(User->Results->Ticket);
-    return true;
-}
-
-static bool SteamUser_GetPlayerSteamLevel(int32_t *PlayerSteamLevel) {
-    *PlayerSteamLevel = SteamUser()->GetPlayerSteamLevel();
-    return true;
-}
-
-static bool SteamUser_StartVoiceRecording(void) {
-    SteamUser()->StartVoiceRecording();
-    return true;
-}
-
-static bool SteamUser_StopVoiceRecording(void) {
-    SteamUser()->StopVoiceRecording();
-    return true;
+    if (response->m_eResult == k_EResultOK)
+        successful = true;
+    if (response->m_hAuthTicket == ticket) {
+        char hex_ticket[4096];
+        String_ConvertToHex(ticket_data, ticket_size, true, hex_ticket, sizeof(hex_ticket));
+        NotificationCenter_FireAfterDelayWithJSON(
+            "SteamUser", "AuthSessionTicketResponse", Class_InstanceId(static_cast<SteamUserStruct *>(user)), 0,
+            "{ \"ticket\": %d, \"ticketData\": \"%s\", \"successful\": %s, \"errorCode\": %d }", ticket, hex_ticket,
+            successful ? "true" : "false", response->m_eResult);
+    }
 }
 
 /*********************************************************************/
 // Interop functions
 
-bool SteamUser_GetInstanceId(char *String, int32_t MaxString) {
-    SteamUserStruct *User = (SteamUserStruct *)GlobalSteamUser;
-    strncpy(String, Class_InstanceId(User), MaxString);
-    String[MaxString - 1] = 0;
+bool SteamUser_GetInstanceId(char *string, int32_t max_string) {
+    if (!g_steam_user)
+        return false;
+    strncpy(string, Class_InstanceId(g_steam_user), max_string);
+    string[max_string - 1] = 0;
     return true;
 }
 
-bool SteamUser_Process(void *SteamUserContext) {
-    // This function is called once per tick and can be used to process simple operations and
-    // thread synchronization.
-    return true;
-}
-
-bool SteamUser_Invoke(void *SteamUserContext, echandle MethodDictionaryHandle, echandle ReturnDictionaryHandle) {
+bool SteamUser_Invoke(void *handle, echandle method_dictionary_handle, echandle return_dictionary_handle) {
     // EVERYTHING is marshaled in AND out as a JSON string, use any type supported by JSON and
     // it should marshal ok.
 
-    echandle ItemHandle = nullptr;
-    int64_t Value64 = 0;
-    int32_t RetVal = false;
-    int32_t ReturnValue = false;
-    int32_t Value32 = 0;
-    const char *Method = nullptr;
-    char *ValueString = nullptr;
-    char Value64String[120]{};
+    int32_t ret = false;
+    const char *method = nullptr;
 
     if (!SteamAPI_IsInitialized())
         return false;
-    if (!IDictionary_GetStringPtrByKey(MethodDictionaryHandle, "method", &Method))
+    if (!IDictionary_GetStringPtrByKey(method_dictionary_handle, "method", &method))
         return false;
 
-    if (strcmp(Method, "getSteamId") == 0) {
-        RetVal = SteamUser_GetSteamId((uint64_t *)&Value64);
-        snprintf(Value64String, sizeof(Value64String), "%" PRIu64, (uint64_t)Value64);
-        IDictionary_AddString(ReturnDictionaryHandle, "returnValue", Value64String, &ItemHandle);
-    } else if (strcmp(Method, "getAuthSessionTicket") == 0) {
-        SteamUser_GetAuthSessionTicket(&Value32);
-        RetVal = IDictionary_AddInt(ReturnDictionaryHandle, "returnValue", Value32, &ItemHandle);
-    } else if (strcmp(Method, "cancelAuthTicket") == 0) {
-        ReturnValue = SteamUser_CancelAuthTicket();
-        RetVal = IDictionary_AddBoolean(ReturnDictionaryHandle, "returnValue", ReturnValue, &ItemHandle);
-    } else if (strcmp(Method, "isLoggedOn") == 0) {
-        ReturnValue = SteamUser_IsLoggedOn();
-        RetVal = IDictionary_AddBoolean(ReturnDictionaryHandle, "returnValue", ReturnValue, &ItemHandle);
-    } else if (strcmp(Method, "isBehindNAT") == 0) {
-        ReturnValue = SteamUser_IsBehindNAT();
-        RetVal = IDictionary_AddBoolean(ReturnDictionaryHandle, "returnValue", ReturnValue, &ItemHandle);
-    } else if (strcmp(Method, "isPhoneVerified") == 0) {
-        ReturnValue = SteamUser_IsPhoneVerified();
-        RetVal = IDictionary_AddBoolean(ReturnDictionaryHandle, "returnValue", ReturnValue, &ItemHandle);
-    } else if (strcmp(Method, "isTwoFactorEnabled") == 0) {
-        ReturnValue = SteamUser_IsPhoneIdentifying();
-        RetVal = IDictionary_AddBoolean(ReturnDictionaryHandle, "returnValue", ReturnValue, &ItemHandle);
-    } else if (strcmp(Method, "isPhoneIdentifying") == 0) {
-        ReturnValue = SteamUser_IsBehindNAT();
-        RetVal = IDictionary_AddBoolean(ReturnDictionaryHandle, "returnValue", ReturnValue, &ItemHandle);
-    } else if (strcmp(Method, "isPhoneRequiringVerification") == 0) {
-        ReturnValue = SteamUser_IsPhoneRequiringVerification();
-        RetVal = IDictionary_AddBoolean(ReturnDictionaryHandle, "returnValue", ReturnValue, &ItemHandle);
-    } else if (strcmp(Method, "getPlayerSteamLevel") == 0) {
-        RetVal = SteamUser_GetPlayerSteamLevel(&Value32);
-        IDictionary_AddInt(ReturnDictionaryHandle, "returnValue", Value32, &ItemHandle);
-    } else if (strcmp(Method, "startVoiceRecording") == 0) {
-        ReturnValue = SteamUser_StartVoiceRecording();
-        RetVal = IDictionary_AddBoolean(ReturnDictionaryHandle, "returnValue", ReturnValue, &ItemHandle);
-    } else if (strcmp(Method, "stopVoiceRecording") == 0) {
-        ReturnValue = SteamUser_StopVoiceRecording();
-        RetVal = IDictionary_AddBoolean(ReturnDictionaryHandle, "returnValue", ReturnValue, &ItemHandle);
+    if (strcmp(method, "getSteamId") == 0) {
+        const auto steam_id = SteamUser()->GetSteamID().ConvertToUint64();
+        ret = steam_id != 0;
+        char steam_id_string[120]{};
+        snprintf(steam_id_string, sizeof(steam_id_string), "%" PRIu64, static_cast<uint64_t>(steam_id));
+        IDictionary_AddString(return_dictionary_handle, "returnValue", steam_id_string, nullptr);
+    } else if (strcmp(method, "getAuthSessionTicket") == 0) {
+        const auto ticket = GetAuthSessionTicket();
+        ret = IDictionary_AddInt(return_dictionary_handle, "returnValue", ticket, nullptr);
+    } else if (strcmp(method, "cancelAuthTicket") == 0) {
+        bool cancelled = false;
+        if (g_steam_user) {
+            SteamUser()->CancelAuthTicket(g_steam_user->results->ticket);
+            cancelled = true;
+        }
+        ret = IDictionary_AddBoolean(return_dictionary_handle, "returnValue", cancelled, nullptr);
+    } else if (strcmp(method, "isLoggedOn") == 0) {
+        const auto is_logged_on = SteamUser()->BLoggedOn();
+        ret = IDictionary_AddBoolean(return_dictionary_handle, "returnValue", is_logged_on, nullptr);
+    } else if (strcmp(method, "isBehindNAT") == 0) {
+        const auto is_behind_nat = SteamUser()->BIsBehindNAT();
+        ret = IDictionary_AddBoolean(return_dictionary_handle, "returnValue", is_behind_nat, nullptr);
+    } else if (strcmp(method, "isPhoneVerified") == 0) {
+        const auto is_verified = SteamUser()->BIsPhoneVerified();
+        ret = IDictionary_AddBoolean(return_dictionary_handle, "returnValue", is_verified, nullptr);
+    } else if (strcmp(method, "isTwoFactorEnabled") == 0) {
+        const auto is_enabled = SteamUser()->BIsTwoFactorEnabled();
+        ret = IDictionary_AddBoolean(return_dictionary_handle, "returnValue", is_enabled, nullptr);
+    } else if (strcmp(method, "isPhoneIdentifying") == 0) {
+        const auto is_identifying = SteamUser()->BIsPhoneIdentifying();
+        ret = IDictionary_AddBoolean(return_dictionary_handle, "returnValue", is_identifying, nullptr);
+    } else if (strcmp(method, "isPhoneRequiringVerification") == 0) {
+        const auto is_requiring_verification = SteamUser()->BIsPhoneRequiringVerification();
+        ret = IDictionary_AddBoolean(return_dictionary_handle, "returnValue", is_requiring_verification, nullptr);
+    } else if (strcmp(method, "getPlayerSteamLevel") == 0) {
+        const auto player_level = SteamUser()->GetPlayerSteamLevel();
+        ret = IDictionary_AddInt(return_dictionary_handle, "returnValue", player_level, nullptr);
+    } else if (strcmp(method, "startVoiceRecording") == 0) {
+        SteamUser()->StartVoiceRecording();
+        ret = IDictionary_AddBoolean(return_dictionary_handle, "returnValue", true, nullptr);
+    } else if (strcmp(method, "stopVoiceRecording") == 0) {
+        SteamUser()->StopVoiceRecording();
+        ret = IDictionary_AddBoolean(return_dictionary_handle, "returnValue", true, nullptr);
     }
 
-    return RetVal;
+    return ret;
 }
 
 /*********************************************************************/
 // Global initialization functions
 
 bool SteamUser_Init(void) {
-    SteamUserStruct *User = nullptr;
-
-    User = (SteamUserStruct *)malloc(sizeof(SteamUserStruct));
-    if (!User)
+    auto *user = reinterpret_cast<SteamUserStruct *>(calloc(sizeof(SteamUserStruct), 1));
+    if (!user)
         return false;
-    memset(User, 0, sizeof(SteamUserStruct));
-    Interop_GenerateInstanceId(User->Class.InstanceId, sizeof(User->Class.InstanceId));
+    Interop_GenerateInstanceId(user->Class.InstanceId, sizeof(user->Class.InstanceId));
 
-    User->Class.RefCount = 1;
+    user->Class.RefCount = 1;
 
-    User->Results = new UserResults();
-    User->Results->User = User;
-    User->Results->AuthSessionTicket.Register(User->Results, &UserResults::OnAuthSessionTicketResponse);
+    user->results = new UserResults();
+    user->results->user = user;
+    user->results->auth_session_ticket.Register(user->results, &UserResults::OnAuthSessionTicketResponse);
 
-    GlobalSteamUser = User;
+    g_steam_user = user;
     return true;
 }
 
 bool SteamUser_Remove(void) {
-    SteamUserStruct *User = (SteamUserStruct *)GlobalSteamUser;
+    SteamUserStruct *user = g_steam_user;
 
-    if (--User->Class.RefCount == 0) {
-        User->Results->AuthSessionTicket.Unregister();
-        delete User->Results;
-        free(User);
+    if (--user->Class.RefCount == 0) {
+        user->results->auth_session_ticket.Unregister();
+        delete user->results;
+        free(user);
     }
 
-    GlobalSteamUser = nullptr;
+    g_steam_user = nullptr;
     return true;
 }
 

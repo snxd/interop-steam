@@ -9,10 +9,9 @@ extern "C" {
 
 /*********************************************************************/
 
-bool SteamUser_GetInstanceId(char *String, int32_t MaxString);
+bool SteamUser_GetInstanceId(char *string, int32_t max_string);
 
-bool SteamUser_Process(void *SteamUserContext);
-bool SteamUser_Invoke(void *SteamUserContext, echandle MethodDictionaryHandle, echandle ReturnDictionaryHandle);
+bool SteamUser_Invoke(void *handle, echandle method_dictionary_handle, echandle return_dictionary_handle);
 
 /*********************************************************************/
 
