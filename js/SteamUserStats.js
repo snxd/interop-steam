@@ -2,184 +2,140 @@
  *  @class Steam user stats
  *  @brief
  */
+import {EventEmitter} from "events";
 
 import {interop} from "../direct/Host";
 
-// Node JS support
-var EventEmitter;
-if (typeof (require) !== "undefined") {
-  if (typeof (EventEmitter) == "undefined") {
-    EventEmitter = require("events");
+class SteamUserStats extends EventEmitter {
+  constructor(instanceId) {
+    super();
+    this.instanceId = instanceId;
+    this.refCount = 1;
+  }
+
+  addRef() {
+    this.refCount++;
+  }
+  release() {
+    if (--this.refCount === 0) {
+      this.emit("release");
+
+      return interop.releaseInstance(this.instanceId);
+    }
+  }
+  invoke(method, methodArgs) {
+    return interop.invoke(this.instanceId, method, methodArgs);
+  }
+  /**
+   * Get the number of players for the current app
+   * @returns bool
+   */
+  getNumberOfCurrentPlayers() {
+    return this.invoke("getNumberOfCurrentPlayers");
+  }
+  /**
+   * Get the number of achievements for the current app
+   * @returns bool
+   */
+  getNumberOfAchievements() {
+    return this.invoke("getNumberOfAchievements");
+  }
+  /**
+   * Get an achievement by name to see if it was achieved
+   * @returns bool
+   */
+  getAchievement(name) {
+    return this.invoke("getAchievement", {name});
+  }
+  /**
+   * Get an achievement name by index
+   * @returns string
+   */
+  getAchievementName(index) {
+    return this.invoke("getAchievementName", {index});
+  }
+  /**
+   * Get an achievement image icon index by name
+   * @returns int
+   */
+  getAchievementIcon(name) {
+    return this.invoke("getAchievementIcon", {name});
+  }
+  /**
+   * Get an achievement's attribute (name, desc, or hidden)
+   * @returns int
+   */
+  getAchievementDisplayAttribute(name, key) {
+    return this.invoke("getAchievementDisplayAttribute", {name, key});
+  }
+  /**
+   * Set an achievement by name as achieved
+   * @returns bool
+   */
+  setAchievement(name) {
+    return this.invoke("setAchievement", {name});
+  }
+  /**
+   * Clears an achievement by name that was previously achieved
+   * @returns bool
+   */
+  clearAchievement(name) {
+    return this.invoke("clearAchievement", {name});
+  }
+  /**
+   * Get an achievement by user and name to see if it was achieved
+   * @returns bool
+   */
+  getUserAchievement(steamId, name) {
+    return this.invoke("getUserAchievement", {steamId, name});
+  }
+  /**
+   * Get percentage of users who have completed achievement
+   * @returns bool
+   */
+  getAchievementAchievedPercent(name) {
+    return this.invoke("getAchievementAchievedPercent", {name});
+  }
+  /**
+   * Requests a user's stats
+   * @returns bool
+   */
+  requestUserStats(steamId) {
+    return this.invoke("requestUserStats", {steamId});
+  }
+  /**
+   * Requests global achievement percentages
+   * @returns bool
+   */
+  requestGlobalAchievementPercentages() {
+    return this.invoke("requestGlobalAchievementPercentages");
+  }
+  /**
+   * Resets all stats
+   * @returns bool
+   */
+  resetAllStats(achievementsToo) {
+    return this.invoke("resetAllStats", {achievementsToo});
   }
 }
 
-function SteamUserStats(instanceId) {
-  this.instanceId = instanceId;
-}
-
-SteamUserStats.prototype = Object.create(EventEmitter.prototype, {
-  constructor: {value: SteamUserStats, enumerable: false, writable: true, configurable: true}
-});
-
-SteamUserStats.prototype.release = function() {
-  this.emit("finalize");
-  this.releaseInstance();
-};
-SteamUserStats.prototype.invoke = function(methodBinding) {
-  return interop.invoke(this.instanceId, methodBinding);
-};
-SteamUserStats.prototype.releaseInstance = function() {
-  interop.releaseInstance(this.instanceId);
-};
-
-/**
- * Get the number of players for the current app
- * @returns bool
- */
-SteamUserStats.prototype.getNumberOfCurrentPlayers = function () {
-  return this.invoke({
-    "method": "getNumberOfCurrentPlayers"
-  });
-};
-/**
- * Get the number of achievements for the current app
- * @returns bool
- */
-SteamUserStats.prototype.getNumberOfAchievements = function () {
-  return this.invoke({
-    "method": "getNumberOfAchievements"
-  });
-};
-/**
- * Get an achievement by name to see if it was achieved
- * @returns bool
- */
-SteamUserStats.prototype.getAchievement = function (name) {
-  return this.invoke({
-    "method": "getAchievement",
-    "name": name
-  });
-};
-/**
- * Get an achievement name by index
- * @returns string
- */
-SteamUserStats.prototype.getAchievementName = function (index) {
-  return this.invoke({
-    "method": "getAchievementName",
-    "index": index
-  });
-};
-/**
- * Get an achievement image icon index by name
- * @returns int
- */
-SteamUserStats.prototype.getAchievementIcon = function (name) {
-  return this.invoke({
-    "method": "getAchievementIcon",
-    "name": name
-  });
-};
-/**
- * Get an achievement's attribute (name, desc, or hidden)
- * @returns int
- */
-SteamUserStats.prototype.getAchievementDisplayAttribute = function (name, key) {
-  return this.invoke({
-    "method": "getAchievementDisplayAttribute",
-    "name": name,
-    "key": key
-  });
-};
-/**
- * Set an achievement by name as achieved
- * @returns bool
- */
-SteamUserStats.prototype.setAchievement = function (name) {
-  return this.invoke({
-    "method": "setAchievement",
-    "name": name
-  });
-};
-/**
- * Clears an achievement by name that was previously achieved
- * @returns bool
- */
-SteamUserStats.prototype.clearAchievement = function (name) {
-  return this.invoke({
-    "method": "clearAchievement",
-    "name": name
-  });
-};
-/**
- * Get an achievement by user and name to see if it was achieved
- * @returns bool
- */
-SteamUserStats.prototype.getUserAchievement = function (steamId, name) {
-  return this.invoke({
-    "method": "getUserAchievement",
-    "steamId": steamId,
-    "name": name
-  });
-};
-/**
- * Get percentage of users who have completed achievement
- * @returns bool
- */
-SteamUserStats.prototype.getAchievementAchievedPercent = function (name) {
-  return this.invoke({
-    "method": "getAchievementAchievedPercent",
-    "name": name
-  });
-};
-/**
- * Requests a user's stats
- * @returns bool
- */
-SteamUserStats.prototype.requestUserStats = function (steamId) {
-  return this.invoke({
-    "method": "requestUserStats",
-    "steamId": steamId
-  });
-};
-/**
- * Requests global achievement percentages
- * @returns bool
- */
-SteamUserStats.prototype.requestGlobalAchievementPercentages = function () {
-  return this.invoke({
-    "method": "requestGlobalAchievementPercentages"
-  });
-};
-/**
- * Resets all stats
- * @returns bool
- */
-SteamUserStats.prototype.resetAllStats = function (achievementsToo) {
-  return this.invoke({
-    "method": "resetAllStats",
-    "achievementsToo": achievementsToo
-  });
-};
-
-var createSteamUserStats = function(instanceId) {
-  return interop.createInstance("Steam.UserStats", SteamUserStats, instanceId);
-};
+export const createSteamUserStats = (instanceId) =>
+  interop.createInstance("Steam.UserStats", SteamUserStats, instanceId);
 
 /** Global instance of SteamUserStats
  *  @type SteamUserStats
  */
 var steamUserStats;
-interop.on("load", function(info) {
+interop.on("load", (info) => {
   if (info.name === "steam") {
     steamUserStats = createSteamUserStats();
   }
 });
-interop.on("unload", function(info) {
+interop.on("unload", (info) => {
   if (info.name === "steam") {
     steamUserStats.release();
     steamUserStats = null;
   }
 });
 
-export {createSteamUserStats, steamUserStats};
+export {steamUserStats};

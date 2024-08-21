@@ -2,182 +2,139 @@
  *  @class SteamApps
  *  @brief
  */
+import {EventEmitter} from "events";
 
 import {interop} from "../direct/Host";
 
-// Node JS support
-var EventEmitter;
-if (typeof (require) !== "undefined") {
-  if (typeof (EventEmitter) == "undefined") {
-    EventEmitter = require("events");
+class SteamApps extends EventEmitter {
+  constructor(instanceId) {
+    super();
+    this.instanceId = instanceId;
+    this.refCount = 1;
+  }
+
+  addRef() {
+    this.refCount++;
+  }
+  release() {
+    if (--this.refCount === 0) {
+      this.emit("release");
+
+      return interop.releaseInstance(this.instanceId);
+    }
+  }
+  invoke(method, methodArgs) {
+    return interop.invoke(this.instanceId, method, methodArgs);
+  }
+  /**
+   * Gets whether or not an app is installed by its id
+   */
+  isAppInstalled(id) {
+    return this.invoke("isAppInstalled", {id});
+  }
+  /**
+   * Gets an app's install directory
+   */
+  getAppInstallDir(id) {
+    return this.invoke("getAppInstallDir", {id});
+  }
+  /**
+   * Gets the current app's build id
+   */
+  getAppBuildId() {
+    return this.invoke("getAppBuildId");
+  }
+  /**
+   * Gets whether or not a dlc is installed by its app id
+   */
+  isDLCInstalled(id) {
+    return this.invoke("isDLCInstalled", {id});
+  }
+  /**
+   * Gets number of dlcs for the current app
+   */
+  getDLCCount() {
+    return this.invoke("getDLCCount");
+  }
+  /**
+   * Installs a dlc by its app id
+   */
+  installDLC(id) {
+    return this.invoke("installDLC", {id});
+  }
+  /**
+   * Uninstalls a dlc by its app id
+   */
+  uninstallDLC(id) {
+    return this.invoke("uninstallDLC", {id});
+  }
+  /**
+   * Gets dlc data by index
+   */
+  getDLCData(index) {
+    return this.invoke("getDLCData", {index});
+  }
+  /**
+   * Checks if the current user is banned
+   */
+  isVACBanned() {
+    return this.invoke("isVACBanned");
+  }
+  /**
+   * Checks if the current user is subscribed
+   */
+  isSubscribed() {
+    return this.invoke("isSubscribed");
+  }
+  /**
+   * Checks if the current user has low violence setting enabled
+   */
+  isLowViolence() {
+    return this.invoke("isLowViolence");
+  }
+  /**
+   * Checks if the current user has cyber cafe setting enabled
+   */
+  isCybercafe() {
+    return this.invoke("isCybercafe");
+  }
+  /**
+   * Checks if the current user is subscribed from weekend
+   */
+  isSubscribedFromWeekend() {
+    return this.invoke("isSubscribedFromWeekend");
+  }
+  /**
+   * Gets the current branch for the app
+   */
+  getCurrentBetaName() {
+    return this.invoke("getCurrentBetaName");
+  }
+  /**
+   * Marks content as corrupt
+   */
+  markContentCorrupt(missingFilesOnly) {
+    return this.invoke("markContentCorrupt", {missingFilesOnly});
   }
 }
 
-function SteamApps(instanceId) {
-  this.instanceId = instanceId;
-}
-
-SteamApps.prototype = Object.create(EventEmitter.prototype, {
-  constructor: {value: SteamApps, enumerable: false, writable: true, configurable: true}
-});
-
-SteamApps.prototype.release = function() {
-  this.emit("finalize");
-  this.releaseInstance();
-};
-SteamApps.prototype.invoke = function(methodBinding) {
-  return interop.invoke(this.instanceId, methodBinding);
-};
-SteamApps.prototype.releaseInstance = function() {
-  interop.releaseInstance(this.instanceId);
-};
-
-/**
- * Gets whether or not an app is installed by its id
- */
-SteamApps.prototype.isAppInstalled = function (id) {
-  return this.invoke({
-    "method": "isAppInstalled",
-    "id": id
-  });
-};
-/**
- * Gets an app's install directory
- */
-SteamApps.prototype.getAppInstallDir = function (id) {
-  return this.invoke({
-    "method": "getAppInstallDir",
-    "id": id
-  });
-};
-/**
- * Gets the current app's build id
- */
-SteamApps.prototype.getAppBuildId = function () {
-  return this.invoke({
-    "method": "getAppBuildId"
-  });
-};
-/**
- * Gets whether or not a dlc is installed by its app id
- */
-SteamApps.prototype.isDLCInstalled = function (id) {
-  return this.invoke({
-    "method": "isDLCInstalled",
-    "id": id
-  });
-};
-/**
- * Gets number of dlcs for the current app
- */
-SteamApps.prototype.getDLCCount = function () {
-  return this.invoke({
-    "method": "getDLCCount"
-  });
-};
-/**
- * Installs a dlc by its app id
- */
-SteamApps.prototype.installDLC = function (id) {
-  return this.invoke({
-    "method": "installDLC",
-    "id": id
-  });
-};
-/**
- * Uninstalls a dlc by its app id
- */
-SteamApps.prototype.installDLC = function (id) {
-  return this.invoke({
-    "method": "uninstallDLC",
-    "id": id
-  });
-};
-/**
- * Gets dlc data by index
- */
-SteamApps.prototype.getDLCData = function (index) {
-  return this.invoke({
-    "method": "getDLCData",
-    "index": index
-  });
-};
-/**
- * Checks if the current user is banned
- */
-SteamApps.prototype.isVACBanned = function () {
-  return this.invoke({
-    "method": "isVACBanned"
-  });
-};
-/**
- * Checks if the current user is subscribed
- */
-SteamApps.prototype.isSubscribed = function () {
-  return this.invoke({
-    "method": "isSubscribed"
-  });
-};
-/**
- * Checks if the current user has low violence setting enabled
- */
-SteamApps.prototype.isLowViolence = function () {
-  return this.invoke({
-    "method": "isLowViolence"
-  });
-};
-/**
- * Checks if the current user has cyber cafe setting enabled
- */
-SteamApps.prototype.isCybercafe = function () {
-  return this.invoke({
-    "method": "isCybercafe"
-  });
-};
-/**
- * Checks if the current user is subscribed from weekend
- */
-SteamApps.prototype.isSubscribedFromWeekend = function () {
-  return this.invoke({
-    "method": "isSubscribedFromWeekend"
-  });
-};
-/**
- * Gets the current branch for the app
- */
-SteamApps.prototype.getCurrentBetaName = function () {
-  return this.invoke({
-    "method": "getCurrentBetaName"
-  });
-};
-/**
- * Marks content as corrupt
- */
-SteamApps.prototype.markContentCorrupt = function (missingFilesOnly) {
-  return this.invoke({
-    "method": "markContentCorrupt",
-    "missingFilesOnly": missingFilesOnly
-  });
-};
-
-var createSteamApps = function() {
-  return interop.createInstance("Steam.Apps", SteamApps);
-};
+export const createSteamApps = (instanceId) =>
+  interop.createInstance("Steam.Apps", SteamApps, instanceId);
 
 /** Global instance of SteamApps
  *  @type SteamApps
  */
 var steamApps;
-interop.on("load", function(info) {
+interop.on("load", (info) => {
   if (info.name === "steam") {
     steamApps = createSteamApps();
   }
 });
-interop.on("unload", function(info) {
+interop.on("unload", (info) => {
   if (info.name === "steam") {
     steamApps.release();
     steamApps = null;
   }
 });
 
-export {createSteamApps, steamApps};
+export {steamApps};
