@@ -43,10 +43,7 @@ bool GetImageRGBAPtr(int32_t index, uint8_t **base64_buffer, int32_t *base64_buf
     auto *buffer = reinterpret_cast<uint8_t *>(malloc(buffer_size));
     SteamUtils()->GetImageRGBA(index, buffer, buffer_size);
 
-    *base64_buffer_size = 0;
-    *base64_buffer = nullptr;
-
-    Base64_CalculateEncodeSize(buffer_size, base64_buffer_size);
+    *base64_buffer_size = Base64_CalculateEncodeSize(buffer_size);
     *base64_buffer = reinterpret_cast<uint8_t *>(malloc(*base64_buffer_size));
     Base64_Encode(buffer, buffer_size, (char *)*base64_buffer, *base64_buffer_size, &base64_length);
     return true;
