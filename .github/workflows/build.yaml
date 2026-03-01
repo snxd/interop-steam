@@ -64,7 +64,7 @@ jobs:
       run: cmake --build build --config MinSizeRel
 
     - name: Upload build
-      uses: actions/upload-artifact@v6
+      uses: actions/upload-artifact@v7
       with:
         name: ${{ matrix.name }}
         path: |
@@ -74,7 +74,7 @@ jobs:
         retention-days: 30
 
     - name: Upload build errors
-      uses: actions/upload-artifact@v6
+      uses: actions/upload-artifact@v7
       if: failure()
       with:
         name: CMake Errors - ${{ matrix.name }}
