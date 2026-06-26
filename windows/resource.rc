@@ -50,8 +50,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 7, 2, 193
- PRODUCTVERSION 7, 2, 193
+ FILEVERSION 7, 2, 194
+ PRODUCTVERSION 7, 2, 194
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -68,12 +68,12 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "Solid State Networks"
             VALUE "FileDescription", "Steam Interop"
-            VALUE "FileVersion", "dev"
+            VALUE "FileVersion", "7.2"
             VALUE "InternalName", "steam.dll"
             VALUE "LegalCopyright", "Copyright (C) 2018"
             VALUE "OriginalFilename", "steam.dll"
             VALUE "ProductName", "DIRECT"
-            VALUE "ProductVersion", "dev"
+            VALUE "ProductVersion", "7.2"
         END
     END
     BLOCK "VarFileInfo"
