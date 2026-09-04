@@ -36,6 +36,9 @@ bool GetImageRGBAPtr(int32_t index, uint8_t **base64_buffer, int32_t *base64_buf
     int32_t height = 0;
     int32_t base64_length = 0;
 
+    *base64_buffer = nullptr;
+    *base64_buffer_size = 0;
+
     if (!SteamUtils()->GetImageSize(index, reinterpret_cast<uint32_t *>(&width), reinterpret_cast<uint32_t *>(&height)))
         return false;
 
