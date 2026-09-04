@@ -42,8 +42,11 @@ bool GetImageRGBAPtr(int32_t index, uint8_t **base64_buffer, int32_t *base64_buf
     if (!SteamUtils()->GetImageSize(index, reinterpret_cast<uint32_t *>(&width), reinterpret_cast<uint32_t *>(&height)))
         return false;
 
-    int32_t buffer_size = 4 * width * height * sizeof(char);
-    auto *buffer = reinterpret_cast<uint8_t *>(malloc(buffer_size));
+    const int64_t buffer_size64 = 4LL * width * height;
+    const int32_t buffer_size = static_cast<int32_t>(buffer_size64);
+    if (buffer_size64 <= 0 || buffer_size64 != static_cast<int64_t>(buffer_size))
+        return false;
+    auto *buffer = reinterpret_cast<uint8_t *>(malloc(static_cast<size_t>(buffer_size)));
     if (!buffer)
         return false;
     if (!SteamUtils()->GetImageRGBA(index, buffer, buffer_size)) {
