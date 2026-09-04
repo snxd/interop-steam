@@ -41,11 +41,30 @@ bool GetImageRGBAPtr(int32_t index, uint8_t **base64_buffer, int32_t *base64_buf
 
     int32_t buffer_size = 4 * width * height * sizeof(char);
     auto *buffer = reinterpret_cast<uint8_t *>(malloc(buffer_size));
-    SteamUtils()->GetImageRGBA(index, buffer, buffer_size);
+    if (!buffer)
+        return false;
+    if (!SteamUtils()->GetImageRGBA(index, buffer, buffer_size)) {
+        free(buffer);
+        return false;
+    }
 
     *base64_buffer_size = Base64_CalculateEncodeSize(buffer_size);
     *base64_buffer = reinterpret_cast<uint8_t *>(malloc(*base64_buffer_size));
-    Base64_Encode(buffer, buffer_size, (char *)*base64_buffer, *base64_buffer_size, &base64_length);
+    if (!*base64_buffer) {
+        *base64_buffer_size = 0;
+        free(buffer);
+        return false;
+    }
+
+    const auto encoded =
+        Base64_Encode(buffer, buffer_size, (char *)*base64_buffer, *base64_buffer_size, &base64_length);
+    free(buffer);
+    if (!encoded) {
+        free(*base64_buffer);
+        *base64_buffer = nullptr;
+        *base64_buffer_size = 0;
+        return false;
+    }
     return true;
 }
 
